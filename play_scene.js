@@ -29,17 +29,16 @@ var PlayScene = {
     this.game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
 
-    HUD = game.add.physics(560, 0, 'HUD');
-    //this.game.world.addChild(HUD);
-    //this.game.physics.arcade.enable(HUD);
-    //HUD.body.collideWorldBounds = true;
+    HUD = this.game.add.physicsGroup();
+    HUD.create(560, 0, 'HUD');
+    HUD.setAll('body.immovable', true);
 
     cursors = this.game.input.keyboard.createCursorKeys();
 
     
   },
   update: function(){
-    this.game.physics.arcade.collide(player, HUD);
+        
   },
   render: function(){
   }
@@ -65,7 +64,29 @@ PlayerController.constructor = PlayerController;
 
 PlayerController.prototype.update = function () {
 
-    this.speed=2;
+
+      this.game.physics.arcade.collide(player, HUD);
+  
+      this.body.velocity.x = 0;
+      this.body.velocity.y = 0;
+  
+      if (cursors.left.isDown)
+      {
+          this.body.velocity.x = -200;
+      }
+      else if (cursors.right.isDown)
+      {
+          this.body.velocity.x = 200;
+      }
+      else if (cursors.up.isDown)
+      {
+          this.body.velocity.y = -200;
+      }
+      else if (cursors.down.isDown)
+      {
+          this.body.velocity.y = 200;
+      }
+    /*this.speed=2;
     
     if (cursors.left.isDown)
     {
@@ -90,17 +111,17 @@ PlayerController.prototype.update = function () {
     }
     else if (cursors.down.isDown)
     {
-      this.dirx=0;
+      /*this.dirx=0;
       this.diry=1;
       this.y += this.diry*2;
       distanceY+=2*this.diry;
     }
 
-    if (distanceX>44 || distanceX<-44)
+    /*if (distanceX>44 || distanceX<-44)
     distanceX=0;
     if (distanceY>44 || distanceY<-44)
     distanceY=0;
-
+*/
     
 }
 
