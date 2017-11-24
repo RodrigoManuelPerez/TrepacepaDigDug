@@ -59,3 +59,47 @@ La dinámica principal del juego es el paso de rondas derrotando a todos los ene
 __Niveles__
 
 La creación de los niveles se produce siguiendo un patrón, hasta el nivel 10 y partiendo del nivel inicial aumenta a cada ronda las rocas en una hasta llegar a 5 y hasta 8 los enemigos. Al llegar a 5 las rocas irán disminuyendo hasta volver a 3 y así cíclicamente.
+
+__Planificación__
+
+	Semana 1:
+
+Movimiento DigDug.
+Física de rocas.
+Tierra se borra al pasar.
+
+	Semana 2:
+
+Movimiento Enemigos.
+Ataque del dragon.
+
+	Semana 3:
+
+Ataque de DigDug.
+Daño por parte de los enemigos y DigDug.
+
+	Semana 4:
+
+Sistema de puntuación (que los puntos corran por debajo sin mostrarse).
+Animaciones de movimiento básico.
+
+	Semana 5:
+
+Resto de animacones.
+
+	Semana 6:
+
+Separar todas las entidades (hacerlo por scripts diferentes y no todo en el playscene).
+
+	Semana 7:
+
+Implementación del menú.
+Implementación del HUD.
+
+	Semana 8:
+
+Testeo y correccion de errores.
+
+	Semana 9:
+
+Preparación de la presentación.
