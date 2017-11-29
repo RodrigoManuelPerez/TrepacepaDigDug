@@ -144,7 +144,7 @@ var PlayScene = {
         var PosPlayer = new Par(475, 42);
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', VelPlayer, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, tierra, tierraH, 'player');
+        player = new Player(this.game,PosPlayer, 'DigDug', VelPlayer, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, 'Player');
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
@@ -155,7 +155,8 @@ var PlayScene = {
         //Creamos el grupo de las piedras
 
         //CREO EL TIMER
-        timer=this.game.time.create(false); //Creamos el temporizador pausado
+
+         //Creamos el temporizador pausado
         
 
         /*var PosColl = new Par(45, 168);
@@ -166,9 +167,7 @@ var PlayScene = {
         var VelRocaBlock = new Par(0, 0);
         roca = new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
         this.game.physics.arcade.enable(roca);
-
         rocaColl.addChild(roca);
-
         this.game.world.add(rocaColl);*
         
                 
@@ -219,6 +218,9 @@ var PlayScene = {
         /*paredDerecha.body.immovable = true;
         paredSuperior.body.immovable = true;
 */      
+
+
+        
     },
     update: function(){
         //this.game.physics.arcade.overlap(ball, pared1, collisionHandler, null, this);   
@@ -228,8 +230,9 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
-        this.game.physics.arcade.collide(player, roca, onCollisionCae);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
+        this.game.physics.arcade.collide(roca, tierra, onCollisionPara);
+        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
         
         
         //console.debug(tierra.length);
@@ -246,7 +249,7 @@ var PlayScene = {
 
     },
     render: function(){
-        this.game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
+        
     }
 }
 
@@ -254,8 +257,6 @@ module.exports = PlayScene;
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-
-
     if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+1)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+1)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+1)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
@@ -275,30 +276,26 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._dirY = 1
         }
     }
-    else if ((obj1.x > obj2.x && obj1.y==(obj2.y+obj1.height+3))||(obj1.x < obj2.x && obj1.y == obj2.y+obj1.height+3)||(obj1.x == obj2.x && obj1.y>obj2.y)){
+    else if ((obj1.x-2 > obj2.x && obj1.y==(obj2.y+obj1.height+3+1))||(obj1.x-2 < obj2.x && obj1.y == obj2.y+obj1.height+3+1)||(obj1.x-2 == obj2.x && obj1.y>obj2.y+1)){
 
-        timeToCount=3000;
-        timer.loop(timeToCount,updateCounter(),this.game);
-        timer.start();
+        obj2.EnableFall();
+        
     }
-}
-
-
-function updateCounter() {
-    
-        total++;
-    
 }
 
 function onCollisionTierra (obj1, obj2)
 {
-    //this.game.physics.arcade.collide(rocaColl, obj2, onCollisionCae);   //Al cavar comprobamos si existe colision entre el collider Rojo y la tierra que estamos cavando y si es asi activamos su caida
-    obj2.Destroy(); //Llamamos la la destructora de la tierra
+    if (obj1._id=='Player')
+        obj2.Destroy(); //Llamamos la la destructora de la tierra
+    if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)
+        obj2.Destroy();
 }
 
-function onCollisionCae(obj1, obj2)
+function onCollisionPara(obj1, obj2)
 {
-    
+    if(obj1._Falling && obj2.y>obj1.y){
+        obj1._Falling=false;
+    }
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){
@@ -314,10 +311,11 @@ function Par (x, y) {
 
 
 //LA CLASE MOVABLE HEREDA DE SPRITE
-function Movable(game, position, sprite, velocity)
+function Movable(game, position, sprite, velocity,id)
     {
         Phaser.Sprite.apply(this, [game ,position._x, position._y, sprite]);
         this._velocity = velocity;
+        this._id=id;
     }
 
     Movable.prototype = Object.create(Phaser.Sprite.prototype);
@@ -339,9 +337,9 @@ function Movable(game, position, sprite, velocity)
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, id, roca)
+function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, id)
     {
-    Movable.apply(this, [game, position, sprite, velocity]);
+    Movable.apply(this, [game, position, sprite, velocity, id]);
     
     this._Enableleft = true;
     this._Enableright = true;
@@ -353,15 +351,11 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     this._Movingup = true;
     this._Movingdown = true;
 
-    this._id = id;
-
     this._dirX = DirPlayer._x;
     this._dirY = DirPlayer._y;
 
     this._distanceX = distanceX;
     this._distanceY = distanceY;
-
-    this._roca = roca;
 
     this._cursors = cursors;
     //this._gunbutton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
@@ -560,8 +554,7 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
 
 function Tierra(game, position, sprite, velocity,id)
     {
-        Movable.apply(this, [game, position, sprite, velocity]);
-        this._id = id;
+        Movable.apply(this, [game, position, sprite, velocity,id]);
     }
     
     Tierra.prototype = Object.create(Movable.prototype);
@@ -578,9 +571,8 @@ function Tierra(game, position, sprite, velocity,id)
 
 function Collider(game, position, sprite, velocity, id)
     {
-        Movable.apply(this, [game, position, sprite, velocity]);
+        Movable.apply(this, [game, position, sprite, velocity,id]);
 
-        this._id=id;
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
