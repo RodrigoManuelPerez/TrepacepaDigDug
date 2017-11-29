@@ -10,8 +10,6 @@ var roca, rocaColl;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
-var RocaBlock;
-
 var PlayScene = {
     create: function() {
 
@@ -43,6 +41,9 @@ var PlayScene = {
         tierraH = this.game.add.physicsGroup();
         //Poner fisicas a la tierra vertical.
         tierraV = this.game.add.physicsGroup();
+
+        roca = this.game.add.physicsGroup();
+        rocaColl = this.game.add.physicsGroup();
         
         /*
         //CREAMOS LA MATRIZ DE 12 * 12.       
@@ -63,8 +64,22 @@ var PlayScene = {
                 this.game.world.addChild(BloqTierra);
                 tierra.add(BloqTierra);
 
+                //ROCAS
+
+                var a = Math.random();
+                if (a<0.05){
+                    var PosColl = new Par(i, j);
+                    var VelColl = new Par(0, 0);
+                    var Coll = new Collider(this.game, PosColl, 'RocaCompleta',VelColl, 'Collider');
+                    this.game.physics.arcade.enable(Coll); 
+                    
+                    roca.add(Coll);     //AÑADIMOS AL GRUPO 
+                    //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
+            
+                }
             }
         }
+        this.game.world.add(roca);
 
         //CREAMOS LA TIERRA HORIZONTAL
 
@@ -113,6 +128,7 @@ var PlayScene = {
         paredSuperior = new Phaser.Sprite(this.game, 0, 0, 'latSup')
         paredSuperior.anchor.x = 0;
         paredSuperior.anchor.y = 0;
+        paredSuperior.visible=false;
         this.game.world.addChild(paredDerecha);
         this.game.world.addChild(paredSuperior);
 
@@ -125,17 +141,32 @@ var PlayScene = {
         var PosPlayer = new Par(475, 42);
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', VelPlayer, DirPlayer, cursors, limiteDerecho, 
-            limiteSuperior, distanceX, distanceY, tierra, tierraH, 'player');
+        player = new Player(this.game,PosPlayer, 'DigDug', VelPlayer, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, tierra, tierraH, 'player');
+        this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
         this.game.world.addChild(player);
 
         //CREACION DE LAS PIEDRAS
         //Creamos el grupo de las piedras
+
         
-        rocaColl = this.game.add.physicsGroup();
-        roca = this.game.add.physicsGroup();
+
+        
+
+        /*var PosColl = new Par(45, 168);
+        var VelColl = new Par(0, 0);
+        rocaColl = new Collider(this.game, PosColl, 'RocaColl',VelColl, 'Collider');
+        this.game.physics.arcade.enable(rocaColl);
+        var PosRocaBlock = new Par(0, -37);
+        var VelRocaBlock = new Par(0, 0);
+        roca = new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
+        this.game.physics.arcade.enable(roca);
+
+        rocaColl.addChild(roca);
+
+        this.game.world.add(rocaColl);*
+        
                 
         for(var i = 2; i < limiteDerecho; i += 43)
         {           
@@ -145,28 +176,28 @@ var PlayScene = {
                 if (a<0.05){
                     var PosColl = new Par(i, j);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Collider(this.game, PosColl, 'RocaColl',VelColl, 'Collider'); 
+                    var Coll = new Collider(this.game, PosColl, 'RocaColl',VelColl, 'Collider');
+                    this.game.physics.arcade.enable(Coll); 
                     //Coll.visible = false;
-
-                    this.game.physics.arcade.enable(Coll);  
-                          
-                    this.game.world.addChild(Coll);
-                    rocaColl.add(Coll);     //AÑADIMOS AL GRUPO                    
-
-
-                    var PosRocaBlock = new Par(i, j - 37);
+                                   
+                    var PosRocaBlock = new Par(0,-37);
                     var VelRocaBlock = new Par(0, 0);
-                    var RocaBlock = new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
-
-                   // this.game.physics.arcade.enable(RocaBlock);
-                    //this.game.world.addChild(RocaBlock);     
-                    Coll.addChild(RocaBlock);
-                   roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-
+                    var RocaBlock=new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
+                    this.game.physics.arcade.enable(RocaBlock);
+                    //var RocaBlock=new Phaser.Sprite(this.game, i, j-37, 'Roca');
+                    //this.game.physics.arcade.enable(RocaBlock);
+                    //this.game.world.addChild(RocaBlock);
                     
+                    Coll.addChild(RocaBlock);
+                            
+                    rocaColl.add(Coll);     //AÑADIMOS AL GRUPO 
+                    //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
+            
                 }
             }
         }
+        this.game.world.add(rocaColl);*/
+        //this.game.world.add(roca);
          
 
         
@@ -178,7 +209,7 @@ var PlayScene = {
         //Motor físico de Phaser
    
         //Colisiones
-        this.game.physics.enable([player,roca, rocaColl], Phaser.Physics.ARCADE);
+        //this.game.physics.enable([player,roca, rocaColl], Phaser.Physics.ARCADE);
 
         //Objetos que no se mueven
         /*paredDerecha.body.immovable = true;
@@ -193,7 +224,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
-        this.game.physics.arcade.collide(player, rocaColl, onCollisionCae);
+        this.game.physics.arcade.collide(player, roca, onCollisionCae);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
         
         
@@ -220,22 +251,27 @@ module.exports = PlayScene;
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-    if (obj1._Movingleft) {
-        obj1._Enableleft = false;
-        obj1._dirX = 1;
-     }
-    else if (obj1._Movingright) {
-        obj1._Enableright = false;
-        obj1._dirX = -1;
+    if ((obj1.x == obj2.x && obj1.y<obj2.y)||(obj1.x > obj2.x && obj1.y==obj2.y)||(obj1.x < obj2.x && obj1.y==obj2.y)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+        if (obj1._Movingleft) {
+            obj1._Enableleft = false;
+            obj1._dirX = 1;
+        }
+        else if (obj1._Movingright) {
+            obj1._Enableright = false;
+            obj1._dirX = -1;
+        }
+        else if (obj1._Movingdown) {
+            obj1._Enabledown = false;
+            obj1._dirY = -1
+        }
+        else if (obj1._Movingup) {
+            obj1._Enableup = false;
+            obj1._dirY = 1
+        }
     }
-    else if (obj1._Movingdown) {
-        obj1._Enabledown = false;
-        obj1._dirY = -1
+    else if ((obj1.x > obj2.x && obj1.y==(obj2.y+obj1.height+3))||(obj1.x < obj2.x && obj1.y == obj2.y+obj1.height+3)||(obj1.x == obj2.x && obj1.y>obj2.y)){
+        obj2.EnableFall();
     }
-    else if (obj1._Movingup) {
-        obj1._Enableup = false;
-        obj1._dirY = 1
-     }
 }
 
 function onCollisionTierra (obj1, obj2)
@@ -246,9 +282,7 @@ function onCollisionTierra (obj1, obj2)
 
 function onCollisionCae(obj1, obj2)
 {
-    obj2.EnableFall();
-    //if(!obj1._HasFallen)       //Si ya se ha
-    //    obj1._HasFallen=true;
+    
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){
@@ -302,7 +336,6 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     this._Movingright = true;
     this._Movingup = true;
     this._Movingdown = true;
-
 
     this._id = id;
 
@@ -554,10 +587,7 @@ function Collider(game, position, sprite, velocity, id)
     Collider.prototype.update=function(){
         if(this._Falling){
             for(var i=0; i<6; i++){
-                if (this._Falling && this._id=='Collider' && this.y<598){
-                    this.y ++;
-                }
-                else if (this._Falling && this._id=='roca' && this.y<561){
+                if (this._Falling && this._id=='Collider' && this.y<558){
                     this.y ++;
                 }
             }
