@@ -10,16 +10,17 @@ var roca, rocaColl;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
+var timer;
+var timeToCount;
+var total=0;
+
 var PlayScene = {
     create: function() {
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
         
-        /*
-        //Como se pinta lineal por orden, seria primero la tierra, 
-        //las pared de la derecha (el limite derecho), y después el jugador.
-        */
+        
 
         //Poner variables a los limites.
         limiteDerecho = 513;
@@ -67,7 +68,7 @@ var PlayScene = {
                 //ROCAS
 
                 var a = Math.random();
-                if (a<0.05){
+                if (a<0.03){
                     var PosColl = new Par(i, j);
                     var VelColl = new Par(0, 0);
                     var Coll = new Collider(this.game, PosColl, 'RocaCompleta',VelColl, 'Collider');
@@ -75,7 +76,9 @@ var PlayScene = {
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 
                     //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-            
+                    
+                    console.debug(Coll.x);
+                    console.debug(Coll.y);
                 }
             }
         }
@@ -147,11 +150,12 @@ var PlayScene = {
         
         this.game.world.addChild(player);
 
+
         //CREACION DE LAS PIEDRAS
         //Creamos el grupo de las piedras
 
-        
-
+        //CREO EL TIMER
+        timer=this.game.time.create(false); //Creamos el temporizador pausado
         
 
         /*var PosColl = new Par(45, 168);
@@ -242,16 +246,18 @@ var PlayScene = {
 
     },
     render: function(){
-
+        this.game.debug.text('Time until event: ' + timer.duration.toFixed(0), 32, 32);
     }
 }
-
 
 module.exports = PlayScene;
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-    if ((obj1.x == obj2.x && obj1.y<obj2.y)||(obj1.x > obj2.x && obj1.y==obj2.y)||(obj1.x < obj2.x && obj1.y==obj2.y)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+
+
+    if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+1)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+1)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+1)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
             obj1._dirX = 1;
@@ -270,8 +276,18 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
         }
     }
     else if ((obj1.x > obj2.x && obj1.y==(obj2.y+obj1.height+3))||(obj1.x < obj2.x && obj1.y == obj2.y+obj1.height+3)||(obj1.x == obj2.x && obj1.y>obj2.y)){
-        obj2.EnableFall();
+
+        timeToCount=3000;
+        timer.loop(timeToCount,updateCounter(),this.game);
+        timer.start();
     }
+}
+
+
+function updateCounter() {
+    
+        total++;
+    
 }
 
 function onCollisionTierra (obj1, obj2)
