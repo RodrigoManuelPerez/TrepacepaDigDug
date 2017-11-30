@@ -11,7 +11,7 @@ var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
 var timer;
-var timeToCount;
+var seconds=0;
 var total=0;
 
 var PlayScene = {
@@ -53,7 +53,7 @@ var PlayScene = {
 
         for(var i = 0; i < limiteDerecho; i += 43)
         {           
-            for(var j = 84; j < 594; j += 43) //84
+            for(var j = 83; j < 593; j += 43) //84
             {
                 var PosTierra = new Par(i, j);
                 var VelTierra = new Par(0, 0);
@@ -69,7 +69,7 @@ var PlayScene = {
 
                 var a = Math.random();
                 if (a<0.03){
-                    var PosColl = new Par(i, j);
+                    var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
                     var Coll = new Collider(this.game, PosColl, 'RocaCompleta',VelColl, 'Collider');
                     this.game.physics.arcade.enable(Coll); 
@@ -88,7 +88,7 @@ var PlayScene = {
 
         for(var i = -3; i < limiteDerecho; i+=43)
         {
-            for(var j = 124; j < 600; j+=43)
+            for(var j = 80; j < 599; j+=43)
             {
                 var PosTierraH = new Par(i, j);
                 var VelTierraH = new Par(0, 0);
@@ -108,7 +108,7 @@ var PlayScene = {
         for(var i = 40; i < limiteDerecho; i += 43)
         {
             if (cont<11){
-                for(var j = 84; j < 600; j += 43)
+                for(var j = 83; j < 599; j += 43)
                 {   
                     var PosTierraV = new Par(i, j);
                     var VelTierraV = new Par(0, 0);
@@ -232,7 +232,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(roca, tierra, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
         
-        
+        seconds = Math.floor(this.game.time.time / 1000) % 4;
         //console.debug(tierra.length);
         //this.game.physics.arcade.collide(rocaColl, tierra, onCollisionCae);
         /*for (var i = rocaColl.lenght)
@@ -247,7 +247,7 @@ var PlayScene = {
 
     },
     render: function(){
-        
+        this.game.debug.text("Time until event: " + seconds, 32, 32);
     }
 }
 
@@ -255,7 +255,9 @@ module.exports = PlayScene;
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-    if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+1)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+1)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+1)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+    console.debug('colision');
+
+    if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+3)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+3)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
@@ -273,11 +275,13 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._Enableup = false;
             obj1._dirY = 1
         }
-    }
-    else if ((obj1.x-2 > obj2.x && obj1.y>obj2.y+1)||(obj1.x-2 < obj2.x && obj1.y > obj2.y)+1||(obj1.x-2 == obj2.x && obj1.y>obj2.y+1)){
 
-        //game.time.event.add(Phaser.Timer.Second * 3,CaeTrasTime,obj2);
+        console.debug('colision roca');
+    }
+    else /*if ((obj1.x-2 > obj2.x && obj1.y>obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y > obj2.y+3)||(obj1.x-2 == obj2.x && obj1.y>obj2.y+3))*/{
+        
         obj2.EnableFall();
+        console.debug('cae roca');
         
     }
 }
@@ -296,7 +300,7 @@ function onCollisionTierra (obj1, obj2)
 
 function onCollisionPara(obj1, obj2)
 {
-    if(obj1._Falling && obj2.y>obj1.y){
+    if(obj1._Falling && obj2.y>obj1.y+3){
         obj1._Falling=false;
         obj1.DestroyColl(); //ESTA LLAMADA A DESTROYCOLL SE HACE PERO EL this.destroy no lo permite
     }
@@ -567,7 +571,7 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     //Ejemplo de metodo
     Tierra.prototype.Destroy = function() //Mueve el jugador a la izquierda
     {
-        //this.kill();
+        this.destroy();
     }
     Tierra.prototype.update=function(){
         // if (colision) this.Destroy();
@@ -608,7 +612,7 @@ function Collider(game, position, sprite, velocity, id)
 
     Collider.prototype.DestroyColl = function() //Mueve el jugador a la izquierda
     {
-        this.destroy();
+        //this.destroy();
     }
 
     Collider.prototype.Para=function() {
