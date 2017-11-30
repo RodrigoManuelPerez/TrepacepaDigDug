@@ -217,9 +217,7 @@ var PlayScene = {
         //Objetos que no se mueven
         /*paredDerecha.body.immovable = true;
         paredSuperior.body.immovable = true;
-*/      
-
-
+*/     
         
     },
     update: function(){
@@ -276,18 +274,23 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._dirY = 1
         }
     }
-    else if ((obj1.x-2 > obj2.x && obj1.y==(obj2.y+obj1.height+3+1))||(obj1.x-2 < obj2.x && obj1.y == obj2.y+obj1.height+3+1)||(obj1.x-2 == obj2.x && obj1.y>obj2.y+1)){
+    else if ((obj1.x-2 > obj2.x && obj1.y>obj2.y+1)||(obj1.x-2 < obj2.x && obj1.y > obj2.y)+1||(obj1.x-2 == obj2.x && obj1.y>obj2.y+1)){
 
+        //game.time.event.add(Phaser.Timer.Second * 3,CaeTrasTime,obj2);
         obj2.EnableFall();
         
     }
 }
 
+/*function CaeTrasTime(obj){
+    obj.EnableFall();
+}*/
+
 function onCollisionTierra (obj1, obj2)
 {
     if (obj1._id=='Player')
         obj2.Destroy(); //Llamamos la la destructora de la tierra
-    if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)
+    if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)         
         obj2.Destroy();
 }
 
@@ -295,6 +298,7 @@ function onCollisionPara(obj1, obj2)
 {
     if(obj1._Falling && obj2.y>obj1.y){
         obj1._Falling=false;
+        obj1.DestroyColl(); //ESTA LLAMADA A DESTROYCOLL SE HACE PERO EL this.destroy no lo permite
     }
 }
 
@@ -549,10 +553,10 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
             obj1._Enable=false;
     }*/
 
-    //CLASE BLOQUE TIERRA NORMAL----------------------------------------------------
+    //CLASE BLOQUE TIERRA----------------------------------------------------
 
 
-function Tierra(game, position, sprite, velocity,id)
+    function Tierra(game, position, sprite, velocity,id)
     {
         Movable.apply(this, [game, position, sprite, velocity,id]);
     }
@@ -563,7 +567,7 @@ function Tierra(game, position, sprite, velocity,id)
     //Ejemplo de metodo
     Tierra.prototype.Destroy = function() //Mueve el jugador a la izquierda
     {
-        this.destroy();
+        //this.kill();
     }
     Tierra.prototype.update=function(){
         // if (colision) this.Destroy();
@@ -600,12 +604,11 @@ function Collider(game, position, sprite, velocity, id)
                 }
             }
         }
-        //if(game.physics.arcade.collide(this,tierra)){
-            //this.Para(); //Paramos la roca
-        //}
+    }
 
-        //game.physics.arcade.collide(this,enemigos,onColisionAñadeEnemigoHijo);    //SI SE CHOCA CON UN ENEMIGO SE LE AÑADE HIJO Y SE SE PARA AL ENEMIGO (ENABLE=FALSE)
-        
+    Collider.prototype.DestroyColl = function() //Mueve el jugador a la izquierda
+    {
+        this.destroy();
     }
 
     Collider.prototype.Para=function() {
