@@ -473,7 +473,7 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     }*/
     Player.prototype.update = function() {
         this.Input();
-        if ((this._Enableleft || this._Enableright || this._Enableup || this._Enabledown))
+        if ((this._Movingleft || this._Movingright || this._Movingup || this._Movingdown))
             if(playerMusic.paused)
                 playerMusic.resume();
         else{
