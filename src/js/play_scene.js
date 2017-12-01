@@ -473,15 +473,13 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     }*/
     Player.prototype.update = function() {
         this.Input();
+        if (this._Enableleft || this._Enableright || this._Enableup || this._Enabledown)
+        playerMusic.resume();
+        else
+        playerMusic.pause();
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;
-    }
-    Player.prototype.update = function() {
-        if (this._Enableleft || this._Enableright || this._Enableup || this._Enabledown)
-            playerMusic.resume();
-        else
-            playerMusic.pause();
     }
 
     /*function onCollisionPlayerRock(obj1,obj2){
