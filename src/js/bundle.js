@@ -71,6 +71,7 @@ var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
 var playerMusic;
+var cargada=false;
 
 var timer;
 var seconds=0;
@@ -82,7 +83,10 @@ var PlayScene = {
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
-        //playerMusic.pause();
+        console.debug("creada");
+        playerMusic.pause();
+        console.debug("pausada");
+        cargada=true;
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -340,10 +344,10 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     this._Enableup = true;
     this._Enabledown = true;
 
-    this._Movingleft = true;
-    this._Movingright = true;
-    this._Movingup = true;
-    this._Movingdown = true;
+    this._Movingleft = false;
+    this._Movingright = false;
+    this._Movingup = false;
+    this._Movingdown = false;
 
     this._dirX = DirPlayer._x;
     this._dirY = DirPlayer._y;
@@ -520,12 +524,40 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
             }
         }
     }
+    else{
+        this._Movingleft = false;
+        this._Movingright = false;
+        this._Movingup = false;
+        this._Movingdown = false;
+    }
 
     if (this._distanceX > 42 || this._distanceX < -42)
         this._distanceX = 0;
     if (this._distanceY > 42 || this._distanceY < -42)
         this._distanceY = 0;
+
+
+    if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
+        this._Moving=true;
+        if(cargada){
+        playerMusic.resume();
+        console.debug('resume');
+        }
+        else
+            console.debug('no cargada');
     }
+    else{
+        this._Moving=false;
+        if(cargada){
+            playerMusic.pause();
+            console.debug('pause');
+        }
+        else
+            console.debug('no cargada');        
+    }
+}
+
+    
 
     /*if(this._fireButton.isDown)
     {
