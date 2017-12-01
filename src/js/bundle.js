@@ -22,10 +22,12 @@ var PreloaderScene = {
     // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
     // this.loadingBar.anchor.setTo(0, 0.5);
     // this.load.setPreloadSprite(this.loadingBar);
-
+    
 
     this.game.load.baseURL = 'https://rodrigomanuelperez.github.io/TrepacepaDigDug/src/';
     this.game.load.crossOrigin = 'anonymous';
+
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
@@ -68,12 +70,19 @@ var roca, rocaColl;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
+var playerMusic;
+
 var timer;
 var seconds=0;
 var total=0;
 
 var PlayScene = {
     create: function() {
+
+        //MUSICA PARA EL PLAYER AL MOVERSE
+        playerMusic=this.game.add.audio('running90s');
+        playerMusic.play();
+        playerMusic.pause();
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -206,77 +215,7 @@ var PlayScene = {
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
-        this.game.world.addChild(player);
-
-
-        //CREACION DE LAS PIEDRAS
-        //Creamos el grupo de las piedras
-
-        //CREO EL TIMER
-
-         //Creamos el temporizador pausado
-        
-
-        /*var PosColl = new Par(45, 168);
-        var VelColl = new Par(0, 0);
-        rocaColl = new Collider(this.game, PosColl, 'RocaColl',VelColl, 'Collider');
-        this.game.physics.arcade.enable(rocaColl);
-        var PosRocaBlock = new Par(0, -37);
-        var VelRocaBlock = new Par(0, 0);
-        roca = new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
-        this.game.physics.arcade.enable(roca);
-        rocaColl.addChild(roca);
-        this.game.world.add(rocaColl);*
-        
-                
-        for(var i = 2; i < limiteDerecho; i += 43)
-        {           
-            for(var j = 125; j < 551; j += 43)
-            {
-                var a = Math.random();
-                if (a<0.05){
-                    var PosColl = new Par(i, j);
-                    var VelColl = new Par(0, 0);
-                    var Coll = new Collider(this.game, PosColl, 'RocaColl',VelColl, 'Collider');
-                    this.game.physics.arcade.enable(Coll); 
-                    //Coll.visible = false;
-                                   
-                    var PosRocaBlock = new Par(0,-37);
-                    var VelRocaBlock = new Par(0, 0);
-                    var RocaBlock=new Collider(this.game, PosRocaBlock, 'Roca',VelRocaBlock, 'roca');
-                    this.game.physics.arcade.enable(RocaBlock);
-                    //var RocaBlock=new Phaser.Sprite(this.game, i, j-37, 'Roca');
-                    //this.game.physics.arcade.enable(RocaBlock);
-                    //this.game.world.addChild(RocaBlock);
-                    
-                    Coll.addChild(RocaBlock);
-                            
-                    rocaColl.add(Coll);     //AÑADIMOS AL GRUPO 
-                    //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-            
-                }
-            }
-        }
-        this.game.world.add(rocaColl);*/
-        //this.game.world.add(roca);
-         
-
-        
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!////////////////////////PARA ESPERAR UNOS SEGUNDOS HASTA QUE CAIGA LA ROCA
-        //this.game.time.events.add(Phaser.Timer.SECOND * 4, function() {  this.deletePower(power);}, this);
-
-
-        //Motor físico de Phaser
-   
-        //Colisiones
-        //this.game.physics.enable([player,roca, rocaColl], Phaser.Physics.ARCADE);
-
-        //Objetos que no se mueven
-        /*paredDerecha.body.immovable = true;
-        paredSuperior.body.immovable = true;
-*/     
-        
+        this.game.world.addChild(player);        
     },
     update: function(){
         //this.game.physics.arcade.overlap(ball, pared1, collisionHandler, null, this);   
@@ -290,18 +229,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(roca, tierra, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
         
-        seconds = Math.floor(this.game.time.time / 1000) % 4;
-        //console.debug(tierra.length);
-        //this.game.physics.arcade.collide(rocaColl, tierra, onCollisionCae);
-        /*for (var i = rocaColl.lenght)
-        if (this.game.physics.arcade.collide(rocaColl, tierra))
-            rocaColl._Collided=true;
-        else
-            rocaColl._Collided=false;
-        *///this.game.physics.arcade.collide(roca, player, onCollisionRoca);
-
-        //this.game.physics.arcade.collide(rocaColl, tierra, onCollisionCaePara);
-        
+        seconds = Math.floor(this.game.time.time / 1000) % 4;        
 
     },
     render: function(){
@@ -608,6 +536,12 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;
+    }
+    Player.prototype.update = function() {
+        if (this._Enableleft || this._Enableright || this._Enableup || this._Enabledown)
+            playerMusic.resume();
+        else
+            playerMusic.pause();
     }
 
     /*function onCollisionPlayerRock(obj1,obj2){

@@ -21,10 +21,12 @@ var PreloaderScene = {
     // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
     // this.loadingBar.anchor.setTo(0, 0.5);
     // this.load.setPreloadSprite(this.loadingBar);
-
+    
 
     this.game.load.baseURL = 'https://rodrigomanuelperez.github.io/TrepacepaDigDug/src/';
     this.game.load.crossOrigin = 'anonymous';
+
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
