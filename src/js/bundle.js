@@ -193,7 +193,7 @@ var PlayScene = {
         this.game.world.addChild(paredDerecha);
         this.game.world.addChild(paredSuperior);
 
-        //paredDerecha.visible=false;
+        paredDerecha.visible=false;
         //paredSuperior.visible=false;
 
 
