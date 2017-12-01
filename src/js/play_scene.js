@@ -446,18 +446,28 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         if (this._distanceX == 0) {
             this.y -= 1;
             this._distanceY -= 1;
+            if(playerMusic.paused)
+                playerMusic.resume();
         }
         else if (this._dirX == 1) {
             if(this.x < this._LimiteDerecho - this.width - 2){
                 this.x += 1;
                 this._distanceX += 1;
+                if(playerMusic.paused)
+                playerMusic.resume();
             }
+            else
+                playerMusic.pause();
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
+                if(playerMusic.paused)
+                playerMusic.resume();
             }
+            else
+            playerMusic.pause();
         }
     }
 
@@ -473,13 +483,6 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     }*/
     Player.prototype.update = function() {
         this.Input();
-        if ((this._Movingleft || this._Movingright || this._Movingup || this._Movingdown))
-            if(playerMusic.paused)
-                playerMusic.resume();
-        else{
-            if(!playerMusic.paused)
-                playerMusic.pause();
-        }
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;
