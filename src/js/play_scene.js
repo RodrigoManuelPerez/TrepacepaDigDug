@@ -22,7 +22,7 @@ var PlayScene = {
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
-        playerMusic.pause();
+        //playerMusic.pause();
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -280,10 +280,10 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     this._Enableup = true;
     this._Enabledown = true;
 
-    this._Movingleft = true;
-    this._Movingright = true;
-    this._Movingup = true;
-    this._Movingdown = true;
+    this._Movingleft = false;
+    this._Movingright = false;
+    this._Movingup = false;
+    this._Movingdown = false;
 
     this._dirX = DirPlayer._x;
     this._dirY = DirPlayer._y;
@@ -446,28 +446,18 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         if (this._distanceX == 0) {
             this.y -= 1;
             this._distanceY -= 1;
-            if(playerMusic.paused)
-                playerMusic.resume();
         }
         else if (this._dirX == 1) {
             if(this.x < this._LimiteDerecho - this.width - 2){
                 this.x += 1;
                 this._distanceX += 1;
-                if(playerMusic.paused)
-                playerMusic.resume();
             }
-            else
-                playerMusic.pause();
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
-                if(playerMusic.paused)
-                playerMusic.resume();
             }
-            else
-            playerMusic.pause();
         }
     }
 
@@ -477,12 +467,25 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         this._distanceY = 0;
     }
 
+
+    if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
+        this._Moving=true;
+        playerMusic.resume();
+        console.debug('resume');
+    }
+    else{
+        this._Moving=false;
+        playerMusic.pause();
+        console.debug('pause');
+    }
+
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
     }*/
     Player.prototype.update = function() {
         this.Input();
+        if 
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;

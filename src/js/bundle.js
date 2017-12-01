@@ -82,7 +82,7 @@ var PlayScene = {
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
-        playerMusic.pause();
+        //playerMusic.pause();
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -506,28 +506,18 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         if (this._distanceX == 0) {
             this.y -= 1;
             this._distanceY -= 1;
-            if(playerMusic.paused)
-                playerMusic.resume();
         }
         else if (this._dirX == 1) {
             if(this.x < this._LimiteDerecho - this.width - 2){
                 this.x += 1;
                 this._distanceX += 1;
-                if(playerMusic.paused)
-                playerMusic.resume();
             }
-            else
-                playerMusic.pause();
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
-                if(playerMusic.paused)
-                playerMusic.resume();
             }
-            else
-            playerMusic.pause();
         }
     }
 
