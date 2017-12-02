@@ -1,5 +1,10 @@
 //var Player = require('./Player.js')
+/*
 
+COMENTARIO BLABLABLA
+
+
+*/
 var player;
 var Arma;
 var cursors;
@@ -178,7 +183,6 @@ module.exports = PlayScene;
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-    console.debug('colision');
 
     if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+3)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+3)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
@@ -569,7 +573,7 @@ function Collider(game, position, sprite, velocity, id)
     }
 
     Collider.prototype.EnableFall=function() {
-        this._timer.loop(1000,Fall,this);
+        this._timer.loop(1500,Fall,this);
         this._timer.start();
     }
 
