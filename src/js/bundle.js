@@ -126,6 +126,8 @@ var PlayScene = {
         {           
             for(var j = 83; j < 593; j += 43) //84
             {
+                //TIERRA
+                
                 var PosTierra = new Par(i, j);
                 var VelTierra = new Par(0, 0);
                 var BloqTierra = new Tierra(this.game, PosTierra, 'tierra', VelTierra, 'tierra'); 
@@ -147,9 +149,6 @@ var PlayScene = {
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 
                     //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-                    
-                    console.debug(Coll.x);
-                    console.debug(Coll.y);
                 }
             }
         }
@@ -282,8 +281,28 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
 
 function onCollisionTierra (obj1, obj2)
 {
-    if (obj1._id=='Player')
-        obj2.Destroy(); //Llamamos la la destructora de la tierra
+    if (obj1._id=='Player'){
+        if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
+            obj2.Destroy(); //Llamamos la la destructora de la tierra
+        else {
+            if ((obj1.x-2)>obj2._posX && (obj1.y-2)==obj2._posY){
+                obj2.width = obj2.width-2;
+            }
+            else if ((obj1.x-2)<obj2._posX && (obj1.y-2)==obj2._posY){
+                obj2.x = obj2.x+2;
+                obj2.width = obj2.width-2;
+            }
+            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)<obj2._posY){
+                obj2.y = obj2.y + 2;
+                obj2.height = obj2.height-2;
+            }
+            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)>obj2._posY){
+                obj2.height = obj2.height-2;
+            }
+            if (obj2.width<4 || obj2.height<4)
+                obj2.Destroy();
+        }
+    }
     if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)         
         obj2.Destroy();
 }
@@ -292,7 +311,7 @@ function onCollisionPara(obj1, obj2)
 {
     if(obj1._Falling && obj2.y>obj1.y+3){
         obj1._Falling=false;
-        obj1.DestroyColl(); //ESTA LLAMADA A DESTROYCOLL SE HACE PERO EL this.destroy no lo permite
+        //obj1.destroy(); //ESTA LLAMADA A DESTROYCOLL SE HACE PERO EL this.destroy no lo permite
     }
 }
 
@@ -541,24 +560,15 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         this._Moving=true;
         if(cargada){
         playerMusic.resume();
-        console.debug('resume');
         }
-        else
-            console.debug('no cargada');
     }
     else{
         this._Moving=false;
         if(cargada){
             playerMusic.pause();
-            console.debug('pause');
+            }      
         }
-        else
-            console.debug('no cargada');        
     }
-}
-
-    
-
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
@@ -573,14 +583,13 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     /*function onCollisionPlayerRock(obj1,obj2){
         if((game.physics.arcade.collide(obj1, obj2)))
             obj1._Enable=false;
-    }*/
-
-    //CLASE BLOQUE TIERRA----------------------------------------------------
-
-
-    function Tierra(game, position, sprite, velocity,id)
+}*/
+//CLASE BLOQUE TIERRA----------------------------------------------------
+function Tierra(game, position, sprite, velocity,id)
     {
         Movable.apply(this, [game, position, sprite, velocity,id]);
+        this._posX=this.x;
+        this._posY=this.y;
     }
     
     Tierra.prototype = Object.create(Movable.prototype);
