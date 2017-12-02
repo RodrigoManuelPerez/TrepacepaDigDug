@@ -73,10 +73,6 @@ var paredDerecha, paredSuperior;
 var playerMusic;
 var cargada=false;
 
-var timer;
-var seconds=0;
-var total=0;
-
 var PlayScene = {
     create: function() {
 
@@ -230,13 +226,11 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
         this.game.physics.arcade.collide(roca, tierra, onCollisionPara);
-        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
-        
-        seconds = Math.floor(this.game.time.time / 1000) % 4;        
+        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);     
 
     },
     render: function(){
-        this.game.debug.text("Time until event: " + seconds, 32, 32);
+
     }
 }
 
@@ -265,13 +259,9 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._dirY = 1
         }
 
-        console.debug('colision roca');
     }
-    else /*if ((obj1.x-2 > obj2.x && obj1.y>obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y > obj2.y+3)||(obj1.x-2 == obj2.x && obj1.y>obj2.y+3))*/{
-        
+    else {
         obj2.EnableFall();
-        console.debug('cae roca');
-        
     }
 }
 
@@ -611,22 +601,12 @@ function Collider(game, position, sprite, velocity, id)
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
-
+        this._timer = this.game.time.create(false);
     }
     
     Collider.prototype = Object.create(Movable.prototype);
     Collider.prototype.constructor = Collider;
-    
-        //Funciones de jugador
-    Collider.prototype.Input = function() //Mueve el jugador a la izquierda
-    {
-    //Comprobación de cursores de Phaser
-    }
 
-    /*if(this._fireButton.isDown)
-    {
-        this._playerWeapon.fire();
-    }*/
     Collider.prototype.update=function(){
         if(this._Falling){
             for(var i=0; i<6; i++){
@@ -649,6 +629,12 @@ function Collider(game, position, sprite, velocity, id)
     }
 
     Collider.prototype.EnableFall=function() {
+        this._timer.loop(1000,Fall,this);
+        this._timer.start();
+    }
+
+    function Fall() {
         this._Falling = true;
+        this._timer.stop();
     }
 },{}]},{},[1]);
