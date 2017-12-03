@@ -1,12 +1,17 @@
-//var Player = require('./Player.js')
-/*
 
-COMENTARIO BLABLABLA
+'use strict';
 
-
+var GO = require('./Class_GameObject.js');
+var Roca = require('./Class_Roca.js');
+var Vegetal = require('./Class_Vegetal.js');
+var Movable = require('./Class_Movable.js');
+var Player = require('./Class_Player.js');
+/*var Enemy = require('./Class_Enemy.js');
+var Fygar = require('./Class_Fygar.js');
 */
+
 var player;
-var Arma;
+var arma;
 var cursors;
 var limiteDerecho;
 var limiteSuperior;
@@ -18,7 +23,6 @@ var paredDerecha, paredSuperior;
 var puntuacion;
 
 var playerMusic;
-var cargada=false;
 
 var PlayScene = {
     create: function() {
@@ -27,7 +31,6 @@ var PlayScene = {
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
         playerMusic.pause();
-        cargada=true;
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -70,7 +73,7 @@ var PlayScene = {
                 
                 var PosTierra = new Par(i, j);
                 var VelTierra = new Par(0, 0);
-                var BloqTierra = new GameObject(this.game, PosTierra, 'tierra', 'tierra'); 
+                var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
 
                 this.game.physics.arcade.enable(BloqTierra);
                 BloqTierra.body.immovable = true;
@@ -102,7 +105,7 @@ var PlayScene = {
             {
                 var PosTierraH = new Par(i, j);
                 var VelTierraH = new Par(0, 0);
-                var BloqTierraH = new GameObject(this.game, PosTierraH, 'tierraH','tierraH'); 
+                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
                 
                 this.game.physics.arcade.enable(BloqTierraH);
                 BloqTierraH.body.immovable = true;
@@ -122,7 +125,7 @@ var PlayScene = {
                 {   
                     var PosTierraV = new Par(i, j);
                     var VelTierraV = new Par(0, 0);
-                    var BloqTierraV = new GameObject(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+                    var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
                     
                     this.game.physics.arcade.enable(BloqTierraV);
                     BloqTierraV.body.immovable = true;
@@ -172,7 +175,10 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
-        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);     
+        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
+        
+        if(player._Moving) playerMusic.resume();
+        else playerMusic.pause();
 
     },
     render: function(){
@@ -243,7 +249,10 @@ function onCollisionTierra (obj1, obj2)
 function onCollisionPara(obj1, obj2)
 {
     if(obj2._Falling && obj1.y>obj2.y+3){
-        obj2.Para();
+        if(obj2.y != obj2._posY)
+            obj2.Para();
+        else
+            obj2._Falling=false;
     }
 }
 
@@ -258,325 +267,6 @@ function Par (x, y) {
     this._y = y;
 }
 
-///////////////////////////CLASE GAMEOBJECT DE LA QUE HEREDA LA TIERRA Y LAS ROCAS
-function GameObject(game, position, sprite,id)
-    {
-        Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
-
-        this._id=id;
-        this._posX=position._x;
-        this._posY=position._y;
-    }
-
-    GameObject.prototype = Object.create(Phaser.Sprite.prototype);
-    GameObject.prototype.constructor = Movable;
-
-    GameObject.prototype.Destroy = function()
-    {
-        this.destroy();
-    }
-
-///////////////////////////CLASE ROCA QUE HEREDA DE GAMEOBJECT Y POSEE SUS METODOS DE CAIDA
-function Roca(game, position, sprite,id)
-    {
-    GameObject.apply(this, [game ,position, sprite, id]);
-
-    this._Falling = false;
-    this._HasFallen = false;
-    this._FallEnable = false;
-    this._timer = this.game.time.create(false);
-    }
-
-    Roca.prototype = Object.create(GameObject.prototype);
-    Roca.prototype.constructor = Movable;
-
-    Roca.prototype.update=function(){
-        if(this._Falling){
-            for(var i=0; i<6; i++){
-                if (this._Falling /*&& this._id=='Collider'*/ && this.y<558){
-                    this.y ++;
-                }
-            }
-        }
-    }
-
-    Roca.prototype.Para=function() {
-        this._Falling = false;
-        this._timer.loop(3500,BreakRock,this);
-        this._timer.start();
-
-        this.body.enable=false;
-        //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
-        // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
-    }
-
-    Roca.prototype.EnableFall=function() {
-        this._timer.loop(1500,Fall,this);
-        this._timer.start();
-    }
-
-    function Fall() {
-        if(!this._HasFallen){
-            this._Falling = true;
-            this._timer.stop();
-            this._HasFallen = true;
-        }
-    }
-    function BreakRock(){
-        this.Destroy();
-    }
-
-function Vegetal(game, position, sprite,id, puntos)
-    {
-        GameObject.apply(this, [game ,position, sprite, id]);
-        this._puntos = puntos;
-    }
-
-    Vegetal.prototype = Object.create(GameObject.prototype);
-    Vegetal.prototype.constructor = Movable;
-
-    Vegetal.prototype.AumentaPuntos=function() {
-
-        puntuacion+=this._puntos;
-        this.Destroy();
-        //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
-        // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
-    }
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-///////////////////////////CLASE MOVABLE QUE HEREDA DE GAMEOBJECT Y QUE ES HEREDADA POR ENEMY Y PLAYER
-function Movable(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior){
-    GameObject.apply(this, [game ,position, sprite, id]);
-    
-    this._MovementEnable = true;
-
-    this._Enableleft = true;
-    this._Enableright = true;
-    this._Enableup = true;
-    this._Enabledown = true;
-
-    this._Movingleft = false;
-    this._Movingright = false;
-    this._Movingup = false;
-    this._Movingdown = false;
-
-    this._distanceX = distanceX;
-    this._distanceY = distanceY;
-
-    this._LimiteSuperior = limiteSuperior;
-    this._LimiteDerecho = limiteDerecho;
-    }
-
-    Movable.prototype = Object.create(GameObject.prototype);
-    Movable.prototype.constructor = Movable;
-
-
-function Player(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior)
-    {
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
-
-    this._cursors = cursors;
-    }
-
-    Player.prototype = Object.create(Movable.prototype);
-    Player.prototype.constructor = Player;
-
-    //Funciones de jugador
-    Player.prototype.Input = function() //Mueve el jugador a la izquierda
-    {
-    //Comprobación de cursores de Phaser
-    if (this._cursors.left.isDown && this.x > 2 && this._Enableleft)
-    {
-        if (this._Movingright == true)
-            this._Movingright = false;
-        else if (this._Movingdown == true)
-            this._Movingdown = false;
-        else if (this._Movingup == true)
-            this._Movingup = false;
-
-        if (this._Movingleft == false)
-            this._Movingleft = true;
-
-        if (this._Enableright == false)
-            this._Enableright = true;
-        else if (this._Enabledown==false)
-            this._Enabledown = true;
-        else if (this._Enableup == false)
-            this._Enableup = true;
-
-        this._dirX = -1;
-
-        if (this._distanceY == 0) {
-            this.x -= 1;
-            this._distanceX -= 1;
-        }
-        else if (this._dirY == 1) {
-            if(this.y < 594 - this.height) {
-                this.y += 1;
-                this._distanceY += 1;
-            }
-        }
-        else if (this._dirY == -1) {
-            if(this.y > this.height + 6) {
-                this.y -= 1;
-                this._distanceY -= 1;
-            }
-        }
-    }
-    else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - this.width- 2 && this._Enableright)
-    {
-        if (this._Movingleft == true)
-            this._Movingleft = false;
-        else if (this._Movingdown == true)
-            this._Movingdown = false;
-        else if (this._Movingup == true)
-            this._Movingup = false;
-
-        if(this._Movingright == false)
-            this._Movingright = true;
-
-        if (this._Enableleft == false)
-            this._Enableleft = true;
-        else if (this._Enabledown == false)
-            this._Enabledown = true;
-        else if (this._Enableup == false)
-            this._Enableup = true;
-
-        this._dirX = 1;
-
-        if(this._distanceY == 0){
-            this.x += 1;
-            this._distanceX += 1;
-        }
-        else if (this._dirY == 1){
-            if(this.y < 594 - this.height){
-                this.y += 1;
-                this._distanceY += 1;
-            }
-        }
-        else if (this._dirY == -1) {
-            if(this.y > this.height + 6) {
-                this.y -= 1;
-                this._distanceY -= 1;
-            }
-        }
-    }
-    else if (this._cursors.down.isDown && this.y < 594 - this.height && this._Enabledown)
-    {   
-
-        if (this._Movingright == true)
-        this._Movingright = false;
-        else if (this._Movingleft == true)
-        this._Movingleft = false;
-        else if (this._Movingup == true)
-        this._Movingup = false;
-
-        if (this._Movingdown == false)
-            this._Movingdown = true;
-
-        if (this._Enableright == false)
-            this._Enableright = true;
-        else if (this._Enableleft == false)
-            this._Enableleft=true;
-        else if (this._Enableup == false)
-            this._Enableup = true;
-
-        this._dirY = 1;
-
-        if (this._distanceX == 0) {
-            this.y += 1;
-            this._distanceY += 1;
-        }
-        else if (this._dirX == 1) {
-            if (this.x < this._LimiteDerecho - this.width - 2) {
-                this.x += 1;
-                this._distanceX += 1;
-            }
-        }
-        else if (this._dirX == -1) {
-            if(this.x > 2) {
-                this.x -= 1;
-                this._distanceX -= 1;
-            }
-        }
-    }
-    else if (this._cursors.up.isDown && this.y > this.height + 6 && this._Enableup)
-    {   
-
-        if (this._Movingright == true)
-        this._Movingright = false;
-        else if (this._Movingleft == true)
-        this._Movingleft = false;
-        else if (this._Movingdown == true)
-        this._Movingdown = false;
-
-        if(this._Movingup == false)
-            this._Movingup = true;
-
-        if (this._Enableright == false)
-            this._Enableright = true;
-        else if (this._Enableleft == false)
-            this._Enableleft=true;
-        else if (this._Enabledown == false)
-            this._Enabledown = true;
-
-        this._dirY =- 1;
-
-        if (this._distanceX == 0) {
-            this.y -= 1;
-            this._distanceY -= 1;
-        }
-        else if (this._dirX == 1) {
-            if(this.x < this._LimiteDerecho - this.width - 2){
-                this.x += 1;
-                this._distanceX += 1;
-            }
-        }
-        else if (this._dirX == -1) {
-            if(this.x > 2) {
-                this.x -= 1;
-                this._distanceX -= 1;
-            }
-        }
-    }
-    else{
-        this._Movingleft = false;
-        this._Movingright = false;
-        this._Movingup = false;
-        this._Movingdown = false;
-    }
-
-    if (this._distanceX > 42 || this._distanceX < -42)
-        this._distanceX = 0;
-    if (this._distanceY > 42 || this._distanceY < -42)
-        this._distanceY = 0;
-
-
-    if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
-        this._Moving=true;
-        if(cargada){
-        playerMusic.resume();
-        }
-    }
-    else{
-        this._Moving=false;
-        if(cargada){
-            playerMusic.pause();
-            }      
-        }
-    }
-    /*if(this._fireButton.isDown)
-    {
-        this._playerWeapon.fire();
-    }*/
-    Player.prototype.update = function() {
-        this.Input();
-    }
-    Player.prototype.PlayerRock = function() {
-        this._Enable=false;
-    }
-
-//CLASE BLOQUE TIERRA----------------------------------------------------
 function Enemy(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior)
     {
     Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);

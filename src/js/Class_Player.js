@@ -1,0 +1,204 @@
+'use strict';
+
+var Movable = require('./Class_Movable.js');
+
+var playerMusic;
+var MusicaCargada=false;
+
+var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior){
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+    this._cursors = cursors;
+    }
+
+    Player.prototype = Object.create(Movable.prototype);
+    Player.prototype.constructor = Player;
+
+    Player.prototype.Input = function() //Mueve el jugador a la izquierda
+    {
+    //Comprobación de cursores de Phaser
+    if (this._cursors.left.isDown && this.x > 2 && this._Enableleft)
+    {
+        if (this._Movingright == true)
+            this._Movingright = false;
+        else if (this._Movingdown == true)
+            this._Movingdown = false;
+        else if (this._Movingup == true)
+            this._Movingup = false;
+
+        if (this._Movingleft == false)
+            this._Movingleft = true;
+
+        if (this._Enableright == false)
+            this._Enableright = true;
+        else if (this._Enabledown==false)
+            this._Enabledown = true;
+        else if (this._Enableup == false)
+            this._Enableup = true;
+
+        this._dirX = -1;
+
+        if (this._distanceY == 0) {
+            this.x -= 1;
+            this._distanceX -= 1;
+        }
+        else if (this._dirY == 1) {
+            if(this.y < 594 - this.height) {
+                this.y += 1;
+                this._distanceY += 1;
+            }
+        }
+        else if (this._dirY == -1) {
+            if(this.y > this.height + 6) {
+                this.y -= 1;
+                this._distanceY -= 1;
+            }
+        }
+    }
+    else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - this.width- 2 && this._Enableright)
+    {
+        if (this._Movingleft == true)
+            this._Movingleft = false;
+        else if (this._Movingdown == true)
+            this._Movingdown = false;
+        else if (this._Movingup == true)
+            this._Movingup = false;
+
+        if(this._Movingright == false)
+            this._Movingright = true;
+
+        if (this._Enableleft == false)
+            this._Enableleft = true;
+        else if (this._Enabledown == false)
+            this._Enabledown = true;
+        else if (this._Enableup == false)
+            this._Enableup = true;
+
+        this._dirX = 1;
+
+        if(this._distanceY == 0){
+            this.x += 1;
+            this._distanceX += 1;
+        }
+        else if (this._dirY == 1){
+            if(this.y < 594 - this.height){
+                this.y += 1;
+                this._distanceY += 1;
+            }
+        }
+        else if (this._dirY == -1) {
+            if(this.y > this.height + 6) {
+                this.y -= 1;
+                this._distanceY -= 1;
+            }
+        }
+    }
+    else if (this._cursors.down.isDown && this.y < 594 - this.height && this._Enabledown)
+    {   
+
+        if (this._Movingright == true)
+        this._Movingright = false;
+        else if (this._Movingleft == true)
+        this._Movingleft = false;
+        else if (this._Movingup == true)
+        this._Movingup = false;
+
+        if (this._Movingdown == false)
+            this._Movingdown = true;
+
+        if (this._Enableright == false)
+            this._Enableright = true;
+        else if (this._Enableleft == false)
+            this._Enableleft=true;
+        else if (this._Enableup == false)
+            this._Enableup = true;
+
+        this._dirY = 1;
+
+        if (this._distanceX == 0) {
+            this.y += 1;
+            this._distanceY += 1;
+        }
+        else if (this._dirX == 1) {
+            if (this.x < this._LimiteDerecho - this.width - 2) {
+                this.x += 1;
+                this._distanceX += 1;
+            }
+        }
+        else if (this._dirX == -1) {
+            if(this.x > 2) {
+                this.x -= 1;
+                this._distanceX -= 1;
+            }
+        }
+    }
+    else if (this._cursors.up.isDown && this.y > this.height + 6 && this._Enableup)
+    {   
+
+        if (this._Movingright == true)
+        this._Movingright = false;
+        else if (this._Movingleft == true)
+        this._Movingleft = false;
+        else if (this._Movingdown == true)
+        this._Movingdown = false;
+
+        if(this._Movingup == false)
+            this._Movingup = true;
+
+        if (this._Enableright == false)
+            this._Enableright = true;
+        else if (this._Enableleft == false)
+            this._Enableleft=true;
+        else if (this._Enabledown == false)
+            this._Enabledown = true;
+
+        this._dirY =- 1;
+
+        if (this._distanceX == 0) {
+            this.y -= 1;
+            this._distanceY -= 1;
+        }
+        else if (this._dirX == 1) {
+            if(this.x < this._LimiteDerecho - this.width - 2){
+                this.x += 1;
+                this._distanceX += 1;
+            }
+        }
+        else if (this._dirX == -1) {
+            if(this.x > 2) {
+                this.x -= 1;
+                this._distanceX -= 1;
+            }
+        }
+    }
+    else{
+        this._Movingleft = false;
+        this._Movingright = false;
+        this._Movingup = false;
+        this._Movingdown = false;
+    }
+
+    if (this._distanceX > 42 || this._distanceX < -42)
+        this._distanceX = 0;
+    if (this._distanceY > 42 || this._distanceY < -42)
+        this._distanceY = 0;
+
+
+        if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
+            this._Moving=true;
+        }
+        else{
+            this._Moving=false;    
+        }
+    }
+    /*if(this._fireButton.isDown)
+    {
+        this._playerWeapon.fire();
+    }*/
+    Player.prototype.update = function() {
+        this.Input();
+    }
+    Player.prototype.PlayerRock = function() {
+        this._Enable=false;
+    }
+
+module.exports = Player;
