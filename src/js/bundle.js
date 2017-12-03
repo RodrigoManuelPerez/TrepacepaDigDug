@@ -231,7 +231,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
-        this.game.physics.arcade.collide(roca, tierra, onCollisionPara);
+        this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);     
 
     },
@@ -272,10 +272,6 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
     }
 }
 
-/*function CaeTrasTime(obj){
-    obj.EnableFall();
-}*/
-
 function onCollisionTierra (obj1, obj2)
 {
     if (obj1._id=='Player'){
@@ -306,9 +302,8 @@ function onCollisionTierra (obj1, obj2)
 
 function onCollisionPara(obj1, obj2)
 {
-    if(obj1._Falling && obj2.y>obj1.y+3){
-        obj1._Falling=false;
-        //obj1.destroy(); //ESTA LLAMADA A DESTROYCOLL SE HACE PERO EL this.destroy no lo permite
+    if(obj2._Falling && obj1.y>obj2.y+3){
+        obj2.Para();
     }
 }
 
@@ -367,6 +362,10 @@ function Roca(game, position, sprite,id)
 
     Roca.prototype.Para=function() {
         this._Falling = false;
+        this._timer.loop(3500,BreakRock,this);
+        this._timer.start();
+
+        this.body.enable=false;
         //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
         // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
     }
@@ -377,8 +376,14 @@ function Roca(game, position, sprite,id)
     }
 
     function Fall() {
-        this._Falling = true;
-        this._timer.stop();
+        if(!this._HasFallen){
+            this._Falling = true;
+            this._timer.stop();
+            this._HasFallen = true;
+        }
+    }
+    function BreakRock(){
+        this.Destroy();
     }
 
 function Vegetal(game, position, sprite,id, puntos)
