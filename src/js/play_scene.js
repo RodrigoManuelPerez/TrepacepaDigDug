@@ -15,6 +15,8 @@ var roca, rocaColl;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
+var puntuacion;
+
 var playerMusic;
 var cargada=false;
 
@@ -24,9 +26,7 @@ var PlayScene = {
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
-        console.debug("creada");
         playerMusic.pause();
-        console.debug("pausada");
         cargada=true;
 
         //Activar las físicas de Phaser.
@@ -56,7 +56,6 @@ var PlayScene = {
         tierraV = this.game.add.physicsGroup();
 
         roca = this.game.add.physicsGroup();
-        rocaColl = this.game.add.physicsGroup();
         
         /*
         //CREAMOS LA MATRIZ DE 12 * 12.       
@@ -71,7 +70,7 @@ var PlayScene = {
                 
                 var PosTierra = new Par(i, j);
                 var VelTierra = new Par(0, 0);
-                var BloqTierra = new Tierra(this.game, PosTierra, 'tierra', VelTierra, 'tierra'); 
+                var BloqTierra = new GameObject(this.game, PosTierra, 'tierra', 'tierra'); 
 
                 this.game.physics.arcade.enable(BloqTierra);
                 BloqTierra.body.immovable = true;
@@ -85,7 +84,7 @@ var PlayScene = {
                 if (a<0.03){
                     var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Collider(this.game, PosColl, 'RocaCompleta',VelColl, 'Collider');
+                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Collider');
                     this.game.physics.arcade.enable(Coll); 
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 
@@ -103,7 +102,7 @@ var PlayScene = {
             {
                 var PosTierraH = new Par(i, j);
                 var VelTierraH = new Par(0, 0);
-                var BloqTierraH = new Tierra(this.game, PosTierraH, 'tierraH',VelTierraH,'tierraH'); 
+                var BloqTierraH = new GameObject(this.game, PosTierraH, 'tierraH','tierraH'); 
                 
                 this.game.physics.arcade.enable(BloqTierraH);
                 BloqTierraH.body.immovable = true;
@@ -123,7 +122,7 @@ var PlayScene = {
                 {   
                     var PosTierraV = new Par(i, j);
                     var VelTierraV = new Par(0, 0);
-                    var BloqTierraV = new Tierra(this.game, PosTierraV, 'tierraV',VelTierraV, 'tierraV'); 
+                    var BloqTierraV = new GameObject(this.game, PosTierraV, 'tierraV', 'tierraV'); 
                     
                     this.game.physics.arcade.enable(BloqTierraV);
                     BloqTierraV.body.immovable = true;
@@ -155,11 +154,13 @@ var PlayScene = {
         var PosPlayer = new Par(475, 42);
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', VelPlayer, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, 'Player');
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
-        this.game.world.addChild(player);        
+        this.game.world.addChild(player);   
+        
+
     },
     update: function(){
         //this.game.physics.arcade.overlap(ball, pared1, collisionHandler, null, this);   
@@ -198,11 +199,13 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._Enabledown = false;
             obj1._dirY = -1
         }
-        else if (obj1._Movingup) {
+
+    }
+    else if (obj1.x-2 == obj2.x && obj1.y>obj2.y+40){
+        if (obj1._Movingup) {
             obj1._Enableup = false;
             obj1._dirY = 1
         }
-
     }
     else {
         obj2.EnableFall();
@@ -219,7 +222,7 @@ function onCollisionTierra (obj1, obj2)
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
         else {
-            if ((obj1.x-2)>obj2._posX && (obj1.y-2)==obj2._posY){
+            if ((obj1.x-2)>obj2._posX && (obj1.y-2)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-2;
             }
             else if ((obj1.x-2)<obj2._posX && (obj1.y-2)==obj2._posY){
@@ -260,38 +263,88 @@ function Par (x, y) {
     this._y = y;
 }
 
-
-//LA CLASE MOVABLE HEREDA DE SPRITE
-function Movable(game, position, sprite, velocity,id)
+///////////////////////////CLASE GAMEOBJECT DE LA QUE HEREDA LA TIERRA Y LAS ROCAS
+function GameObject(game, position, sprite,id)
     {
-        Phaser.Sprite.apply(this, [game ,position._x, position._y, sprite]);
-        this._velocity = velocity;
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
+
         this._id=id;
+        this._posX=position._x;
+        this._posY=position._y;
     }
 
-    Movable.prototype = Object.create(Phaser.Sprite.prototype);
-    Movable.prototype.constructor = Movable;
+    GameObject.prototype = Object.create(Phaser.Sprite.prototype);
+    GameObject.prototype.constructor = Movable;
 
-
-    //Funciones de movable
-    Movable.prototype.setVelocity = function(velocity) //Cambia la velocidad
+    GameObject.prototype.Destroy = function()
     {
-        this._velocity._x = velocity._x;
-        this._velocity._y = velocity._y;
+        this.destroy();
     }
 
-
-    Movable.prototype.update = function() //Para la DeadZone
+///////////////////////////CLASE ROCA QUE HEREDA DE GAMEOBJECT Y POSEE SUS METODOS DE CAIDA
+function Roca(game, position, sprite,id)
     {
-        
+    GameObject.apply(this, [game ,position, sprite, id]);
+
+    this._Falling = false;
+    this._HasFallen = false;
+    this._FallEnable = false;
+    this._timer = this.game.time.create(false);
     }
 
+    Roca.prototype = Object.create(GameObject.prototype);
+    Roca.prototype.constructor = Movable;
+
+    Roca.prototype.update=function(){
+        if(this._Falling){
+            for(var i=0; i<6; i++){
+                if (this._Falling /*&& this._id=='Collider'*/ && this.y<558){
+                    this.y ++;
+                }
+            }
+        }
+    }
+
+    Roca.prototype.Para=function() {
+        this._Falling = false;
+        //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
+        // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
+    }
+
+    Roca.prototype.EnableFall=function() {
+        this._timer.loop(1500,Fall,this);
+        this._timer.start();
+    }
+
+    function Fall() {
+        this._Falling = true;
+        this._timer.stop();
+    }
+
+function Vegetal(game, position, sprite,id, puntos)
+    {
+        GameObject.apply(this, [game ,position, sprite, id]);
+        this._puntos = puntos;
+    }
+
+    Vegetal.prototype = Object.create(GameObject.prototype);
+    Vegetal.prototype.constructor = Movable;
+
+    Vegetal.prototype.AumentaPuntos=function() {
+
+        puntuacion+=this._puntos;
+        this.Destroy();
+        //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
+        // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
+    }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDerecho, limiteSuperior, distanceX, distanceY, id)
-    {
-    Movable.apply(this, [game, position, sprite, velocity, id]);
+///////////////////////////CLASE MOVABLE QUE HEREDA DE GAMEOBJECT Y QUE ES HEREDADA POR ENEMY Y PLAYER
+function Movable(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior){
+    GameObject.apply(this, [game ,position, sprite, id]);
     
+    this._MovementEnable = true;
+
     this._Enableleft = true;
     this._Enableright = true;
     this._Enableup = true;
@@ -302,18 +355,22 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
     this._Movingup = false;
     this._Movingdown = false;
 
-    this._dirX = DirPlayer._x;
-    this._dirY = DirPlayer._y;
-
     this._distanceX = distanceX;
     this._distanceY = distanceY;
 
-    this._cursors = cursors;
-    //this._gunbutton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-    //se podria hacer track sprite para que nuestro gancho siguiera por detras a digdug
-    //this._playerWeapon.trackSprite(this, 0, 0);
     this._LimiteSuperior = limiteSuperior;
     this._LimiteDerecho = limiteDerecho;
+    }
+
+    Movable.prototype = Object.create(GameObject.prototype);
+    Movable.prototype.constructor = Movable;
+
+
+function Player(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior)
+    {
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+
+    this._cursors = cursors;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -514,70 +571,37 @@ function Player(game, position, sprite, velocity, DirPlayer, cursors, limiteDere
         this._Enable=false;
     }
 
-    /*function onCollisionPlayerRock(obj1,obj2){
-        if((game.physics.arcade.collide(obj1, obj2)))
-            obj1._Enable=false;
-}*/
 //CLASE BLOQUE TIERRA----------------------------------------------------
-function Tierra(game, position, sprite, velocity,id)
+function Enemy(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior)
     {
-        Movable.apply(this, [game, position, sprite, velocity,id]);
-        this._posX=this.x;
-        this._posY=this.y;
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+
+    //variables de enemy
     }
+
+    Enemy.prototype = Object.create(Movable.prototype);
+    Enemy.prototype.constructor = Enemy;
+
+    //Funciones de los enemigos
+
+    Enemy.prototype.update = function() {
     
-    Tierra.prototype = Object.create(Movable.prototype);
-    Tierra.prototype.constructor = Tierra;
+    }
+
+function Fygar(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior)
+    {
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+
+    //variables de enemy
+    }
+
+    Fygar.prototype = Object.create(Enemy.prototype);
+    Fygar.prototype.constructor = Fygar;
+
+    //Funciones de los enemigos
+
+    Fygar.prototype.update = function() {
     
-    //Ejemplo de metodo
-    Tierra.prototype.Destroy = function() //Mueve el jugador a la izquierda
-    {
-        this.destroy();
-    }
-    Tierra.prototype.update=function(){
-        // if (colision) this.Destroy();
     }
 
-function Collider(game, position, sprite, velocity, id)
-    {
-        Movable.apply(this, [game, position, sprite, velocity,id]);
 
-        this._Falling = false;
-        this._HasFallen = false;
-        this._FallEnable = false;
-        this._timer = this.game.time.create(false);
-    }
-    
-    Collider.prototype = Object.create(Movable.prototype);
-    Collider.prototype.constructor = Collider;
-
-    Collider.prototype.update=function(){
-        if(this._Falling){
-            for(var i=0; i<6; i++){
-                if (this._Falling && this._id=='Collider' && this.y<558){
-                    this.y ++;
-                }
-            }
-        }
-    }
-
-    Collider.prototype.DestroyColl = function() //Mueve el jugador a la izquierda
-    {
-        //this.destroy();
-    }
-
-    Collider.prototype.Para=function() {
-        this._Falling = false;
-        //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
-        // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
-    }
-
-    Collider.prototype.EnableFall=function() {
-        this._timer.loop(1500,Fall,this);
-        this._timer.start();
-    }
-
-    function Fall() {
-        this._Falling = true;
-        this._timer.stop();
-    }
