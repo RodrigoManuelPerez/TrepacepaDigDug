@@ -157,7 +157,7 @@ var PlayScene = {
         var PosPlayer = new Par(475, 42);
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
+        player = new Player(this.game,PosPlayer, 'DigDugWalking'[1], 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         

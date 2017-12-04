@@ -28,6 +28,9 @@ var PreloaderScene = {
 
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
+
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');

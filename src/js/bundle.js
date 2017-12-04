@@ -367,6 +367,9 @@ var PreloaderScene = {
 
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
+
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
@@ -555,7 +558,7 @@ var PlayScene = {
         var PosPlayer = new Par(475, 42);
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
+        player = new Player(this.game,PosPlayer, 'DigDugWalking'[1], 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
