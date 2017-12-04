@@ -155,11 +155,13 @@ var PlayScene = {
 
 
         //Cualidad de la posicion del player
-        var PosPlayer = new Par(475, 42);
+        var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, 'DigDugWalking');
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
+        player.anchor.x = 0.5;
+        player.anchor.y = 0.5;
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
         this.game.world.addChild(player);   
@@ -178,7 +180,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
         
-        if(player._Moving) playerMusic.resume();
+        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
 
     },
@@ -192,7 +194,7 @@ module.exports = PlayScene;
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
 
-    if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+3)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+3)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+    if ((obj1.x-20 == obj2.x && obj1.y<obj2.y+21)||(obj1.x-20 > obj2.x && obj1.y==obj2.y+21)||(obj1.x-20 < obj2.x && obj1.y==obj2.y+21)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
@@ -208,7 +210,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
         }
 
     }
-    else if (obj1.x-2 == obj2.x && obj1.y>obj2.y+40){
+    else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
         if (obj1._Movingup) {
             obj1._Enableup = false;
             obj1._dirY = 1
@@ -225,18 +227,18 @@ function onCollisionTierra (obj1, obj2)
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
         else {
-            if ((obj1.x-2)>obj2._posX && (obj1.y-2)==obj2._posY){       //ENTRANDO POR LA DERECHA
+            if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-2;
             }
-            else if ((obj1.x-2)<obj2._posX && (obj1.y-2)==obj2._posY){
+            else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+2;
                 obj2.width = obj2.width-2;
             }
-            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)<obj2._posY){
+            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 2;
                 obj2.height = obj2.height-2;
             }
-            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)>obj2._posY){
+            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-2;
             }
             if (obj2.width<4 || obj2.height<4)
@@ -249,7 +251,7 @@ function onCollisionTierra (obj1, obj2)
 
 function onCollisionPara(obj1, obj2)
 {
-    if(obj2._Falling && obj1.y>obj2.y+3){
+    if(obj2._Falling && obj1.y>obj2.y+21){
         if(obj2.y != obj2._posY)
             obj2.Para();
         else

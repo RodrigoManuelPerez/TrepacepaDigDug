@@ -5,9 +5,11 @@ var Movable = require('./Class_Movable.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior){
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
+    this._animWalk =this.animations.add('Walking');
+    this._animWalk.play(6,true);
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -183,12 +185,31 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         this._distanceY = 0;
 
 
-        if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
-            this._Moving=true;
-        }
-        else{
-            this._Moving=false;    
-        }
+
+
+    if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+        this._animWalk.paused=false;
+    }
+    else if(this._Movingright){
+        if (this.angle!=0)
+            this.angle=0;
+        if (this.width>0)
+            this.width = -this.width;
+    }
+    else if(this._Movingleft){
+        if (this.angle!=0)
+            this.angle=0;
+        if (this.width<0)
+            this.width = -this.width;
+    }
+    else if(this._Movingup){
+        if (this.angle!=90)
+            this.angle = 90;
+    }
+    else if(this._Movingdown){
+        if (this.rotatitio!=-90)
+            this.angle = -90;
+    }
     }
     /*if(this._fireButton.isDown)
     {

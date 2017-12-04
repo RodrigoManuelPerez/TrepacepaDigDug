@@ -1,10 +1,13 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var GameObject = function(game, position, sprite,id){
+var GameObject = function(game, position, sprite,id,spriteSheet){
     
-    Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
-    
+    if(id=='Player')
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 1]);
+    else
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
+
     this._id=id;
     this._posX=position._x;
     this._posY=position._y;
@@ -24,9 +27,9 @@ module.exports = GameObject;
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior){
+var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
     
-    GameObject.apply(this, [game ,position, sprite, id]);
+    GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
 
     this._MovementEnable = true;
 
@@ -59,9 +62,11 @@ var Movable = require('./Class_Movable.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior){
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
+var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
+    this._animWalk =this.animations.add('Walking');
+    this._animWalk.play(6,true);
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -237,12 +242,31 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         this._distanceY = 0;
 
 
-        if(this._Movingdown || this._Movingup || this._Movingleft || this._Movingright){
-            this._Moving=true;
-        }
-        else{
-            this._Moving=false;    
-        }
+
+
+    if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+        this._animWalk.paused=false;
+    }
+    else if(this._Movingright){
+        if (this.angle!=0)
+            this.angle=0;
+        if (this.width>0)
+            this.width = -this.width;
+    }
+    else if(this._Movingleft){
+        if (this.angle!=0)
+            this.angle=0;
+        if (this.width<0)
+            this.width = -this.width;
+    }
+    else if(this._Movingup){
+        if (this.angle!=90)
+            this.angle = 90;
+    }
+    else if(this._Movingdown){
+        if (this.rotatitio!=-90)
+            this.angle = -90;
+    }
     }
     /*if(this._fireButton.isDown)
     {
@@ -556,11 +580,13 @@ var PlayScene = {
 
 
         //Cualidad de la posicion del player
-        var PosPlayer = new Par(475, 42);
+        var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
         var VelPlayer = new Par(0, 0);
         var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior);
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, 'DigDugWalking');
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
+        player.anchor.x = 0.5;
+        player.anchor.y = 0.5;
         //Comprobar a meter esto en el player y comprobar las colisiones del update
         
         this.game.world.addChild(player);   
@@ -579,7 +605,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
         
-        if(player._Moving) playerMusic.resume();
+        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
 
     },
@@ -593,7 +619,7 @@ module.exports = PlayScene;
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
 
-    if ((obj1.x-2 == obj2.x && obj1.y<obj2.y+3)||(obj1.x-2 > obj2.x && obj1.y==obj2.y+3)||(obj1.x-2 < obj2.x && obj1.y==obj2.y+3)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+    if ((obj1.x-20 == obj2.x && obj1.y<obj2.y+21)||(obj1.x-20 > obj2.x && obj1.y==obj2.y+21)||(obj1.x-20 < obj2.x && obj1.y==obj2.y+21)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
@@ -609,7 +635,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
         }
 
     }
-    else if (obj1.x-2 == obj2.x && obj1.y>obj2.y+40){
+    else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
         if (obj1._Movingup) {
             obj1._Enableup = false;
             obj1._dirY = 1
@@ -626,18 +652,18 @@ function onCollisionTierra (obj1, obj2)
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
         else {
-            if ((obj1.x-2)>obj2._posX && (obj1.y-2)==obj2._posY){       //ENTRANDO POR LA DERECHA
+            if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-2;
             }
-            else if ((obj1.x-2)<obj2._posX && (obj1.y-2)==obj2._posY){
+            else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+2;
                 obj2.width = obj2.width-2;
             }
-            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)<obj2._posY){
+            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 2;
                 obj2.height = obj2.height-2;
             }
-            else if ((obj1.x-2)==obj2._posX && (obj1.y-2)>obj2._posY){
+            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-2;
             }
             if (obj2.width<4 || obj2.height<4)
@@ -650,7 +676,7 @@ function onCollisionTierra (obj1, obj2)
 
 function onCollisionPara(obj1, obj2)
 {
-    if(obj2._Falling && obj1.y>obj2.y+3){
+    if(obj2._Falling && obj1.y>obj2.y+21){
         if(obj2.y != obj2._posY)
             obj2.Para();
         else

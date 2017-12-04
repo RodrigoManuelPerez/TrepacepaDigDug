@@ -1,9 +1,12 @@
 'use strict';
 
-var GameObject = function(game, position, sprite,id){
+var GameObject = function(game, position, sprite,id,spriteSheet){
     
-    Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
-    
+    if(id=='Player')
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 1]);
+    else
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
+
     this._id=id;
     this._posX=position._x;
     this._posY=position._y;
