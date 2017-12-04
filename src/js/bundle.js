@@ -432,6 +432,7 @@ var PlayScene = {
         playerMusic=this.game.add.audio('running90s');
         playerMusic.play();
         playerMusic.pause();
+        playerMusic.volume -= 0.8;
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
