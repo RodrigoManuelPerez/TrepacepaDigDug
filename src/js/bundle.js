@@ -75,7 +75,7 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     Player.prototype.Input = function() //Mueve el jugador a la izquierda
     {
     //Comprobación de cursores de Phaser
-    if (this._cursors.left.isDown && this.x > 2 && this._Enableleft)
+    if (this._cursors.left.isDown && this.x > 20 && this._Enableleft)
     {
         if (this._Movingright == true)
             this._Movingright = false;
@@ -99,21 +99,34 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         if (this._distanceY == 0) {
             this.x -= 1;
             this._distanceX -= 1;
+            if(this.angle!=0)
+                this.angle=0;
+            if(this.width<0)
+                this.width=-this.width;
+
         }
         else if (this._dirY == 1) {
-            if(this.y < 594 - this.height) {
+            if(this.y < 612 - this.height) {
                 this.y += 1;
                 this._distanceY += 1;
+                if(this.angle!=-90)
+                    this.angle=-90;
+                if(this.width<0)
+                    this.width=-this.width;
             }
         }
         else if (this._dirY == -1) {
             if(this.y > this.height + 6) {
                 this.y -= 1;
                 this._distanceY -= 1;
+                if(this.angle!=90)
+                    this.angle=90;
+                if(this.width<0)
+                    this.width=-this.width;
             }
         }
     }
-    else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - this.width- 2 && this._Enableright)
+    else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - 20 && this._Enableright)
     {
         if (this._Movingleft == true)
             this._Movingleft = false;
@@ -137,21 +150,33 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         if(this._distanceY == 0){
             this.x += 1;
             this._distanceX += 1;
+            if(this.angle!=0)
+                 this.angle=0;
+            if(this.width>0)
+                 this.width=-this.width;
         }
         else if (this._dirY == 1){
-            if(this.y < 594 - this.height){
+            if(this.y < 612 - this.height){
                 this.y += 1;
                 this._distanceY += 1;
+                if(this.angle!=90)
+                    this.angle=90;
+                if(this.width>0)
+                    this.width=-this.width;
             }
         }
         else if (this._dirY == -1) {
             if(this.y > this.height + 6) {
                 this.y -= 1;
                 this._distanceY -= 1;
+                if(this.angle!=-90)
+                    this.angle=-90;
+                if(this.width>0)
+                    this.width=-this.width;
             }
         }
     }
-    else if (this._cursors.down.isDown && this.y < 594 - this.height && this._Enabledown)
+    else if (this._cursors.down.isDown && this.y < 612 - this.height && this._Enabledown)
     {   
 
         if (this._Movingright == true)
@@ -176,17 +201,29 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         if (this._distanceX == 0) {
             this.y += 1;
             this._distanceY += 1;
+            if(this.width<0)
+                this.width=-this.width;
+            if(this.angle!=-90)
+                this.angle=-90;
         }
         else if (this._dirX == 1) {
-            if (this.x < this._LimiteDerecho - this.width - 2) {
+            if (this.x < this._LimiteDerecho - 20) {
                 this.x += 1;
                 this._distanceX += 1;
+                // if(this.angle!=0)
+                //     this.angle=0;
+                // if(this.width>0)
+                //     this.width=-this.width;
             }
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
+                // if(this.angle!=0)
+                //     this.angle=0;
+                // if(this.width<0)
+                //     this.width=-this.width;
             }
         }
     }
@@ -215,17 +252,31 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         if (this._distanceX == 0) {
             this.y -= 1;
             this._distanceY -= 1;
+            if(this.width<0)
+                this.width=-this.width;
+            if(this.angle!=90)
+                this.angle=90;
+            // if(this.angle!=90)
+            //     this.angle=90;
         }
         else if (this._dirX == 1) {
-            if(this.x < this._LimiteDerecho - this.width - 2){
+            if(this.x < this._LimiteDerecho - 20){
                 this.x += 1;
                 this._distanceX += 1;
+                // if(this.angle!=0)
+                //     this.angle=0;
+                // if(this.width>0)
+                //     this.width=-this.width;
             }
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
+                // if(this.angle!=0)
+                //     this.angle=0;
+                // if(this.width<0)
+                //     this.width=-this.width;
             }
         }
     }
@@ -247,7 +298,7 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
     }
-    else if(this._Movingright){
+    /*else if(this._Movingright){
         if (this.angle!=0)
             this.angle=0;
         if (this.width>0)
@@ -266,7 +317,7 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     else if(this._Movingdown){
         if (this.rotatitio!=-90)
             this.angle = -90;
-    }
+    }*/
     }
     /*if(this._fireButton.isDown)
     {
