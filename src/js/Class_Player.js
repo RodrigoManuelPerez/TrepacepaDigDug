@@ -153,20 +153,12 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
             if (this.x < this._LimiteDerecho - 20) {
                 this.x += 1;
                 this._distanceX += 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width>0)
-                //     this.width=-this.width;
             }
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width<0)
-                //     this.width=-this.width;
             }
         }
     }
@@ -234,9 +226,6 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
         this._distanceX = 0;
     if (this._distanceY > 42 || this._distanceY < -42)
         this._distanceY = 0;
-
-
-
 
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;

@@ -88,7 +88,7 @@ var PlayScene = {
                 if (a<0.03){
                     var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca');
+                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaMoving');
                     this.game.physics.arcade.enable(Coll); 
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 

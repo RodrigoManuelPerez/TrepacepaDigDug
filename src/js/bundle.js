@@ -4,7 +4,7 @@
 var GameObject = function(game, position, sprite,id,spriteSheet){
     
     if(id=='Player' || id=='Roca')
-        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 1]);
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 0]);
     else
         Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
 
@@ -210,20 +210,12 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
             if (this.x < this._LimiteDerecho - 20) {
                 this.x += 1;
                 this._distanceX += 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width>0)
-                //     this.width=-this.width;
             }
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width<0)
-                //     this.width=-this.width;
             }
         }
     }
@@ -292,9 +284,6 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     if (this._distanceY > 42 || this._distanceY < -42)
         this._distanceY = 0;
 
-
-
-
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
         }
@@ -341,10 +330,14 @@ module.exports = Player;
 
 var GameObject = require('./Class_GameObject.js');
 
-var Roca = function(game, position, sprite,id){
+var Roca = function(game, position, sprite,id, spritesheet){
     
-    GameObject.apply(this, [game ,position, sprite, id]);
+    GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
     
+        this.animations.add('Shaking', [0, 1], 5, true);
+        this.animations.add('Breaking', [2, 3, 4, 5], 3, false);
+        //this._animShake.play(5,true);
+
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
@@ -368,6 +361,9 @@ var Roca = function(game, position, sprite,id){
     
         Roca.prototype.Para=function() {
             
+            this.animations.stop('Shaking');
+            this.animations.play('Breaking');
+            this.remove(this._animShake);
             this._Falling = false;
             this._HasFallen = true;
             this._timer.loop(3500,BreakRock,this);
@@ -380,7 +376,8 @@ var Roca = function(game, position, sprite,id){
         }
     
         Roca.prototype.EnableFall=function() {
-            this._timer.loop(1500,Fall,this);
+            this.animations.play('Shaking');
+            this._timer.loop(2000,Fall,this);
             this._timer.start();
         }
     
@@ -449,7 +446,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
-    this.game.load.spritesheet('RocaColl', 'images/RocaColl1.png', 40, 47,2);
+    this.game.load.spritesheet('RocaCompleta', 'images/RocaCompleta.png', 40, 47, 6);
 
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
@@ -458,10 +455,10 @@ var PreloaderScene = {
     this.game.load.image('tierra', 'images/TierraC.png');
     this.game.load.image('tierraH', 'images/LaminaTierra.png');
     this.game.load.image('tierraV', 'images/LaminaTierraV.png');
-    this.game.load.image('Roca', 'images/RocaC.png');
+    //this.game.load.image('Roca', 'images/RocaC.png');
     
 
-    this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
+    //this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
   },
 
   create: function () {
@@ -570,7 +567,7 @@ var PlayScene = {
                 if (a<0.03){
                     var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca');
+                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaMoving');
                     this.game.physics.arcade.enable(Coll); 
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 

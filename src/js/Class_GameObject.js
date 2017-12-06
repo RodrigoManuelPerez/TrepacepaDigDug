@@ -3,7 +3,7 @@
 var GameObject = function(game, position, sprite,id,spriteSheet){
     
     if(id=='Player' || id=='Roca')
-        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 1]);
+        Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 0]);
     else
         Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
 

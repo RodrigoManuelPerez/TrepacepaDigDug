@@ -2,10 +2,14 @@
 
 var GameObject = require('./Class_GameObject.js');
 
-var Roca = function(game, position, sprite,id){
+var Roca = function(game, position, sprite,id, spritesheet){
     
-    GameObject.apply(this, [game ,position, sprite, id]);
+    GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
     
+        this.animations.add('Shaking', [0, 1], 5, true);
+        this.animations.add('Breaking', [2, 3, 4, 5], 3, false);
+        //this._animShake.play(5,true);
+
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
@@ -29,6 +33,9 @@ var Roca = function(game, position, sprite,id){
     
         Roca.prototype.Para=function() {
             
+            this.animations.stop('Shaking');
+            this.animations.play('Breaking');
+            this.remove(this._animShake);
             this._Falling = false;
             this._HasFallen = true;
             this._timer.loop(3500,BreakRock,this);
@@ -41,7 +48,8 @@ var Roca = function(game, position, sprite,id){
         }
     
         Roca.prototype.EnableFall=function() {
-            this._timer.loop(1500,Fall,this);
+            this.animations.play('Shaking');
+            this._timer.loop(2000,Fall,this);
             this._timer.start();
         }
     
