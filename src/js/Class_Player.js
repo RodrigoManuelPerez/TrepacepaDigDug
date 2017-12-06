@@ -240,34 +240,39 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
 
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
-    }
-    /*else if(this._Movingright){
-        if (this.angle!=0)
-            this.angle=0;
-        if (this.width>0)
-            this.width = -this.width;
-    }
-    else if(this._Movingleft){
-        if (this.angle!=0)
-            this.angle=0;
-        if (this.width<0)
-            this.width = -this.width;
-    }
-    else if(this._Movingup){
-        if (this.angle!=90)
-            this.angle = 90;
-    }
-    else if(this._Movingdown){
-        if (this.rotatitio!=-90)
-            this.angle = -90;
-    }*/
+        }
     }
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
     }*/
     Player.prototype.update = function() {
-        this.Input();
+        if (this._MovementEnable)
+            this.Input();
+        else
+            this.AutomaticMovement();
+    }
+    Player.prototype.AutomaticMovement = function() {
+        
+        if(this.x > (42*7 - 16)){
+            if(this._Movingleft!=true)
+                this._Movingleft=true;
+            this.x--;
+        }
+        else if (this.y<(42*8 - 18)){
+            if(this._Movingdown!=true)
+                this._Movingdown=true;
+            if(this.angle!=-90)
+                this.angle=-90;
+            this.y++;
+        }
+        else{
+            if(this.width>0)
+                this.width=-this.width;
+            if(this.angle!=0)
+                this.angle=0;
+            this._MovementEnable=true;           
+        }
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;

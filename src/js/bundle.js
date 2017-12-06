@@ -3,7 +3,7 @@
 
 var GameObject = function(game, position, sprite,id,spriteSheet){
     
-    if(id=='Player')
+    if(id=='Player' || id=='Roca')
         Phaser.Sprite.apply(this,[game ,position._x, position._y, spriteSheet, 1]);
     else
         Phaser.Sprite.apply(this,[game ,position._x, position._y, sprite]);
@@ -31,7 +31,7 @@ var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteD
     
     GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
 
-    this._MovementEnable = true;
+    this._MovementEnable = false;
 
     this._Enableleft = true;
     this._Enableright = true;
@@ -297,34 +297,39 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
 
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
-    }
-    /*else if(this._Movingright){
-        if (this.angle!=0)
-            this.angle=0;
-        if (this.width>0)
-            this.width = -this.width;
-    }
-    else if(this._Movingleft){
-        if (this.angle!=0)
-            this.angle=0;
-        if (this.width<0)
-            this.width = -this.width;
-    }
-    else if(this._Movingup){
-        if (this.angle!=90)
-            this.angle = 90;
-    }
-    else if(this._Movingdown){
-        if (this.rotatitio!=-90)
-            this.angle = -90;
-    }*/
+        }
     }
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
     }*/
     Player.prototype.update = function() {
-        this.Input();
+        if (this._MovementEnable)
+            this.Input();
+        else
+            this.AutomaticMovement();
+    }
+    Player.prototype.AutomaticMovement = function() {
+        
+        if(this.x > (42*7 - 16)){
+            if(this._Movingleft!=true)
+                this._Movingleft=true;
+            this.x--;
+        }
+        else if (this.y<(42*8 - 18)){
+            if(this._Movingdown!=true)
+                this._Movingdown=true;
+            if(this.angle!=-90)
+                this.angle=-90;
+            this.y++;
+        }
+        else{
+            if(this.width>0)
+                this.width=-this.width;
+            if(this.angle!=0)
+                this.angle=0;
+            this._MovementEnable=true;           
+        }
     }
     Player.prototype.PlayerRock = function() {
         this._Enable=false;
@@ -444,6 +449,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('RocaColl', 'images/RocaColl1.png', 40, 47,2);
 
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
@@ -453,7 +459,7 @@ var PreloaderScene = {
     this.game.load.image('tierraH', 'images/LaminaTierra.png');
     this.game.load.image('tierraV', 'images/LaminaTierraV.png');
     this.game.load.image('Roca', 'images/RocaC.png');
-    this.game.load.image('RocaColl', 'images/RocaColl.png');
+    
 
     this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
   },
@@ -564,7 +570,7 @@ var PlayScene = {
                 if (a<0.03){
                     var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Collider');
+                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca');
                     this.game.physics.arcade.enable(Coll); 
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 
@@ -721,7 +727,7 @@ function onCollisionTierra (obj1, obj2)
                 obj2.Destroy();
         }
     }
-    if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)         
+    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
         obj2.Destroy();
 }
 

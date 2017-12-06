@@ -6,7 +6,7 @@ var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteD
     
     GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
 
-    this._MovementEnable = true;
+    this._MovementEnable = false;
 
     this._Enableleft = true;
     this._Enableright = true;

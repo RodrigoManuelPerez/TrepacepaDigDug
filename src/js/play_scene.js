@@ -88,7 +88,7 @@ var PlayScene = {
                 if (a<0.03){
                     var PosColl = new Par(i, j-1);
                     var VelColl = new Par(0, 0);
-                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Collider');
+                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca');
                     this.game.physics.arcade.enable(Coll); 
                     
                     roca.add(Coll);     //AÑADIMOS AL GRUPO 
@@ -245,7 +245,7 @@ function onCollisionTierra (obj1, obj2)
                 obj2.Destroy();
         }
     }
-    if (obj1._Falling && obj1._id=='Collider' && obj1.y<obj2.y)         
+    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
         obj2.Destroy();
 }
 
