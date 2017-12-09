@@ -9,11 +9,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._distanceYtoPlayer;
     this._Movingright=true;
 
-    this._nextRight=false;
-    this._nextLeft=false;
-    this._nextUp=false;
-    this._nextDown=false;
-
     this._player=player;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
@@ -44,32 +39,56 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
 
     if (this._distanceX > 42 || this._distanceX < -42){
         this._distanceX = 0;
-        this._IntentosDeGiro=2;
-        //his.ChangeDir();
+        this.ChangeDirVer();
     }
     if (this._distanceY > 42 || this._distanceY < -42){
         this._distanceY = 0;
         this._IntentosDeGiro=2;
-        //this.ChangeDir();
+        this.ChangeDirHor();
     }
     // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
     //     this._animWalk.paused=false;
     //     }
     }
-    Enemy.prototype.CheckNear = function() {
-        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
-        this._distanceYtoPlayer=Math.abs(this._player.y) - Math.abs(this.y);
-
-        if(this._distanceXtoPlayer > this._distanceYtoPlayer){
-            
-
-
-        }
+    Enemy.prototype.CheckChange = function() {
+        //this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
+        //this._distanceYtoPlayer=Math.abs(this._player.y) - Math.abs(this.y);
+        //if(this._distanceXtoPlayer > this._distanceYtoPlayer){}
     }
+
+    Enemy.prototype.Right = function() {
+        this._Movingright=true;
+        this._Movingleft=false;
+        this._Movingup=false;
+        this._Movingdown=false;
+    }
+
+    Enemy.prototype.Left = function() {
+        this._Movingright=false;
+        this._Movingleft=true;
+        this._Movingup=false;
+        this._Movingdown=false;
+    }
+
+    Enemy.prototype.Up = function() {
+        this._Movingright=false;
+        this._Movingleft=false;
+        this._Movingup=true;
+        this._Movingdown=false;
+    }
+
+    Enemy.prototype.Down = function() {
+        this._Movingright=false;
+        this._Movingleft=false;
+        this._Movingup=false;
+        this._Movingdown=true;
+    }
+
+
     Enemy.prototype.ChangeDirHor = function() {
-        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
         
         this.y-=this._distanceY;
+        this._distanceY=0;
         
         if(this._player.x > this.x){
             this._Movingright=true;
@@ -86,10 +105,9 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     }
 
     Enemy.prototype.ChangeDirVer = function() {
-                
-        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
 
         this.x-=this._distanceX;
+        this._distanceX=0;
 
         if(this._player.y > this.y){
             this._Movingright=false;
