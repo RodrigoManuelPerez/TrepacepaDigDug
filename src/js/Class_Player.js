@@ -5,17 +5,18 @@ var Movable = require('./Class_Movable.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet]);
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
+    this._MovementEnable=true;
     }
 
     Player.prototype = Object.create(Movable.prototype);
     Player.prototype.constructor = Player;
 
-    Player.prototype.Input = function() //Mueve el jugador a la izquierda
+Player.prototype.Input = function() //Mueve el jugador a la izquierda
     {
     //Comprobación de cursores de Phaser
     if (this._cursors.left.isDown && this.x > 20 && this._Enableleft)
@@ -230,11 +231,12 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
         }
-    }
+
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
     }*/
+}
     Player.prototype.update = function() {
         if (this._MovementEnable)
             this.Input();
@@ -260,11 +262,11 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
                 this.width=-this.width;
             if(this.angle!=0)
                 this.angle=0;
-            this._MovementEnable=true;           
+            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse       
         }
     }
     Player.prototype.PlayerRock = function() {
-        this._Enable=false;
+        this._MovementEnable=false;
     }
 
 module.exports = Player;

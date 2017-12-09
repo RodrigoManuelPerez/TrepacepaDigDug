@@ -1,6 +1,129 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
+var Movable = require('./Class_Movable.js');
+
+var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, player, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+    this._IntentosDeGiro=2;
+    this._distanceXtoPlayer;
+    this._distanceYtoPlayer;
+    this._Movingright=true;
+
+    this._vertical=false;
+    this._horizontal=false;
+
+    //this._animWalk =this.animations.add('Walking');
+    //this._animWalk.play(6,true);
+    }
+
+    Enemy.prototype = Object.create(Movable.prototype);
+    Enemy.prototype.constructor = Enemy;
+
+    Enemy.prototype.update = function() 
+    {
+
+    if(this._Movingleft){
+        this.x--;
+        this._distanceX--;
+    }
+    else if(this._Movingright){
+        this.x++;
+        this._distanceX++;
+    }
+    else if(this._Movingup){
+        this.y--;
+        this._distanceY--;
+    }
+    else if(this._Movingdown){
+        this.y++;
+        this._distanceY++;
+    }
+
+    if (this._distanceX > 42 || this._distanceX < -42){
+        this._distanceX = 0;
+        this._IntentosDeGiro=2;
+        //his.ChangeDir();
+    }
+    if (this._distanceY > 42 || this._distanceY < -42){
+        this._distanceY = 0;
+        this._IntentosDeGiro=2;
+        //this.ChangeDir();
+    }
+    // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+    //     this._animWalk.paused=false;
+    //     }
+    }
+    Enemy.prototype.AutomaticMovement = function() {
+        
+    }
+    Enemy.prototype.ChangeDir = function() {
+
+        this._distanceXtoPlayer=Math.abs(player.x) - Math.abs(this.x);
+        this._distanceYtoPlayer=Math.abs(player.y) - Math.abs(this.y);
+
+        if(this._distanceXtoPlayer > this._distanceYtoPlayer){
+            
+
+
+        }
+
+
+        if(this._vertical)
+        if (this._Movingleft || this._Movingright){
+            if(player.y > this.y){
+
+
+
+            }
+        }
+
+    }
+    Enemy.prototype.ChangeDirTierra = function() {
+        
+        if (this._Movingleft){
+            this._Movingleft=false;
+            this._Movingright=true;
+        }
+        else if(this._Movingright){
+            this._Movingleft=true;
+            this._Movingright=false;
+        }
+        else if(this._Movingup){
+            this._Movingdown=true;
+            this._Movingup=false;
+        }
+        else if(this._Movingdown){
+            this._Movingup=true;
+            this._Movingdown=false;
+        }
+    }
+
+module.exports = Enemy;
+},{"./Class_Movable.js":4}],2:[function(require,module,exports){
+'use strict';
+
+var Enemy = require('./Class_Enemy.js');
+
+var Fygar = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
+    Enemy.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+
+    //PARA MONTAR LAS ANIMACIONES DEL DRAGON
+    this._animWalk =this.animations.add('Walking');
+    this._animWalk.play(6,true);
+    }
+
+    Fygar.prototype = Object.create(Enemy.prototype);
+    Fygar.prototype.constructor = Fygar;
+
+    Fygar.prototype.PlayerRock = function() {
+        this._Enable=false;
+    }
+
+module.exports = Fygar;
+},{"./Class_Enemy.js":1}],3:[function(require,module,exports){
+'use strict';
+
 var GameObject = function(game, position, sprite,id,spriteSheet){
     
     if(id=='Player' || id=='Roca')
@@ -22,16 +145,16 @@ GameObject.prototype.Destroy = function()
 }
 
 module.exports = GameObject;
-},{}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
+var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
     
     GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
 
-    this._MovementEnable = false;
+    this._MovementEnable = true;
 
     this._Enableleft = true;
     this._Enableright = true;
@@ -43,8 +166,8 @@ var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteD
     this._Movingup = false;
     this._Movingdown = false;
 
-    this._distanceX = distanceX;
-    this._distanceY = distanceY;
+    this._distanceX = 0;
+    this._distanceY = 0;
 
     this._LimiteSuperior = limiteSuperior;
     this._LimiteDerecho = limiteDerecho;
@@ -54,7 +177,7 @@ var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteD
     Movable.prototype.constructor = Movable;
 
 module.exports = Movable;
-},{"./Class_GameObject.js":1}],3:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],5:[function(require,module,exports){
 'use strict';
 
 var Movable = require('./Class_Movable.js');
@@ -62,17 +185,18 @@ var Movable = require('./Class_Movable.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet]);
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
+    this._MovementEnable=true;
     }
 
     Player.prototype = Object.create(Movable.prototype);
     Player.prototype.constructor = Player;
 
-    Player.prototype.Input = function() //Mueve el jugador a la izquierda
+Player.prototype.Input = function() //Mueve el jugador a la izquierda
     {
     //Comprobación de cursores de Phaser
     if (this._cursors.left.isDown && this.x > 20 && this._Enableleft)
@@ -287,11 +411,12 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
         }
-    }
+
     /*if(this._fireButton.isDown)
     {
         this._playerWeapon.fire();
     }*/
+}
     Player.prototype.update = function() {
         if (this._MovementEnable)
             this.Input();
@@ -317,15 +442,15 @@ var Player = function(game, position, sprite, id, cursors, distanceX, distanceY,
                 this.width=-this.width;
             if(this.angle!=0)
                 this.angle=0;
-            this._MovementEnable=true;           
+            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse       
         }
     }
     Player.prototype.PlayerRock = function() {
-        this._Enable=false;
+        this._MovementEnable=false;
     }
 
 module.exports = Player;
-},{"./Class_Movable.js":2}],4:[function(require,module,exports){
+},{"./Class_Movable.js":4}],6:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -335,7 +460,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
     GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
     
         this.animations.add('Shaking', [0, 1], 5, true);
-        this.animations.add('Breaking', [2, 3, 4, 5], 3, false);
+        this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         //this._animShake.play(5,true);
 
         this._Falling = false;
@@ -363,10 +488,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
             
             this.animations.stop('Shaking');
             this.animations.play('Breaking');
-            this.remove(this._animShake);
             this._Falling = false;
             this._HasFallen = true;
-            this._timer.loop(3500,BreakRock,this);
+            this._timer.loop(4000,BreakRock,this);
             this._timer.start();
     
             this.body.enable=false;
@@ -392,7 +516,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
         }
 
 module.exports = Roca;
-},{"./Class_GameObject.js":1}],5:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],7:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -413,7 +537,7 @@ var Vegetal = function(game, position, sprite,id, puntos){
     }
 
 module.exports = Vegetal;
-},{"./Class_GameObject.js":1}],6:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],8:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
@@ -446,7 +570,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
-    this.game.load.spritesheet('RocaCompleta', 'images/RocaCompleta.png', 40, 47, 6);
+    this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
@@ -456,9 +580,9 @@ var PreloaderScene = {
     this.game.load.image('tierraH', 'images/LaminaTierra.png');
     this.game.load.image('tierraV', 'images/LaminaTierraV.png');
     //this.game.load.image('Roca', 'images/RocaC.png');
-    
 
-    //this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
+    this.game.load.image('Slime', 'images/Slime.png');
+    this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
   },
 
   create: function () {
@@ -476,7 +600,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./play_scene.js":7}],7:[function(require,module,exports){
+},{"./play_scene.js":9}],9:[function(require,module,exports){
 
 'use strict';
 
@@ -485,9 +609,9 @@ var Roca = require('./Class_Roca.js');
 var Vegetal = require('./Class_Vegetal.js');
 var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
-/*var Enemy = require('./Class_Enemy.js');
+var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
-*/
+
 
 var player;
 var arma;
@@ -498,6 +622,8 @@ var tierra, tierraH, tierraV;
 var roca, rocaColl;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
+
+var GrupoEnemigos;
 
 var puntuacion;
 
@@ -514,22 +640,26 @@ var PlayScene = {
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
-        
-        
-
+    
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
 
-        //Distancias recorridas por DigDag.
-        distanceX = 0;
-        distanceY = 0;
 
         //Arma DigDag
         //Arma = 
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
+
+        //Cualidad de la posicion del player
+        var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking');
+        this.game.physics.enable(player, Phaser.Physics.ARCADE);
+        player.anchor.x = 0.5;
+        player.anchor.y = 0.5;
+        this.game.world.addChild(player); 
+
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -539,83 +669,105 @@ var PlayScene = {
         tierraV = this.game.add.physicsGroup();
 
         roca = this.game.add.physicsGroup();
+
+        GrupoEnemigos = this.game.add.physicsGroup();
         
         /*
         //CREAMOS LA MATRIZ DE 12 * 12.       
         //Los saltos entre cuadrados son de  43 uds.
         */
+        var cont=0;
+        var ContHuec=0;
+        var enemigos=1;
+        var hueco=false;
+        var h=false;
+        var v=false;
+
+        var posX;
+        var posy;
 
         for(var i = 0; i < limiteDerecho; i += 43)
         {           
-            for(var j = 83; j < 593; j += 43) //84
+            for(var j = 83; j < 600; j += 43) //84
             {
-                //TIERRA
-                
-                var PosTierra = new Par(i, j);
-                var VelTierra = new Par(0, 0);
-                var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+               
+                if(!((i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
 
-                this.game.physics.arcade.enable(BloqTierra);
-                BloqTierra.body.immovable = true;
-    
-                this.game.world.addChild(BloqTierra);
-                tierra.add(BloqTierra);
+                        //TIERRA
+                        var PosTierra = new Par(i, j);
+                        var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
 
-                //ROCAS
+                        this.game.physics.arcade.enable(BloqTierra);
+                        BloqTierra.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierra);
+                        tierra.add(BloqTierra);
 
-                var a = Math.random();
-                if (a<0.03){
-                    var PosColl = new Par(i, j-1);
-                    var VelColl = new Par(0, 0);
-                    var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaMoving');
-                    this.game.physics.arcade.enable(Coll); 
                     
-                    roca.add(Coll);     //AÑADIMOS AL GRUPO 
-                    //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
                 }
+                else if(i==215 && j==298){
+
+                    var PosEne = new Par(i+20,j+20);
+                    var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
+                    this.game.physics.arcade.enable(enemigo);
+                    enemigo.anchor.x = 0.5;
+                    enemigo.anchor.y = 0.5;
+                    this.game.world.addChild(enemigo);
+                    GrupoEnemigos.add(enemigo);
+                
+                }
+                if(!((i==215 && j==298) || (i==258 && j==298))){
+                    //TIERRA VERTICAL
+                    if (cont<11){
+                        var PosTierraV = new Par(i+40, j);
+                        var VelTierraV = new Par(0, 0);
+                        var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+                        
+                        this.game.physics.arcade.enable(BloqTierraV);
+                        BloqTierraV.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierraV);
+                        tierraV.add(BloqTierraV);
+                    }
+                }
+                
+                        //TIERRA HORIZONTAL
+                    
+                        var PosTierraH = new Par(i-3, j-3);
+                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                        
+                        this.game.physics.arcade.enable(BloqTierraH);
+                        BloqTierraH.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierraH);
+                        tierraH.add(BloqTierraH);
+                    
+                
+
+                    //ROCAS
+                    if(!((i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
+                        var a = Math.random();
+                        if (a<0.03 && i!=258){
+                            var PosColl = new Par(i, j-1);
+                            var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                            this.game.physics.arcade.enable(Coll); 
+                            
+                            roca.add(Coll);     //AÑADIMOS AL GRUPO 
+                            //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
+                        }
+                    }
+                    
+                
+                
+                
+                if(ContHuec>0)
+                    ContHuec--;
+                else
+                    h=false;
             }
+            cont++;
         }
         this.game.world.add(roca);
-
-        //CREAMOS LA TIERRA HORIZONTAL
-
-        for(var i = -3; i < limiteDerecho; i+=43)
-        {
-            for(var j = 80; j < 599; j+=43)
-            {
-                var PosTierraH = new Par(i, j);
-                var VelTierraH = new Par(0, 0);
-                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
-                
-                this.game.physics.arcade.enable(BloqTierraH);
-                BloqTierraH.body.immovable = true;
-    
-                this.game.world.addChild(BloqTierraH);
-                tierraH.add(BloqTierraH);
-            }
-        }
-
-        //CREAMOS LA TIERRA VERTICAL
-
-        var cont = 0;
-        for(var i = 40; i < limiteDerecho; i += 43)
-        {
-            if (cont<11){
-                for(var j = 83; j < 599; j += 43)
-                {   
-                    var PosTierraV = new Par(i, j);
-                    var VelTierraV = new Par(0, 0);
-                    var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
-                    
-                    this.game.physics.arcade.enable(BloqTierraV);
-                    BloqTierraV.body.immovable = true;
-        
-                    this.game.world.addChild(BloqTierraV);
-                    tierraV.add(BloqTierraV);
-                }
-                cont++;
-            }
-        }
 
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
@@ -631,33 +783,25 @@ var PlayScene = {
         //paredDerecha.visible=false;
         //paredSuperior.visible=false;
 
-
-
-        //Cualidad de la posicion del player
-        var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        var VelPlayer = new Par(0, 0);
-        var DirPlayer = new Par(0, 0);
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, distanceX, distanceY, limiteDerecho, limiteSuperior, 'DigDugWalking');
-        this.game.physics.enable(player, Phaser.Physics.ARCADE);
-        player.anchor.x = 0.5;
-        player.anchor.y = 0.5;
-        //Comprobar a meter esto en el player y comprobar las colisiones del update
-        
-        this.game.world.addChild(player);   
-        
-
+          
+    
     },
     update: function(){
         //this.game.physics.arcade.overlap(ball, pared1, collisionHandler, null, this);   
         //COLISION HANDLER ES UNA AUXILIAR PARA LA COLISION DE LA PELOTA CON EL RESTO DE COSAS, HABRIA QUE HACER UN METODO PARA LAS COLISIONES CON LA ROCA POR EJEMPLO
         
-        
+        //PLAYER
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
+
+        //ROCAS
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
+
+        //ENEMIGOS
+        this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
         
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
@@ -669,6 +813,10 @@ var PlayScene = {
 }
 
 module.exports = PlayScene;
+
+function onCollisionEnemyTierra(obj1,obj2){
+    obj2.ChangeDirTierra();
+}
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
@@ -700,8 +848,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
     }
 }
 
-function onCollisionTierra (obj1, obj2)
-{
+function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
@@ -748,39 +895,4 @@ function Par (x, y) {
     this._x = x;
     this._y = y;
 }
-
-function Enemy(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior)
-    {
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
-
-    //variables de enemy
-    }
-
-    Enemy.prototype = Object.create(Movable.prototype);
-    Enemy.prototype.constructor = Enemy;
-
-    //Funciones de los enemigos
-
-    Enemy.prototype.update = function() {
-    
-    }
-
-function Fygar(game, position, sprite, id, cursors, distanceX, distanceY, limiteDerecho, limiteSuperior)
-    {
-    Movable.apply(this, [game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior]);
-
-    //variables de enemy
-    }
-
-    Fygar.prototype = Object.create(Enemy.prototype);
-    Fygar.prototype.constructor = Fygar;
-
-    //Funciones de los enemigos
-
-    Fygar.prototype.update = function() {
-    
-    }
-
-
-
-},{"./Class_GameObject.js":1,"./Class_Movable.js":2,"./Class_Player.js":3,"./Class_Roca.js":4,"./Class_Vegetal.js":5}]},{},[6]);
+},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Movable.js":4,"./Class_Player.js":5,"./Class_Roca.js":6,"./Class_Vegetal.js":7}]},{},[8]);

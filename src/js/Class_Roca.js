@@ -7,7 +7,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
     GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
     
         this.animations.add('Shaking', [0, 1], 5, true);
-        this.animations.add('Breaking', [2, 3, 4, 5], 3, false);
+        this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         //this._animShake.play(5,true);
 
         this._Falling = false;
@@ -35,10 +35,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
             
             this.animations.stop('Shaking');
             this.animations.play('Breaking');
-            this.remove(this._animShake);
             this._Falling = false;
             this._HasFallen = true;
-            this._timer.loop(3500,BreakRock,this);
+            this._timer.loop(4000,BreakRock,this);
             this._timer.start();
     
             this.body.enable=false;

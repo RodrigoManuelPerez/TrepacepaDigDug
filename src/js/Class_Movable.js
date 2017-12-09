@@ -2,11 +2,11 @@
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteDerecho, limiteSuperior, spriteSheet){
+var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
     
     GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
 
-    this._MovementEnable = false;
+    this._MovementEnable = true;
 
     this._Enableleft = true;
     this._Enableright = true;
@@ -18,8 +18,8 @@ var Movable = function(game, position, sprite, id, distanceX, distanceY, limiteD
     this._Movingup = false;
     this._Movingdown = false;
 
-    this._distanceX = distanceX;
-    this._distanceY = distanceY;
+    this._distanceX = 0;
+    this._distanceY = 0;
 
     this._LimiteSuperior = limiteSuperior;
     this._LimiteDerecho = limiteDerecho;
