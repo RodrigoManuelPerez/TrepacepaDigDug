@@ -68,9 +68,10 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
         }
     }
     Enemy.prototype.ChangeDirHor = function() {
-
         this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
-
+        
+        this.y-=this._distanceY;
+        
         if(this._player.x > this.x){
             this._Movingright=true;
             this._Movingleft=false;
@@ -83,10 +84,30 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
             this._Movingup=false;
             this._Movingdown=false;
         }
+    }
+
+    Enemy.prototype.ChangeDirVer = function() {
+                
+        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
+
+        this.x-=this._distanceX;
+
+        if(this._player.y > this.y){
+            this._Movingright=false;
+            this._Movingleft=false;
+            this._Movingup=false;
+            this._Movingdown=true;
+        }
+        else{
+            this._Movingright=false;
+            this._Movingleft=false;
+            this._Movingup=true;
+            this._Movingdown=false;
+        }
 
     }
+
     Enemy.prototype.ChangeDirTierra = function() {
-        
         if (this._Movingleft){
             this._Movingleft=false;
             this._Movingright=true;
@@ -713,7 +734,7 @@ var PlayScene = {
                 }
                 else if(i==215 && j==298){
 
-                    var PosEne = new Par(i+19,j+19);
+                    var PosEne = new Par(i+20,j+20);
                     var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
                     this.game.physics.arcade.enable(enemigo);
                     enemigo.anchor.x = 0.5;
@@ -809,7 +830,9 @@ var PlayScene = {
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
+        this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+        //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
 
@@ -825,8 +848,12 @@ function onCollisionEnemyTierra(obj1,obj2){
     if(obj1._id=='tierra')
         obj2.ChangeDirTierra();
     else if(obj1._id=='tierraH'){
+        console.debug('H');
         obj2.ChangeDirHor();
-        console.debug('colision constante?');
+    }
+    else if(obj1._id=='tierraV'){
+        console.debug('V');
+        obj2.ChangeDirVer();
     }
 }
 
