@@ -41,11 +41,13 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     if (this._distanceX > 42 || this._distanceX < -42){
         this._distanceX = 0;
         this.ChangeDirVer();
+        this.ChangeDirHor();
     }
     if (this._distanceY > 42 || this._distanceY < -42){
         this._distanceY = 0;
         this._IntentosDeGiro=2;
         this.ChangeDirHor();
+        this.ChangeDirVer();
     }
     // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
     //     this._animWalk.paused=false;
@@ -97,7 +99,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
             this._Movingup=false;
             this._Movingdown=false;
         }
-        else{
+        else if (this._player.x < this.x){
             this._Movingright=false;
             this._Movingleft=true;
             this._Movingup=false;
@@ -116,7 +118,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
             this._Movingup=false;
             this._Movingdown=true;
         }
-        else{
+        else if(this._player.y < this.y){
             this._Movingright=false;
             this._Movingleft=false;
             this._Movingup=true;
