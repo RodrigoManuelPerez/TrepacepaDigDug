@@ -10,9 +10,12 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._distanceYtoPlayer;
     this._Movingright=true;
 
-    this._vertical=false;
-    this._horizontal=false;
+    this._nextRight=false;
+    this._nextLeft=false;
+    this._nextUp=false;
+    this._nextDown=false;
 
+    this._player=player;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
     }
@@ -54,28 +57,31 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     //     this._animWalk.paused=false;
     //     }
     }
-    Enemy.prototype.AutomaticMovement = function() {
-        
-    }
-    Enemy.prototype.ChangeDir = function() {
-
-        this._distanceXtoPlayer=Math.abs(player.x) - Math.abs(this.x);
-        this._distanceYtoPlayer=Math.abs(player.y) - Math.abs(this.y);
+    Enemy.prototype.CheckNear = function() {
+        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
+        this._distanceYtoPlayer=Math.abs(this._player.y) - Math.abs(this.y);
 
         if(this._distanceXtoPlayer > this._distanceYtoPlayer){
             
 
 
         }
+    }
+    Enemy.prototype.ChangeDirHor = function() {
 
+        this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
 
-        if(this._vertical)
-        if (this._Movingleft || this._Movingright){
-            if(player.y > this.y){
-
-
-
-            }
+        if(this._player.x > this.x){
+            this._Movingright=true;
+            this._Movingleft=false;
+            this._Movingup=false;
+            this._Movingdown=false;
+        }
+        else{
+            this._Movingright=false;
+            this._Movingleft=true;
+            this._Movingup=false;
+            this._Movingdown=false;
         }
 
     }
@@ -707,7 +713,7 @@ var PlayScene = {
                 }
                 else if(i==215 && j==298){
 
-                    var PosEne = new Par(i+20,j+20);
+                    var PosEne = new Par(i+19,j+19);
                     var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
                     this.game.physics.arcade.enable(enemigo);
                     enemigo.anchor.x = 0.5;
@@ -802,6 +808,7 @@ var PlayScene = {
 
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
+        this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
@@ -815,7 +822,12 @@ var PlayScene = {
 module.exports = PlayScene;
 
 function onCollisionEnemyTierra(obj1,obj2){
-    obj2.ChangeDirTierra();
+    if(obj1._id=='tierra')
+        obj2.ChangeDirTierra();
+    else if(obj1._id=='tierraH'){
+        obj2.ChangeDirHor();
+        console.debug('colision constante?');
+    }
 }
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
