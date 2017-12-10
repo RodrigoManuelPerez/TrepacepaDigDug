@@ -195,12 +195,14 @@ var PlayScene = {
 
 
         //MUSICA
-        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
-        else playerMusic.pause();
+        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
+            playerMusic.resume();
+        else
+            playerMusic.pause();
 
     },
     render: function(){
-
+        
     }
 }
 

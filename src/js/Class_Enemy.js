@@ -15,7 +15,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._player=player;
     this._bufferBounce=1;
 
-    this._MovementEnable=false;
+    this._MovementEnable=true;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
     }
@@ -26,19 +26,19 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     Enemy.prototype.update = function() 
     {
     if(this._MovementEnable){
-        if(this._Movingleft && this.x>18){
+        if(this._Movingleft && this.x>15){
             this.x--;
             this._distanceX--;
         }
-        else if(this._Movingright && this.x<this._limiteDerecho-18){
+        else if(this._Movingright && this.x<this._limiteDerecho-15){
             this.x++;
             this._distanceX++;
         }
-        else if(this._Movingup && this.y>this._limiteSuperior+18){
+        else if(this._Movingup && this.y>this._limiteSuperior+15){
             this.y--;
             this._distanceY--;
         }
-        else if(this._Movingdown && this.y<580){
+        else if(this._Movingdown && this.y<585){
             this.y++;
             this._distanceY++;
         }
