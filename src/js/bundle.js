@@ -15,6 +15,8 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
 
     this._player=player;
     this._bufferBounce=1;
+
+    this._MovementEnable=false;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
     }
@@ -24,46 +26,49 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
 
     Enemy.prototype.update = function() 
     {
+    if(this._MovementEnable){
+        if(this._Movingleft && this.x>18){
+            this.x--;
+            this._distanceX--;
+        }
+        else if(this._Movingright && this.x<this._limiteDerecho-18){
+            this.x++;
+            this._distanceX++;
+        }
+        else if(this._Movingup && this.y>this._limiteSuperior+18){
+            this.y--;
+            this._distanceY--;
+        }
+        else if(this._Movingdown && this.y<580){
+            this.y++;
+            this._distanceY++;
+        }
 
-    if(this._Movingleft && this.x>18){
-        this.x--;
-        this._distanceX--;
-    }
-    else if(this._Movingright && this.x<this._limiteDerecho-18){
-        this.x++;
-        this._distanceX++;
-    }
-    else if(this._Movingup && this.y>this._limiteSuperior+18){
-        this.y--;
-        this._distanceY--;
-    }
-    else if(this._Movingdown && this.y<580){
-        this.y++;
-        this._distanceY++;
+        if (this._distanceX > 42 || this._distanceX < -42){
+            this._distanceX = 0;
+            if(this._bufferBounce==0){
+                this.ChangeDirVer();
+            }
+            else{
+                this._bufferBounce--;
+            }
+        }
+        if (this._distanceY > 42 || this._distanceY < -42){
+            this._distanceY = 0;
+            if(this._bufferBounce==0){
+                this.ChangeDirHor();
+            }
+            else{
+                this._bufferBounce--;
+            }
+        }
+        // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+        //     this._animWalk.paused=false;
+        //     }
+
+        }
     }
 
-    if (this._distanceX > 42 || this._distanceX < -42){
-        this._distanceX = 0;
-        if(this._bufferBounce==0){
-            this.ChangeDirVer();
-        }
-        else{
-            this._bufferBounce--;
-        }
-    }
-    if (this._distanceY > 42 || this._distanceY < -42){
-        this._distanceY = 0;
-        if(this._bufferBounce==0){
-            this.ChangeDirHor();
-        }
-        else{
-            this._bufferBounce--;
-        }
-    }
-    // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
-    //     this._animWalk.paused=false;
-    //     }
-    }
     Enemy.prototype.CheckChange = function() {
         //this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
         //this._distanceYtoPlayer=Math.abs(this._player.y) - Math.abs(this.y);
@@ -253,6 +258,7 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
     this._MovementEnable=true;
+    this._AutomaticMovement=false;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -472,8 +478,9 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     Player.prototype.update = function() {
         if (this._MovementEnable)
             this.Input();
-        else
+        else if(this._AutomaticMovement)
             this.AutomaticMovement();
+
     }
     Player.prototype.AutomaticMovement = function() {
         
@@ -494,7 +501,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 this.width=-this.width;
             if(this.angle!=0)
                 this.angle=0;
-            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse       
+            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse
+            this._AutomaticMovement=false;      
         }
     }
     Player.prototype.PlayerRock = function() {
@@ -678,7 +686,8 @@ var paredDerecha, paredSuperior;
 
 var GrupoEnemigos;
 
-var puntuacion;
+var puntuacion=0;
+var vidas=3;
 
 var playerMusic;
 
@@ -730,20 +739,12 @@ var PlayScene = {
 
         GrupoEnemigos = this.game.add.physicsGroup();
         
-        /*
-        //CREAMOS LA MATRIZ DE 12 * 12.       
-        //Los saltos entre cuadrados son de  43 uds.
-        */
-        var cont=0;
-        var ContHuec=0;
-        var enemigos=1;
-        var hueco=false;
-        var h=false;
-        var v=false;
-
         var posX;
         var posy;
 
+        var cont=0;
+        //CREAMOS LA MATRIZ DE 12 * 12.       
+        //Los saltos entre cuadrados son de  43 uds.
         for(var i = 0; i < limiteDerecho; i += 43)
         {           
             for(var j = 83; j < 600; j += 43) //84
@@ -814,14 +815,6 @@ var PlayScene = {
                             //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
                         }
                     }
-                    
-                
-                
-                
-                if(ContHuec>0)
-                    ContHuec--;
-                else
-                    h=false;
             }
             cont++;
         }
@@ -854,11 +847,17 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
 
+            //COLISION ROCAS CON ENEMIGOS Y PLAYER
+            this.game.physics.arcade.collide(roca, GrupoEnemigos, onCollisionAplasta);
+            this.game.physics.arcade.collide(roca, player, onCollisionAplasta);
+
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+
+
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
@@ -892,6 +891,19 @@ function onCollisionEnemyTierra(obj1,obj2){
     }
 }
 
+function onCollisionAplasta(obj1, obj2){
+    if(obj2._Falling){
+        obj1._MovementEnable=false;
+        obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+        if(obj1.angle!=0)
+            obj1.angle=0;
+        
+        obj2.addChild(obj1);
+        obj1.x=20;
+        obj1.y=35;
+    }
+}
+
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
 
@@ -911,7 +923,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
         }
     }
      else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
-         if (obj1._Movingup || obj1._dirY == -1) {
+         if (obj1._Movingup) {
              obj1._Enableup = false;
          }
     }

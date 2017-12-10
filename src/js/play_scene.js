@@ -22,7 +22,8 @@ var paredDerecha, paredSuperior;
 
 var GrupoEnemigos;
 
-var puntuacion;
+var puntuacion=0;
+var vidas=3;
 
 var playerMusic;
 
@@ -74,20 +75,12 @@ var PlayScene = {
 
         GrupoEnemigos = this.game.add.physicsGroup();
         
-        /*
-        //CREAMOS LA MATRIZ DE 12 * 12.       
-        //Los saltos entre cuadrados son de  43 uds.
-        */
-        var cont=0;
-        var ContHuec=0;
-        var enemigos=1;
-        var hueco=false;
-        var h=false;
-        var v=false;
-
         var posX;
         var posy;
 
+        var cont=0;
+        //CREAMOS LA MATRIZ DE 12 * 12.       
+        //Los saltos entre cuadrados son de  43 uds.
         for(var i = 0; i < limiteDerecho; i += 43)
         {           
             for(var j = 83; j < 600; j += 43) //84
@@ -158,14 +151,6 @@ var PlayScene = {
                             //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
                         }
                     }
-                    
-                
-                
-                
-                if(ContHuec>0)
-                    ContHuec--;
-                else
-                    h=false;
             }
             cont++;
         }
@@ -198,11 +183,17 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
 
+            //COLISION ROCAS CON ENEMIGOS Y PLAYER
+            this.game.physics.arcade.collide(roca, GrupoEnemigos, onCollisionAplasta);
+            this.game.physics.arcade.collide(roca, player, onCollisionAplasta);
+
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+
+
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright) playerMusic.resume();
         else playerMusic.pause();
@@ -236,6 +227,19 @@ function onCollisionEnemyTierra(obj1,obj2){
     }
 }
 
+function onCollisionAplasta(obj1, obj2){
+    if(obj2._Falling){
+        obj1._MovementEnable=false;
+        obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+        if(obj1.angle!=0)
+            obj1.angle=0;
+        
+        obj2.addChild(obj1);
+        obj1.x=20;
+        obj1.y=35;
+    }
+}
+
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
 
@@ -255,7 +259,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
         }
     }
      else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
-         if (obj1._Movingup || obj1._dirY == -1) {
+         if (obj1._Movingup) {
              obj1._Enableup = false;
          }
     }

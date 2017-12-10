@@ -11,6 +11,7 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
     this._MovementEnable=true;
+    this._AutomaticMovement=false;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -230,8 +231,9 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     Player.prototype.update = function() {
         if (this._MovementEnable)
             this.Input();
-        else
+        else if(this._AutomaticMovement)
             this.AutomaticMovement();
+
     }
     Player.prototype.AutomaticMovement = function() {
         
@@ -252,7 +254,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 this.width=-this.width;
             if(this.angle!=0)
                 this.angle=0;
-            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse       
+            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse
+            this._AutomaticMovement=false;      
         }
     }
     Player.prototype.PlayerRock = function() {
