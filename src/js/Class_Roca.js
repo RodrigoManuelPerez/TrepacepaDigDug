@@ -56,6 +56,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
             if(!this._HasFallen){
                 this._Falling = true;
                 this._timer.stop();
+
             }
         }
         function BreakRock(){

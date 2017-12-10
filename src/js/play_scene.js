@@ -26,6 +26,11 @@ var puntuacion;
 
 var playerMusic;
 
+var RocasCaidas=0;
+
+var Vegetable;
+var PosVegetable = new Par(258, 298);
+
 var PlayScene = {
     create: function() {
 
@@ -115,7 +120,7 @@ var PlayScene = {
                 }
                 if(!((i==215 && j==298) || (i==258 && j==298))){
                     //TIERRA VERTICAL
-                    if (cont<11){
+                    if (cont<12){
                         var PosTierraV = new Par(i+40, j);
                         var VelTierraV = new Par(0, 0);
                         var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
@@ -170,17 +175,13 @@ var PlayScene = {
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
         paredDerecha.anchor.x = 0;
         paredDerecha.anchor.y = 0;
+        paredDerecha.visible=false;
         paredSuperior = new Phaser.Sprite(this.game, 0, 0, 'latSup')
         paredSuperior.anchor.x = 0;
         paredSuperior.anchor.y = 0;
         paredSuperior.visible=false;
         this.game.world.addChild(paredDerecha);
-        this.game.world.addChild(paredSuperior);
-
-        //paredDerecha.visible=false;
-        //paredSuperior.visible=false;
-
-          
+        this.game.world.addChild(paredSuperior);          
     
     },
     update: function(){
@@ -218,19 +219,27 @@ function onCollisionEnemyTierra(obj1,obj2){
     if(obj1._id=='tierra')
         obj2.ChangeDirTierra();
     else if(obj1._id=='tierraH'){
-        console.debug('H');
-        obj2.ChangeDirHor();
+        if(obj2._bufferBounce==0)
+            obj2.ChangeDirHor();
+        else{
+            obj2.ChangeDirTierra();
+            obj2._bufferBounce--;
+        }
     }
     else if(obj1._id=='tierraV'){
-        console.debug('V');
-        obj2.ChangeDirVer();
+        if(obj2._bufferBounce==0)
+            obj2.ChangeDirVer();
+        else{
+            obj2.ChangeDirTierra();
+            obj2._bufferBounce--;
+        }
     }
 }
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
 
-    if ((obj1.x-20 == obj2.x && obj1.y<obj2.y+21)||(obj1.x-20 > obj2.x && obj1.y==obj2.y+21)||(obj1.x-20 < obj2.x && obj1.y==obj2.y+21)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+    if ((obj1.x-20 == obj2.x && obj1.y<obj2.y+21)||(obj1.x-20 > obj2.x && obj1.y==obj2.y+21)||(obj1.x-20 < obj2.x && obj1.y==obj2.y+21)/*||(obj1.x-20 == obj2.x && obj1.y>obj2.y+58)*/){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
@@ -244,13 +253,11 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._Enabledown = false;
             obj1._dirY = -1
         }
-
     }
-    else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
-        if (obj1._Movingup) {
-            obj1._Enableup = false;
-            obj1._dirY = 1
-        }
+     else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
+         if (obj1._Movingup || obj1._dirY == -1) {
+             obj1._Enableup = false;
+         }
     }
     else {
         obj2.EnableFall();

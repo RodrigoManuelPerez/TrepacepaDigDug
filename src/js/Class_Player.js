@@ -192,27 +192,17 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 this.width=-this.width;
             if(this.angle!=90)
                 this.angle=90;
-            // if(this.angle!=90)
-            //     this.angle=90;
         }
         else if (this._dirX == 1) {
             if(this.x < this._LimiteDerecho - 20){
                 this.x += 1;
                 this._distanceX += 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width>0)
-                //     this.width=-this.width;
             }
         }
         else if (this._dirX == -1) {
             if(this.x > 2) {
                 this.x -= 1;
                 this._distanceX -= 1;
-                // if(this.angle!=0)
-                //     this.angle=0;
-                // if(this.width<0)
-                //     this.width=-this.width;
             }
         }
     }
