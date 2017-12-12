@@ -8,10 +8,11 @@ var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
+var Hook = require('./Class_Hook.js');
 
 
 var player;
-var arma;
+var Hook;
 var cursors;
 var limiteDerecho;
 var limiteSuperior;
@@ -48,21 +49,24 @@ var PlayScene = {
         limiteDerecho = 513;
         limiteSuperior = 44;
 
-
-        //Arma DigDag
-        //Arma = 
-
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
 
-        //Cualidad de la posicion del player
+        //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking');
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
         this.game.world.addChild(player); 
 
+        //Construyo el arma que ahora pasa a ser de tipo Hook
+        var PosHook = new Par(0,0);
+        Hook = new Hook(this.game,PosHook,'Gancho','Hook',player); //Le pongo una referencia sobre quien es su padre para que pueda influencia sobre él
+        this.game.physics.enable(Hook, Phaser.Physics.ARCADE);
+        player.anchor.x = 0.5;
+        player.anchor.y = 0.5;
+        player.addChild(Hook);
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -70,7 +74,7 @@ var PlayScene = {
         tierraH = this.game.add.physicsGroup();
         //Poner fisicas a la tierra vertical.
         tierraV = this.game.add.physicsGroup();
-
+        //Grupo de las rocas
         roca = this.game.add.physicsGroup();
 
         GrupoEnemigos = this.game.add.physicsGroup();
@@ -104,10 +108,10 @@ var PlayScene = {
 
                     var PosEne = new Par(i+20,j+20);
                     var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
-                    this.game.physics.arcade.enable(enemigo);
+                    this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
                     enemigo.anchor.x = 0.5;
                     enemigo.anchor.y = 0.5;
-                    this.game.world.addChild(enemigo);
+                    //this.game.world.addChild(enemigo);
                     GrupoEnemigos.add(enemigo);
                 
                 }
@@ -231,13 +235,21 @@ function onCollisionEnemyTierra(obj1,obj2){
 
 function onCollisionAplasta(obj1, obj2){
     if(obj2._Falling){
+        if(obj1._id=='Player')  //Si el objeto es el digdug es necesario para su movimiento y asi pausar la cancion
+        {
+            obj1._Movingdown=false;     //Pongo todas las variables que dicen que se esta moviendo el player a false
+            obj1._Movingleft=false;
+            obj1._Movingright=false;
+            obj1._Movingup=false;
+        }
+        
         obj1._MovementEnable=false;
         obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         if(obj1.angle!=0)
             obj1.angle=0;
         
-        obj2.addChild(obj1);
-        obj1.x=20;
+        obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
+        obj1.x=20;              //En la posicion correcta
         obj1.y=35;
     }
 }

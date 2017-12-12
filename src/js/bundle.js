@@ -167,7 +167,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     }
 
 module.exports = Enemy;
-},{"./Class_Movable.js":4}],2:[function(require,module,exports){
+},{"./Class_Movable.js":5}],2:[function(require,module,exports){
 'use strict';
 
 var Enemy = require('./Class_Enemy.js');
@@ -217,6 +217,81 @@ module.exports = GameObject;
 
 var GameObject = require('./Class_GameObject.js');
 
+var Hook = function(game, position, sprite,id, player){
+    
+    GameObject.apply(this, [game ,position, sprite, id]);
+    
+        //this.animations.add('Shaking', [0, 1], 5, true);
+        //this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
+        //this._animShake.play(5,true);
+
+        this._Thrown = false;       //Denota el estado de si está lanzado o recogido por DigDug
+        this._Hooked = false;       //Denota cuando el gancho ha codigo a un enemigo
+        this._Distance=0;           //Distancia recorrida por el gancho
+        this._MaxDistance=43*3;     //Distancia máxima que puede recorrer
+        /*this._HasFallen = false;
+        this._FallEnable = false;
+        this._timer = this.game.time.create(false);*/
+        }
+    
+        Hook.prototype = Object.create(GameObject.prototype);
+        Hook.prototype.constructor = Hook;
+    
+        Hook.prototype.update=function(){
+
+            if(this._Hooked)        //Coloco primero el estado de enganchado porque es el que tiene prioridad
+            {
+
+            }
+            else if(this._Thrown)    //Cuando el gancho está volando
+            {
+
+            }
+            else                //Cuando el gancho está quiero en dig dug
+            {
+                //En verdad se queda en la posicion sin mas, posicion hija del player en el 0 0 aprox
+            }
+
+        }
+    
+        Hook.prototype.Para=function() {
+            
+            this.animations.stop('Shaking');
+            this.animations.play('Breaking');
+            this._Falling = false;
+            this._HasFallen = true;
+            this._timer.loop(4000,BreakRock,this);
+            this._timer.start();
+    
+            this.body.enable=false;
+            //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
+            // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
+            
+        }
+    
+        Hook.prototype.EnableFall=function() {
+            this.animations.play('Shaking');
+            this._timer.loop(2000,Fall,this);
+            this._timer.start();
+        }
+    
+        function Fall() {
+            if(!this._HasFallen){
+                this._Falling = true;
+                this._timer.stop();
+
+            }
+        }
+        function BreakRock(){
+            this.Destroy();
+        }
+
+module.exports = Hook;
+},{"./Class_GameObject.js":3}],5:[function(require,module,exports){
+'use strict';
+
+var GameObject = require('./Class_GameObject.js');
+
 var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
     
     GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
@@ -244,21 +319,28 @@ var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior
     Movable.prototype.constructor = Movable;
 
 module.exports = Movable;
-},{"./Class_GameObject.js":3}],5:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],6:[function(require,module,exports){
 'use strict';
 
 var Movable = require('./Class_Movable.js');
+var GO = require('./Class_GameObject.js');
 
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet, Hook){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
-    this._MovementEnable=true;
+    //this._MovementEnable=true;    NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
+
+    this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
+    this._Hooking=false;  //LANZANDO EL GANCHO
+    this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -461,6 +543,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Movingdown = false;
     }
 
+    if (this._HookThrow.isDown && !this._Hooking){
+        if(this._MovementEnable)
+            this._MovementEnable=false;
+        if(!this._Hooking)
+            this._Hooking=true;
+    }
+
     if (this._distanceX > 42 || this._distanceX < -42)
         this._distanceX = 0;
     if (this._distanceY > 42 || this._distanceY < -42)
@@ -510,7 +599,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
 module.exports = Player;
-},{"./Class_Movable.js":4}],6:[function(require,module,exports){
+},{"./Class_GameObject.js":3,"./Class_Movable.js":5}],7:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -577,7 +666,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
         }
 
 module.exports = Roca;
-},{"./Class_GameObject.js":3}],7:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],8:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -598,14 +687,14 @@ var Vegetal = function(game, position, sprite,id, puntos){
     }
 
 module.exports = Vegetal;
-},{"./Class_GameObject.js":3}],8:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],9:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
 
 var BootScene = {
   preload: function () {
-    this.game.load.image('preloader_bar', 'images/preloader_bar.png');
+    //this.game.load.image('preloader_bar', 'images/preloader_bar.png');
   },
 
   create: function () {
@@ -616,9 +705,10 @@ var BootScene = {
 
 var PreloaderScene = {
   preload: function () {
-     this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
-     this.loadingBar.anchor.setTo(0, 0.5);
-     this.load.setPreloadSprite(this.loadingBar);
+     
+    //this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
+    //this.loadingBar.anchor.setTo(0, 0.5);
+    //this.load.setPreloadSprite(this.loadingBar);
     
 
     this.game.load.baseURL = 'https://rodrigomanuelperez.github.io/TrepacepaDigDug/src/';
@@ -661,7 +751,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./play_scene.js":9}],9:[function(require,module,exports){
+},{"./play_scene.js":10}],10:[function(require,module,exports){
 
 'use strict';
 
@@ -672,10 +762,11 @@ var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
+var Hook = require('./Class_Hook.js');
 
 
 var player;
-var arma;
+var Hook;
 var cursors;
 var limiteDerecho;
 var limiteSuperior;
@@ -712,21 +803,24 @@ var PlayScene = {
         limiteDerecho = 513;
         limiteSuperior = 44;
 
-
-        //Arma DigDag
-        //Arma = 
-
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
 
-        //Cualidad de la posicion del player
+        //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking');
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
         this.game.world.addChild(player); 
 
+        //Construyo el arma que ahora pasa a ser de tipo Hook
+        var PosHook = new Par(0,0);
+        Hook = new Hook(this.game,PosHook,'Gancho','Hook',player); //Le pongo una referencia sobre quien es su padre para que pueda influencia sobre él
+        this.game.physics.enable(Hook, Phaser.Physics.ARCADE);
+        player.anchor.x = 0.5;
+        player.anchor.y = 0.5;
+        player.addChild(Hook);
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -734,7 +828,7 @@ var PlayScene = {
         tierraH = this.game.add.physicsGroup();
         //Poner fisicas a la tierra vertical.
         tierraV = this.game.add.physicsGroup();
-
+        //Grupo de las rocas
         roca = this.game.add.physicsGroup();
 
         GrupoEnemigos = this.game.add.physicsGroup();
@@ -768,10 +862,10 @@ var PlayScene = {
 
                     var PosEne = new Par(i+20,j+20);
                     var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
-                    this.game.physics.arcade.enable(enemigo);
+                    this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
                     enemigo.anchor.x = 0.5;
                     enemigo.anchor.y = 0.5;
-                    this.game.world.addChild(enemigo);
+                    //this.game.world.addChild(enemigo);
                     GrupoEnemigos.add(enemigo);
                 
                 }
@@ -895,13 +989,21 @@ function onCollisionEnemyTierra(obj1,obj2){
 
 function onCollisionAplasta(obj1, obj2){
     if(obj2._Falling){
+        if(obj1._id=='Player')  //Si el objeto es el digdug es necesario para su movimiento y asi pausar la cancion
+        {
+            obj1._Movingdown=false;     //Pongo todas las variables que dicen que se esta moviendo el player a false
+            obj1._Movingleft=false;
+            obj1._Movingright=false;
+            obj1._Movingup=false;
+        }
+        
         obj1._MovementEnable=false;
         obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         if(obj1.angle!=0)
             obj1.angle=0;
         
-        obj2.addChild(obj1);
-        obj1.x=20;
+        obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
+        obj1.x=20;              //En la posicion correcta
         obj1.y=35;
     }
 }
@@ -981,4 +1083,4 @@ function Par (x, y) {
     this._x = x;
     this._y = y;
 }
-},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Movable.js":4,"./Class_Player.js":5,"./Class_Roca.js":6,"./Class_Vegetal.js":7}]},{},[8]);
+},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);

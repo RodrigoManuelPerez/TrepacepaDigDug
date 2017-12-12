@@ -1,17 +1,24 @@
 'use strict';
 
 var Movable = require('./Class_Movable.js');
+var GO = require('./Class_GameObject.js');
 
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet, Hook){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
-    this._MovementEnable=true;
+    //this._MovementEnable=true;    NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
+
+    this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
+    this._Hooking=false;  //LANZANDO EL GANCHO
+    this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -212,6 +219,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Movingright = false;
         this._Movingup = false;
         this._Movingdown = false;
+    }
+
+    if (this._HookThrow.isDown && !this._Hooking){
+        if(this._MovementEnable)
+            this._MovementEnable=false;
+        if(!this._Hooking)
+            this._Hooking=true;
     }
 
     if (this._distanceX > 42 || this._distanceX < -42)
