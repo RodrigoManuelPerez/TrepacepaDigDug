@@ -1,5 +1,5 @@
 
-'use strict';
+ 'use strict';
 
 var GO = require('./Class_GameObject.js');
 var Roca = require('./Class_Roca.js');
@@ -24,6 +24,10 @@ var paredDerecha, paredSuperior;
 var GrupoEnemigos;
 
 var puntuacion=0;
+var scoreTextA, scoreTextB, score;
+var maxPuntuacion, highScoreText;
+var scoreStringA = '';
+var scoreStringB = '';
 var vidas=3;
 
 var playerMusic;
@@ -48,6 +52,15 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
+        
+        //Control de puntuaciones
+        scoreStringA = 'HI -';
+        scoreStringB = ' SCORE';
+        scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Wingdings', fill: '#fff' });
+        scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Wingdings', fill: '#fff' });
+            // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
+        score = this.game.add.text(599, 259, puntuacion, { font: '34px Times New Roman', fill: '#fff' });
+        highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -170,7 +183,7 @@ var PlayScene = {
         paredSuperior.anchor.y = 0;
         paredSuperior.visible=false;
         this.game.world.addChild(paredDerecha);
-        this.game.world.addChild(paredSuperior);          
+        this.game.world.addChild(paredSuperior);   
     
     },
     update: function(){
@@ -196,7 +209,12 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
-
+        //PUNTUACION
+        highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
+            if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
+                localStorage.setItem("flappymaxPuntuacion", puntuacion);
+            }
+        }
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -289,17 +307,21 @@ function onCollisionTierra (obj1, obj2){
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+2;
                 obj2.width = obj2.width-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 2;
                 obj2.height = obj2.height-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-2;
+                sumaPuntos(1);
             }
             if (obj2.width<4 || obj2.height<4)
                 obj2.Destroy();
@@ -329,3 +351,8 @@ function Par (x, y) {
     this._x = x;
     this._y = y;
 }
+
+function sumaPuntos (x) {
+    puntuacion += x;
+    score.text = puntuacion;
+} 
