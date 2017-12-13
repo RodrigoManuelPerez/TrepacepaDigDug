@@ -688,8 +688,10 @@ var paredDerecha, paredSuperior;
 var GrupoEnemigos;
 
 var puntuacion=0;
-var scoreText, score;
-var scoreString = '';
+var scoreTextA, scoreTextB, score;
+var maxPuntuacion, highScoreText;
+var scoreStringA = '';
+var scoreStringB = '';
 var vidas=3;
 
 var playerMusic;
@@ -716,10 +718,13 @@ var PlayScene = {
         limiteSuperior = 44;
         
         //Control de puntuaciones
-        scoreString = 'HI-\n   SCORE';
-        scoreText = this.game.add.text(599, 44, scoreString, { font: '34px Wingdings', fill: '#fff' }); 
+        scoreStringA = 'HI -';
+        scoreStringB = ' SCORE';
+        scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Wingdings', fill: '#fff' });
+        scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Wingdings', fill: '#fff' });
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-        score = this.game.add.text(599, 130, puntuacion, { font: '34px Times New Roman', fill: '#fff' }); 
+        score = this.game.add.text(599, 259, puntuacion, { font: '34px Times New Roman', fill: '#fff' });
+        highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
 
         //Arma DigDag
         //Arma = 
@@ -865,6 +870,11 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
         //PUNTUACION
+        highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
+            if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
+                localStorage.setItem("flappymaxPuntuacion", puntuacion);
+            }
+        }
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
