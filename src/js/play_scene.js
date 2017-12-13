@@ -1,5 +1,5 @@
 
-'use strict';
+ 'use strict';
 
 var GO = require('./Class_GameObject.js');
 var Roca = require('./Class_Roca.js');
@@ -8,6 +8,7 @@ var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
+//var Canvas = require('./Canvas.js');
 
 
 var player;
@@ -23,6 +24,8 @@ var paredDerecha, paredSuperior;
 var GrupoEnemigos;
 
 var puntuacion=0;
+var scoreText, score;
+var scoreString = '';
 var vidas=3;
 
 var playerMusic;
@@ -47,7 +50,12 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
-
+        
+        //Control de puntuaciones
+        scoreString = 'HI-\n   SCORE';
+        scoreText = this.game.add.text(599, 44, scoreString, { font: '34px Wingdings', fill: '#fff' }); 
+            // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
+        score = this.game.add.text(599, 130, puntuacion, { font: '34px Times New Roman', fill: '#fff' }); 
 
         //Arma DigDag
         //Arma = 
@@ -166,7 +174,7 @@ var PlayScene = {
         paredSuperior.anchor.y = 0;
         paredSuperior.visible=false;
         this.game.world.addChild(paredDerecha);
-        this.game.world.addChild(paredSuperior);          
+        this.game.world.addChild(paredSuperior);   
     
     },
     update: function(){
@@ -192,7 +200,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
-
+        //PUNTUACION
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -277,17 +285,21 @@ function onCollisionTierra (obj1, obj2){
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+2;
                 obj2.width = obj2.width-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 2;
                 obj2.height = obj2.height-2;
+                sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-2;
+                sumaPuntos(1);
             }
             if (obj2.width<4 || obj2.height<4)
                 obj2.Destroy();
@@ -317,3 +329,8 @@ function Par (x, y) {
     this._x = x;
     this._y = y;
 }
+
+function sumaPuntos (x) {
+    puntuacion += x;
+    score.text = puntuacion;
+} 
