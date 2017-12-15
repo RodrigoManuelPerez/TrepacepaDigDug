@@ -210,11 +210,11 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
         //PUNTUACION
-        highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
-            if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
-                localStorage.setItem("flappymaxPuntuacion", puntuacion);
-            }
-        }
+        // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
+        //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
+        //         localStorage.setItem("flappymaxPuntuacion", puntuacion);
+        //     }
+        // }
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
