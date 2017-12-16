@@ -874,7 +874,7 @@ var PlayScene = {
                 }
                 else{   //Si estasmos en una fila impar
                     if(i%2==0){     //Si estamos en una columna par 
-                        if(row[i]=='2'){
+                        if(row[i]=='1'){
 
                             var PosTierraV = new Par(posX, posY-46);
                             var VelTierraV = new Par(0, 0);
@@ -905,9 +905,20 @@ var PlayScene = {
                         }
                         else if(row[i]=='4'){    //Bloque de Tierra + Roca
                             
-                            
+                            var PosTierra = new Par(posX-40, posY-43);
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+                            this.game.physics.arcade.enable(BloqTierra);
+                            BloqTierra.body.immovable = true;
+                            this.game.world.addChild(BloqTierra);
+                            tierra.add(BloqTierra);
 
-                            posX+=43;
+                            var PosRock = new Par(i, j-1);
+                            var Rock = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                            this.game.physics.arcade.enable(Coll); 
+                            
+                            roca.add(Coll);     //AÑADIMOS AL GRUPO
+
+                            
                         }
                         else if(row[i]=='5'){    //Enemigo
                             

@@ -172,15 +172,29 @@ var PlayScene = {
                         }
                         else if(row[i]=='4'){    //Bloque de Tierra + Roca
                             
-                            
+                            var PosTierra = new Par(posX-40, posY-43);
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+                            this.game.physics.arcade.enable(BloqTierra);
+                            BloqTierra.body.immovable = true;
+                            this.game.world.addChild(BloqTierra);
+                            tierra.add(BloqTierra);
 
-                            posX+=43;
+                            var PosRock = new Par(posX-40, posY-44);
+                            var Rock = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                            this.game.physics.arcade.enable(Coll); 
+                            roca.add(Coll);     //AÑADIMOS AL GRUPO
+                            
                         }
                         else if(row[i]=='5'){    //Enemigo
                             
-                            
+                            var PosEne = new Par(i+20,j+20);
+                            var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
+                            this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
+                            enemigo.anchor.x = 0.5;
+                            enemigo.anchor.y = 0.5;
+                            this.game.world.addChild(enemigo);
+                            GrupoEnemigos.add(enemigo);
 
-                            posX+=43;
                         }
                         else{
                             posX+=43;
@@ -226,7 +240,7 @@ var PlayScene = {
                     this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
                     enemigo.anchor.x = 0.5;
                     enemigo.anchor.y = 0.5;
-                    //this.game.world.addChild(enemigo);
+                    this.game.world.addChild(enemigo);
                     GrupoEnemigos.add(enemigo);
                 
                 }
