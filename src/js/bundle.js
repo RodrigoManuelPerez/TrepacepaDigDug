@@ -929,9 +929,6 @@ var PlayScene = {
                             GrupoEnemigos.add(enemigo);
 
                         }
-                        else{
-                            posX+=43;
-                        }
                     }
                 }
             }
