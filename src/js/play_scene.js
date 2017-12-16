@@ -160,7 +160,31 @@ var PlayScene = {
                     }
                     else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
                     {
+                        if(row[i]=='3'){    //Bloque de Tierra
+                            
+                            var PosTierra = new Par(posX-40, posY-43);
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+                            this.game.physics.arcade.enable(BloqTierra);
+                            BloqTierra.body.immovable = true;
+                            this.game.world.addChild(BloqTierra);
+                            tierra.add(BloqTierra);
 
+                        }
+                        else if(row[i]=='4'){    //Bloque de Tierra + Roca
+                            
+                            
+
+                            posX+=43;
+                        }
+                        else if(row[i]=='5'){    //Enemigo
+                            
+                            
+
+                            posX+=43;
+                        }
+                        else{
+                            posX+=43;
+                        }
                     }
                 }
             }
