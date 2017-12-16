@@ -141,7 +141,7 @@ var PlayScene = {
                 }
                 else{   //Si estasmos en una fila impar
                     if(i%2==0){     //Si estamos en una columna par 
-                        if(row[i]=='1'){
+                        if(row[i]=='2'){
 
                             var PosTierraV = new Par(posX, posY-46);
                             var VelTierraV = new Par(0, 0);
