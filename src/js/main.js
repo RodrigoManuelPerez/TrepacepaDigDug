@@ -36,10 +36,18 @@ var PreloaderScene = {
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
-    this.game.load.image('tierra', 'images/TierraC.png');
-    this.game.load.image('tierraH', 'images/LaminaTierra.png');
-    this.game.load.image('tierraV', 'images/LaminaTierraV.png');
-    //this.game.load.image('Roca', 'images/RocaC.png');
+
+    this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
+    this.game.load.image('tierraHSuperficie', 'images/LaminaTierraSuperficial.png');
+    this.game.load.image('tierraVSuperficie', 'images/LaminaTierraVSuperficial.png');
+
+    this.game.load.image('tierraIntermedia', 'images/TierraCIntermedia.png');
+    this.game.load.image('tierraHIntermedia', 'images/LaminaTierraIntermedia.png');
+    this.game.load.image('tierraVIntermedia', 'images/LaminaTierraVIntermedia.png');
+
+    this.game.load.image('tierraInferior', 'images/TierraCInferior.png');
+    this.game.load.image('tierraHInferior', 'images/LaminaTierraInferior.png');
+    this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
     this.game.load.image('Slime', 'images/Slime.png');
 

@@ -703,10 +703,18 @@ var PreloaderScene = {
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
-    this.game.load.image('tierra', 'images/TierraC.png');
-    this.game.load.image('tierraH', 'images/LaminaTierra.png');
-    this.game.load.image('tierraV', 'images/LaminaTierraV.png');
-    //this.game.load.image('Roca', 'images/RocaC.png');
+
+    this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
+    this.game.load.image('tierraHSuperficie', 'images/LaminaTierraSuperficial.png');
+    this.game.load.image('tierraVSuperficie', 'images/LaminaTierraVSuperficial.png');
+
+    this.game.load.image('tierraIntermedia', 'images/TierraCIntermedia.png');
+    this.game.load.image('tierraHIntermedia', 'images/LaminaTierraIntermedia.png');
+    this.game.load.image('tierraVIntermedia', 'images/LaminaTierraVIntermedia.png');
+
+    this.game.load.image('tierraInferior', 'images/TierraCInferior.png');
+    this.game.load.image('tierraHInferior', 'images/LaminaTierraInferior.png');
+    this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
     this.game.load.image('Slime', 'images/Slime.png');
 
@@ -859,7 +867,13 @@ var PlayScene = {
                         if(row[i]=='2'){
 
                             var PosTierraH = new Par(posX, posY-3);
-                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                            if(j<9)
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHSuperficie','tierraH');
+                            else if(j<17)
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHIntermedia','tierraH');
+                            else 
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHInferior','tierraH');
+
                             this.game.physics.arcade.enable(BloqTierraH);
                             BloqTierraH.body.immovable = true;
                             this.game.world.addChild(BloqTierraH);
@@ -878,8 +892,13 @@ var PlayScene = {
 
                             var PosTierraV = new Par(posX, posY-46);
                             var VelTierraV = new Par(0, 0);
-                            //AQUI PODEMOS PONER QUE SEGUN EL FILA SE COJA UN SPRITE U OTRO
-                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+
+                            if(j<9)
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVSuperficie', 'tierraV');
+                            else if(j<17)
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVIntermedia', 'tierraV'); 
+                            else
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVInferior', 'tierraV');  
                             this.game.physics.arcade.enable(BloqTierraV);
                             BloqTierraV.body.immovable = true;
                             this.game.world.addChild(BloqTierraV);
@@ -896,7 +915,14 @@ var PlayScene = {
                         if(row[i]=='3'){    //Bloque de Tierra
                             
                             var PosTierra = new Par(posX-40, posY-43);
-                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+
+                            if(j<9)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            else if(j<17)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            else
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+                            
                             this.game.physics.arcade.enable(BloqTierra);
                             BloqTierra.body.immovable = true;
                             this.game.world.addChild(BloqTierra);
@@ -906,7 +932,14 @@ var PlayScene = {
                         else if(row[i]=='4'){    //Bloque de Tierra + Roca
                             
                             var PosTierra = new Par(posX-40, posY-43);
-                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+                            
+                            if(j<9)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            else if(j<17)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            else
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+
                             this.game.physics.arcade.enable(BloqTierra);
                             BloqTierra.body.immovable = true;
                             this.game.world.addChild(BloqTierra);
