@@ -8,6 +8,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
+    this._posOriginal = position;
 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
@@ -68,39 +69,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
         }
     }
 
-    Enemy.prototype.CheckChange = function() {
-        //this._distanceXtoPlayer=Math.abs(this._player.x) - Math.abs(this.x);
-        //this._distanceYtoPlayer=Math.abs(this._player.y) - Math.abs(this.y);
-        //if(this._distanceXtoPlayer > this._distanceYtoPlayer){}
-    }
-
-    Enemy.prototype.Right = function() {
-        this._Movingright=true;
-        this._Movingleft=false;
-        this._Movingup=false;
-        this._Movingdown=false;
-    }
-
-    Enemy.prototype.Left = function() {
-        this._Movingright=false;
-        this._Movingleft=true;
-        this._Movingup=false;
-        this._Movingdown=false;
-    }
-
-    Enemy.prototype.Up = function() {
-        this._Movingright=false;
-        this._Movingleft=false;
-        this._Movingup=true;
-        this._Movingdown=false;
-    }
-
-    Enemy.prototype.Down = function() {
-        this._Movingright=false;
-        this._Movingleft=false;
-        this._Movingup=false;
-        this._Movingdown=true;
-    }
 
 
     Enemy.prototype.ChangeDirHor = function() {
@@ -163,6 +131,11 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
             this._Movingup=true;
             this._Movingdown=false;
         }
+    }
+
+    Enemy.prototype.resetPos = function() {
+        this.x=this._posOriginal.x;
+        this.y=this._posOriginal.y;
     }
 
 module.exports = Enemy;

@@ -11,8 +11,10 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
-    //this._MovementEnable=true;    NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
+    this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
+
+    this._Hook = Hook;
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
@@ -221,12 +223,15 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Movingdown = false;
     }
 
-    if (this._HookThrow.isDown && !this._Hooking){
-        if(this._MovementEnable)
+    //PARTE DEL GANCHO QUE VA A HABER QUE CAMBIAR
+
+    /*if (this._HookThrow.isDown && !this._Hooking){
+        if(this._MovementEnable){
             this._MovementEnable=false;
-        if(!this._Hooking)
-            this._Hooking=true;
-    }
+            //Pasamos al estado de lanzando con un solo frame
+            console.debug(this._Hook._id);
+        }
+    }*/
 
     if (this._distanceX > 42 || this._distanceX < -42)
         this._distanceX = 0;

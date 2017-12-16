@@ -17,9 +17,11 @@ var cursors;
 var limiteDerecho;
 var limiteSuperior;
 var tierra, tierraH, tierraV;
-var roca, rocaColl;
+var roca, rocasCaidas, rocasParaVegetal, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
+
+var mapa;
 
 var GrupoEnemigos;
 
@@ -30,6 +32,10 @@ var scoreStringA = '';
 var scoreStringB = '';
 var vidas=3;
 
+var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+
+//DEL MISMO MODO PODEMOS CREAR UN VECTOR DE STRUCTS DONDE CADA STRUCT REPRESENTA UN NIVEL Y CADA PARTE DEL STRUCT LOS COLORES DEL MAPA
+
 var playerMusic;
 
 var RocasCaidas=0;
@@ -38,6 +44,12 @@ var Vegetable;
 var PosVegetable = new Par(258, 298);
 
 var PlayScene = {
+
+    preload: function(){
+        //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
+        this.load.text('level0', 'levels/level0.json');
+    },
+
     create: function() {
 
         //MUSICA PARA EL PLAYER AL MOVERSE
@@ -52,6 +64,11 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
+
+        //Rocas para vegetal
+        rocasParaVegetal=2;
+        rocasCaidas=0;
+        VegetalGenerado=false;
         
         //Control de puntuaciones
         scoreStringA = 'HI -';
@@ -67,19 +84,22 @@ var PlayScene = {
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
         this.game.world.addChild(player); 
 
-        //Construyo el arma que ahora pasa a ser de tipo Hook
-        var PosHook = new Par(0,0);
+        //Construyo el arma que ahora pasa a ser de tipo Hook   VER COMO HACERLO BIEN
+        var PosHook = new Par(5,10);
         Hook = new Hook(this.game,PosHook,'Gancho','Hook',player); //Le pongo una referencia sobre quien es su padre para que pueda influencia sobre él
         this.game.physics.enable(Hook, Phaser.Physics.ARCADE);
-        player.anchor.x = 0.5;
-        player.anchor.y = 0.5;
+        Hook.anchor.x = 1;
+        Hook.anchor.y = 1;
+    
+        player.Hook=Hook;
         player.addChild(Hook);
+
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -89,10 +109,40 @@ var PlayScene = {
         tierraV = this.game.add.physicsGroup();
         //Grupo de las rocas
         roca = this.game.add.physicsGroup();
-
+        //Grupo de los enemigos
         GrupoEnemigos = this.game.add.physicsGroup();
         
-        var posX;
+        this.game.mapa = JSON.parse(this.game.cache.getText('level0'));
+
+        var posX=-3, posY=83;
+
+        for (var j = 0; j < 25; j++){
+            for (var i = 0; i < 25; i++){
+
+                var row = this.game.mapa.map[j].row;
+                
+                if (j%2==0){   //Si estasmos en una fila par
+                    if(i%2!=0){     //Si estamos en una columna impar deberi
+                        if(row[i]=='2'){    //
+
+                            var PosTierraH = new Par(posX, posY-3);
+                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                            this.game.physics.arcade.enable(BloqTierraH);
+                            BloqTierraH.body.immovable = true;
+                            this.game.world.addChild(BloqTierraH);
+                            tierraH.add(BloqTierraH);
+
+                            posX+=40;
+                        }
+                    }
+                }
+                
+
+            }
+        }
+
+
+        /*var posX;
         var posy;
 
         var cont=0;
@@ -103,7 +153,7 @@ var PlayScene = {
             for(var j = 83; j < 600; j += 43) //84
             {
                
-                if(!((i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
+                if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
 
                         //TIERRA
                         var PosTierra = new Par(i, j);
@@ -117,7 +167,7 @@ var PlayScene = {
 
                     
                 }
-                else if(i==215 && j==298){
+                else if(i==129 && j==169){
 
                     var PosEne = new Par(i+20,j+20);
                     var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
@@ -128,10 +178,10 @@ var PlayScene = {
                     GrupoEnemigos.add(enemigo);
                 
                 }
-                if(!((i==215 && j==298) || (i==258 && j==298))){
+                if(!((i==129 && j==169) || (i==172 && j==169)||(i==215 && j==298) || (i==258 && j==298))){
                     //TIERRA VERTICAL
-                    if (cont<12){
-                        var PosTierraV = new Par(i+40, j);
+                    if (cont<14){
+                        var PosTierraV = new Par(i-3, j);
                         var VelTierraV = new Par(0, 0);
                         var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
                         
@@ -157,7 +207,7 @@ var PlayScene = {
                 
 
                     //ROCAS
-                    if(!((i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
+                    if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
                         var a = Math.random();
                         if (a<0.03 && i!=258){
                             var PosColl = new Par(i, j-1);
@@ -171,7 +221,7 @@ var PlayScene = {
             }
             cont++;
         }
-        this.game.world.add(roca);
+        this.game.world.add(roca);*/
 
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
@@ -209,6 +259,16 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+        //ROCAS CAIDAS
+        if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
+            Vegetable = new Vegetal(this.game,PosVegetable,'logo','vegetal',200);
+            VegetalGenerado=true;
+        }
+
+        if(VegetalGenerado){
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionEnemyTierra);
+        }
+
         //PUNTUACION
         // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
         //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
@@ -339,6 +399,11 @@ function onCollisionPara(obj1, obj2)
         else
             obj2._Falling=false;
     }
+}
+
+function onCollisionVegetable(obj1,obj2){
+    sumaPuntos(obj2._puntos);
+    Destroy(obj2);
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){

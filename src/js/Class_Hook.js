@@ -13,7 +13,9 @@ var Hook = function(game, position, sprite,id, player){
         this._Thrown = false;       //Denota el estado de si está lanzado o recogido por DigDug
         this._Hooked = false;       //Denota cuando el gancho ha codigo a un enemigo
         this._Distance=0;           //Distancia recorrida por el gancho
-        this._MaxDistance=43*3;     //Distancia máxima que puede recorrer
+        this._MaxDistance=43*1.5;     //Distancia máxima que puede recorrer
+        
+        this._posOriginal=position;
         /*this._HasFallen = false;
         this._FallEnable = false;
         this._timer = this.game.time.create(false);*/
@@ -30,45 +32,38 @@ var Hook = function(game, position, sprite,id, player){
             }
             else if(this._Thrown)    //Cuando el gancho está volando
             {
-
+                this.width+=2;
+                this.x--;
             }
             else                //Cuando el gancho está quiero en dig dug
             {
+                if(this.x!=this._posOriginal.x)
+                    this.x=this._posOriginal.x;
+                if(this.y!=this._posOriginal.y)
+                    this.y=this._posOriginal.y;
                 //En verdad se queda en la posicion sin mas, posicion hija del player en el 0 0 aprox
+            }
+            if(this.x>this._MaxDistance){
+                this._Thrown=false;
             }
 
         }
     
         Hook.prototype.Para=function() {
             
-            this.animations.stop('Shaking');
-            this.animations.play('Breaking');
-            this._Falling = false;
-            this._HasFallen = true;
-            this._timer.loop(4000,BreakRock,this);
-            this._timer.start();
-    
-            this.body.enable=false;
-            //Y SE LLAMARIA AL DESTRUCTOR DE ESTE OBJETO EL CUAL CONTARA CON UNA ANIMACION SI NO SE ACTIVA UN BOOL DE HABER COGIDO ENEMIGO O SIMPLEMENTE IRA COGIENDO HIJOS Y
-            // LOS PARARA Y AL DESTRUIRSE ÉL DESTRUIRA A LOS HIJOS
+          
             
         }
     
         Hook.prototype.EnableFall=function() {
-            this.animations.play('Shaking');
-            this._timer.loop(2000,Fall,this);
-            this._timer.start();
+
         }
     
         function Fall() {
-            if(!this._HasFallen){
-                this._Falling = true;
-                this._timer.stop();
-
-            }
+        
         }
         function BreakRock(){
-            this.Destroy();
+
         }
 
 module.exports = Hook;
