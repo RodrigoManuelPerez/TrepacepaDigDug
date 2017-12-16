@@ -654,12 +654,6 @@ var Vegetal = function(game, position, sprite,id, puntos){
     Vegetal.prototype = Object.create(GameObject.prototype);
     Vegetal.prototype.constructor = Vegetal;
 
-    Vegetal.prototype.AumentaPuntos=function() {
-
-        puntuacion+=this._puntos;
-        this.Destroy();
-    }
-
 module.exports = Vegetal;
 },{"./Class_GameObject.js":3}],9:[function(require,module,exports){
 'use strict';
@@ -970,7 +964,6 @@ var PlayScene = {
                 posY+=43;
         }
 
-
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
         paredDerecha.anchor.x = 0;
@@ -1012,19 +1005,17 @@ var PlayScene = {
         if(roca.length!=tamañoGrupoRocas){
             rocasCaidas++;
             tamañoGrupoRocas=roca.length;
-            console.debug(rocasCaidas);
-            console.debug(rocasParaVegetal);
-            console.debug(VegetalGenerado);
         }
 
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            console.debug('Hola');
             Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',200);
+            this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
+            this.game.world.addChild(Vegetable);
             VegetalGenerado=true;
         }
 
         if(VegetalGenerado){
-            this.game.physics.arcade.collide(player, Vegetable, onCollisionEnemyTierra);
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
         }
 
         //Comprobacion de la rotura de rocas
@@ -1033,7 +1024,7 @@ var PlayScene = {
             tamañoGrupoRocas=roca.length;
         }
 
-        
+
         //PUNTUACION
         // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
         //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
@@ -1168,7 +1159,7 @@ function onCollisionPara(obj1, obj2)
 
 function onCollisionVegetable(obj1,obj2){
     sumaPuntos(obj2._puntos);
-    Destroy(obj2);
+    obj2.Destroy();
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){
