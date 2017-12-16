@@ -47,7 +47,7 @@ var PlayScene = {
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
-        this.load.text('level0', 'levels/level0.json');
+        this.game.load.text('level0', 'levels/level0.json');
     },
 
     create: function() {
@@ -120,25 +120,24 @@ var PlayScene = {
             for (var i = 0; i < 25; i++){
 
                 var row = this.game.mapa.map[j].row;
-                
+
                 if (j%2==0){   //Si estasmos en una fila par
-                    if(i%2!=0){     //Si estamos en una columna impar deberi
-                        if(row[i]=='2'){    //
+                    if(row[i]=='2'){    //
 
-                            var PosTierraH = new Par(posX, posY-3);
-                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
-                            this.game.physics.arcade.enable(BloqTierraH);
-                            BloqTierraH.body.immovable = true;
-                            this.game.world.addChild(BloqTierraH);
-                            tierraH.add(BloqTierraH);
+                        var PosTierraH = new Par(posX, posY-3);
+                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                        this.game.physics.arcade.enable(BloqTierraH);
+                        BloqTierraH.body.immovable = true;
+                        this.game.world.addChild(BloqTierraH);
+                        tierraH.add(BloqTierraH);
 
-                            posX+=40;
-                        }
+                        posX+=43;
                     }
                 }
-                
-
             }
+            posX=-3;
+            if (j%2==0)
+                posY+=43;
         }
 
 

@@ -21,7 +21,7 @@ var PreloaderScene = {
     //this.load.setPreloadSprite(this.loadingBar);
     
 
-    this.game.load.baseURL = 'https://rodrigomanuelperez.github.io/TrepacepaDigDug/src/';
+    this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
