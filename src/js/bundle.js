@@ -920,7 +920,7 @@ var PlayScene = {
                         }
                         else if(row[i]=='5'){    //Enemigo
                             
-                            var PosEne = new Par(i+20,j+20);
+                            var PosEne = new Par(posX-20,posY-23);
                             var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
                             this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
                             enemigo.anchor.x = 0.5;
