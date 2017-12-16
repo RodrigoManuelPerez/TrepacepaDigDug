@@ -180,9 +180,9 @@ var PlayScene = {
                             tierra.add(BloqTierra);
 
                             var PosRock = new Par(posX-40, posY-44);
-                            var Rock = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
-                            this.game.physics.arcade.enable(Coll); 
-                            roca.add(Coll);     //AÑADIMOS AL GRUPO
+                            var Rock = new Roca(this.game, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                            this.game.physics.arcade.enable(Rock); 
+                            roca.add(Rock);     //AÑADIMOS AL GRUPO
                             
                         }
                         else if(row[i]=='5'){    //Enemigo
