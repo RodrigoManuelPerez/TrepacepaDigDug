@@ -122,16 +122,45 @@ var PlayScene = {
                 var row = this.game.mapa.map[j].row;
 
                 if (j%2==0){   //Si estasmos en una fila par
-                    if(row[i]=='2'){    //
+                    if(i%2!=0){     //Si estamos en una columna impar deberia ser 2 para lleno o 0 para vacio
+                        if(row[i]=='2'){
 
-                        var PosTierraH = new Par(posX, posY-3);
-                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
-                        this.game.physics.arcade.enable(BloqTierraH);
-                        BloqTierraH.body.immovable = true;
-                        this.game.world.addChild(BloqTierraH);
-                        tierraH.add(BloqTierraH);
+                            var PosTierraH = new Par(posX, posY-3);
+                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                            this.game.physics.arcade.enable(BloqTierraH);
+                            BloqTierraH.body.immovable = true;
+                            this.game.world.addChild(BloqTierraH);
+                            tierraH.add(BloqTierraH);
 
-                        posX+=43;
+                            posX+=43;
+                        }
+                        else{
+                            posX+=43;
+                        }
+                    }
+                }
+                else{   //Si estasmos en una fila impar
+                    if(i%2==0){     //Si estamos en una columna par 
+                        if(row[i]=='1'){
+
+                            var PosTierraV = new Par(posX, posY-46);
+                            var VelTierraV = new Par(0, 0);
+                            //AQUI PODEMOS PONER QUE SEGUN EL FILA SE COJA UN SPRITE U OTRO
+                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+                            this.game.physics.arcade.enable(BloqTierraV);
+                            BloqTierraV.body.immovable = true;
+                            this.game.world.addChild(BloqTierraV);
+                            tierraV.add(BloqTierraV);
+
+                            posX+=43;
+                        }
+                        else{
+                            posX+=43;
+                        }
+                    }
+                    else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
+                    {
+
                     }
                 }
             }
