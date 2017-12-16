@@ -32,11 +32,12 @@ var PreloaderScene = {
 
     //this.game.load.text('level0', 'levels/level0.json');
 
-    this.game.load.image('logo', 'images/phaser.png');
+    this.game.load.image('Saco', 'images/SacoMonedas.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
 
+    //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
     this.game.load.image('tierraHSuperficie', 'images/LaminaTierraSuperficial.png');
     this.game.load.image('tierraVSuperficie', 'images/LaminaTierraVSuperficial.png');

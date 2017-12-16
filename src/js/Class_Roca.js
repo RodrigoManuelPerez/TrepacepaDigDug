@@ -10,7 +10,6 @@ var Roca = function(game, position, sprite,id, spritesheet){
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         //this._animShake.play(5,true);
 
-        this._game = game;
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
@@ -40,8 +39,6 @@ var Roca = function(game, position, sprite,id, spritesheet){
             this._HasFallen = true;
             this._timer.loop(4000,BreakRock,this);
             //DENTRO DE UNA FUNCION PROPIA DE LA ROCA A LO MEJOR SI FUNCIONA PORQUE UNA FUNCION EXTERNA A LO MEJOR NO PUEDE ACCEDER
-            game.RocasCaidas++;
-            console.debug(game.RocasCaidas);
             this._timer.start();
     
             this.body.enable=false;

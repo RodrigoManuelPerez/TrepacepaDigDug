@@ -585,7 +585,6 @@ var Roca = function(game, position, sprite,id, spritesheet){
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         //this._animShake.play(5,true);
 
-        this._game = game;
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
@@ -615,8 +614,6 @@ var Roca = function(game, position, sprite,id, spritesheet){
             this._HasFallen = true;
             this._timer.loop(4000,BreakRock,this);
             //DENTRO DE UNA FUNCION PROPIA DE LA ROCA A LO MEJOR SI FUNCIONA PORQUE UNA FUNCION EXTERNA A LO MEJOR NO PUEDE ACCEDER
-            game.RocasCaidas++;
-            console.debug(game.RocasCaidas);
             this._timer.start();
     
             this.body.enable=false;
@@ -699,11 +696,12 @@ var PreloaderScene = {
 
     //this.game.load.text('level0', 'levels/level0.json');
 
-    this.game.load.image('logo', 'images/phaser.png');
+    this.game.load.image('Saco', 'images/SacoMonedas.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
 
+    //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
     this.game.load.image('tierraHSuperficie', 'images/LaminaTierraSuperficial.png');
     this.game.load.image('tierraVSuperficie', 'images/LaminaTierraVSuperficial.png');
@@ -762,6 +760,8 @@ var roca, rocasCaidas, rocasParaVegetal, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
+var tamañoGrupoRocas=0;
+
 var mapa;
 
 var GrupoEnemigos;
@@ -779,10 +779,8 @@ var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprit
 
 var playerMusic;
 
-var RocasCaidas=0;
-
 var Vegetable;
-var PosVegetable = new Par(258, 298);
+var PosCentral = new Par(258, 298);
 
 var PlayScene = {
 
@@ -949,6 +947,8 @@ var PlayScene = {
                             var Rock = new Roca(this.game, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
                             this.game.physics.arcade.enable(Rock); 
                             roca.add(Rock);     //AÑADIMOS AL GRUPO
+
+                            tamañoGrupoRocas++;
                             
                         }
                         else if(row[i]=='5'){    //Enemigo
@@ -970,87 +970,6 @@ var PlayScene = {
                 posY+=43;
         }
 
-
-        /*var posX;
-        var posy;
-
-        var cont=0;
-        //CREAMOS LA MATRIZ DE 12 * 12.       
-        //Los saltos entre cuadrados son de  43 uds.
-        for(var i = 0; i < limiteDerecho; i += 43)
-        {           
-            for(var j = 83; j < 600; j += 43) //84
-            {
-               
-                if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
-
-                        //TIERRA
-                        var PosTierra = new Par(i, j);
-                        var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
-
-                        this.game.physics.arcade.enable(BloqTierra);
-                        BloqTierra.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierra);
-                        tierra.add(BloqTierra);
-
-                    
-                }
-                else if(i==129 && j==169){
-
-                    var PosEne = new Par(i+20,j+20);
-                    var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
-                    this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
-                    enemigo.anchor.x = 0.5;
-                    enemigo.anchor.y = 0.5;
-                    this.game.world.addChild(enemigo);
-                    GrupoEnemigos.add(enemigo);
-                
-                }
-                if(!((i==129 && j==169) || (i==172 && j==169)||(i==215 && j==298) || (i==258 && j==298))){
-                    //TIERRA VERTICAL
-                    if (cont<14){
-                        var PosTierraV = new Par(i-3, j);
-                        var VelTierraV = new Par(0, 0);
-                        var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
-                        
-                        this.game.physics.arcade.enable(BloqTierraV);
-                        BloqTierraV.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierraV);
-                        tierraV.add(BloqTierraV);
-                    }
-                }
-                
-                        //TIERRA HORIZONTAL
-                    
-                        var PosTierraH = new Par(i-3, j-3);
-                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
-                        
-                        this.game.physics.arcade.enable(BloqTierraH);
-                        BloqTierraH.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierraH);
-                        tierraH.add(BloqTierraH);
-                    
-                
-
-                    //ROCAS
-                    if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
-                        var a = Math.random();
-                        if (a<0.03 && i!=258){
-                            var PosColl = new Par(i, j-1);
-                            var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
-                            this.game.physics.arcade.enable(Coll); 
-                            
-                            roca.add(Coll);     //AÑADIMOS AL GRUPO 
-                            //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-                        }
-                    }
-            }
-            cont++;
-        }
-        this.game.world.add(roca);*/
 
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
@@ -1089,8 +1008,18 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
         //ROCAS CAIDAS
+        //Comprobacion de la rotura de rocas
+        if(roca.length!=tamañoGrupoRocas){
+            rocasCaidas++;
+            tamañoGrupoRocas=roca.length;
+            console.debug(rocasCaidas);
+            console.debug(rocasParaVegetal);
+            console.debug(VegetalGenerado);
+        }
+
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            Vegetable = new Vegetal(this.game,PosVegetable,'logo','vegetal',200);
+            console.debug('Hola');
+            Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',200);
             VegetalGenerado=true;
         }
 
@@ -1098,6 +1027,13 @@ var PlayScene = {
             this.game.physics.arcade.collide(player, Vegetable, onCollisionEnemyTierra);
         }
 
+        //Comprobacion de la rotura de rocas
+        if(roca.length!=tamañoGrupoRocas){
+            rocasCaidas++;
+            tamañoGrupoRocas=roca.length;
+        }
+
+        
         //PUNTUACION
         // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
         //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
