@@ -309,7 +309,7 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
-
+    this._vidas=3;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -359,7 +359,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 25) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=90)
@@ -409,7 +409,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 25) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=-90)
@@ -462,7 +462,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    else if (this._cursors.up.isDown && this.y > this.height + 25 && this._Enableup)
+    else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
     {   
 
         if (this._Movingright == true)
@@ -582,7 +582,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
     
         this.animations.add('Shaking', [0, 1], 5, true);
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
-        //this._animShake.play(5,true);
+        
+
+        this._PlayerAplastado = false;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -635,6 +637,16 @@ var Roca = function(game, position, sprite,id, spritesheet){
             }
         }
         function BreakRock(){
+
+            if(this._PlayerAplastado){
+                for (var i=0; i<this.children.length; i++){
+                    if(this.children[i]._id=='Player'){
+                        this.remove(this[i]);
+                        this.children[i].vidas--;
+                    }
+
+                }
+            }
             this.Destroy();
         }
 
@@ -1091,6 +1103,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingleft=false;
             obj1._Movingright=false;
             obj1._Movingup=false;
+            obj2._PlayerAplastado=true;
         }
         
         obj1._MovementEnable=false;

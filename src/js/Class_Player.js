@@ -19,7 +19,7 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
-
+    this._vidas=3;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -69,7 +69,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 25) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=90)
@@ -119,7 +119,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 25) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=-90)
@@ -172,7 +172,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    else if (this._cursors.up.isDown && this.y > this.height + 25 && this._Enableup)
+    else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
     {   
 
         if (this._Movingright == true)

@@ -348,6 +348,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingleft=false;
             obj1._Movingright=false;
             obj1._Movingup=false;
+            obj2._PlayerAplastado=true;
         }
         
         obj1._MovementEnable=false;
