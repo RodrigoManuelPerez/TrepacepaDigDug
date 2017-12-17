@@ -11,10 +11,4 @@ var Vegetal = function(game, position, sprite,id, puntos){
     Vegetal.prototype = Object.create(GameObject.prototype);
     Vegetal.prototype.constructor = Vegetal;
 
-    Vegetal.prototype.AumentaPuntos=function() {
-
-        puntuacion+=this._puntos;
-        this.Destroy();
-    }
-
 module.exports = Vegetal;

@@ -21,6 +21,8 @@ var roca, rocasCaidas, rocasParaVegetal, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
+var tamañoGrupoRocas=0;
+
 var mapa;
 
 var GrupoEnemigos;
@@ -31,6 +33,9 @@ var maxPuntuacion, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 var vidas=3;
+var spriteVidas;
+var lifes;
+var i;
 
 var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 
@@ -38,10 +43,8 @@ var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprit
 
 var playerMusic;
 
-var RocasCaidas=0;
-
 var Vegetable;
-var PosVegetable = new Par(258, 298);
+var PosCentral = new Par(258, 298);
 
 var PlayScene = {
 
@@ -78,6 +81,17 @@ var PlayScene = {
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Times New Roman', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
+
+        //Vidas
+        var thisLifes = this.lifes;
+        thisLifes = this.game.add.group()
+        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
+
+        for (i = 0; i < vidas; i++) 
+        {
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
+            spriteVidas.alpha = 0.4;
+        }
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -126,7 +140,13 @@ var PlayScene = {
                         if(row[i]=='2'){
 
                             var PosTierraH = new Par(posX, posY-3);
-                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                            if(j<9)
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHSuperficie','tierraH');
+                            else if(j<17)
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHIntermedia','tierraH');
+                            else 
+                                var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHInferior','tierraH');
+
                             this.game.physics.arcade.enable(BloqTierraH);
                             BloqTierraH.body.immovable = true;
                             this.game.world.addChild(BloqTierraH);
@@ -145,8 +165,13 @@ var PlayScene = {
 
                             var PosTierraV = new Par(posX, posY-46);
                             var VelTierraV = new Par(0, 0);
-                            //AQUI PODEMOS PONER QUE SEGUN EL FILA SE COJA UN SPRITE U OTRO
-                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+
+                            if(j<9)
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVSuperficie', 'tierraV');
+                            else if(j<17)
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVIntermedia', 'tierraV'); 
+                            else
+                                var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVInferior', 'tierraV');  
                             this.game.physics.arcade.enable(BloqTierraV);
                             BloqTierraV.body.immovable = true;
                             this.game.world.addChild(BloqTierraV);
@@ -163,7 +188,14 @@ var PlayScene = {
                         if(row[i]=='3'){    //Bloque de Tierra
                             
                             var PosTierra = new Par(posX-40, posY-43);
-                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+
+                            if(j<9)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            else if(j<17)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            else
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+                            
                             this.game.physics.arcade.enable(BloqTierra);
                             BloqTierra.body.immovable = true;
                             this.game.world.addChild(BloqTierra);
@@ -173,7 +205,14 @@ var PlayScene = {
                         else if(row[i]=='4'){    //Bloque de Tierra + Roca
                             
                             var PosTierra = new Par(posX-40, posY-43);
-                            var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+                            
+                            if(j<9)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            else if(j<17)
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            else
+                                var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+
                             this.game.physics.arcade.enable(BloqTierra);
                             BloqTierra.body.immovable = true;
                             this.game.world.addChild(BloqTierra);
@@ -183,6 +222,8 @@ var PlayScene = {
                             var Rock = new Roca(this.game, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
                             this.game.physics.arcade.enable(Rock); 
                             roca.add(Rock);     //AÑADIMOS AL GRUPO
+
+                            tamañoGrupoRocas++;
                             
                         }
                         else if(row[i]=='5'){    //Enemigo
@@ -203,88 +244,6 @@ var PlayScene = {
             if (j%2==0)
                 posY+=43;
         }
-
-
-        /*var posX;
-        var posy;
-
-        var cont=0;
-        //CREAMOS LA MATRIZ DE 12 * 12.       
-        //Los saltos entre cuadrados son de  43 uds.
-        for(var i = 0; i < limiteDerecho; i += 43)
-        {           
-            for(var j = 83; j < 600; j += 43) //84
-            {
-               
-                if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
-
-                        //TIERRA
-                        var PosTierra = new Par(i, j);
-                        var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
-
-                        this.game.physics.arcade.enable(BloqTierra);
-                        BloqTierra.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierra);
-                        tierra.add(BloqTierra);
-
-                    
-                }
-                else if(i==129 && j==169){
-
-                    var PosEne = new Par(i+20,j+20);
-                    var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
-                    this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
-                    enemigo.anchor.x = 0.5;
-                    enemigo.anchor.y = 0.5;
-                    this.game.world.addChild(enemigo);
-                    GrupoEnemigos.add(enemigo);
-                
-                }
-                if(!((i==129 && j==169) || (i==172 && j==169)||(i==215 && j==298) || (i==258 && j==298))){
-                    //TIERRA VERTICAL
-                    if (cont<14){
-                        var PosTierraV = new Par(i-3, j);
-                        var VelTierraV = new Par(0, 0);
-                        var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
-                        
-                        this.game.physics.arcade.enable(BloqTierraV);
-                        BloqTierraV.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierraV);
-                        tierraV.add(BloqTierraV);
-                    }
-                }
-                
-                        //TIERRA HORIZONTAL
-                    
-                        var PosTierraH = new Par(i-3, j-3);
-                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
-                        
-                        this.game.physics.arcade.enable(BloqTierraH);
-                        BloqTierraH.body.immovable = true;
-            
-                        this.game.world.addChild(BloqTierraH);
-                        tierraH.add(BloqTierraH);
-                    
-                
-
-                    //ROCAS
-                    if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
-                        var a = Math.random();
-                        if (a<0.03 && i!=258){
-                            var PosColl = new Par(i, j-1);
-                            var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
-                            this.game.physics.arcade.enable(Coll); 
-                            
-                            roca.add(Coll);     //AÑADIMOS AL GRUPO 
-                            //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
-                        }
-                    }
-            }
-            cont++;
-        }
-        this.game.world.add(roca);*/
 
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
@@ -323,21 +282,39 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
         //ROCAS CAIDAS
+        //Comprobacion de la rotura de rocas
+        if(roca.length!=tamañoGrupoRocas){
+            rocasCaidas++;
+            tamañoGrupoRocas=roca.length;
+        }
+
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            Vegetable = new Vegetal(this.game,PosVegetable,'logo','vegetal',200);
+            Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',200);
+            this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
+            this.game.world.addChild(Vegetable);
             VegetalGenerado=true;
         }
 
         if(VegetalGenerado){
-            this.game.physics.arcade.collide(player, Vegetable, onCollisionEnemyTierra);
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
         }
 
+        //Comprobacion de la rotura de rocas
+        if(roca.length!=tamañoGrupoRocas){
+            rocasCaidas++;
+            tamañoGrupoRocas=roca.length;
+        }
+
+
         //PUNTUACION
-        // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
-        //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
-        //         localStorage.setItem("flappymaxPuntuacion", puntuacion);
-        //     }
-        // }
+        highScoreText.text = localStorage.getItem("flappyhighscore"); {
+            if (puntuacion > localStorage.getItem("flappyhighscore")) { 
+                localStorage.setItem("flappyhighscore", puntuacion);
+            }
+        }
+
+        //VIDAS
+        
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -392,6 +369,14 @@ function onCollisionAplasta(obj1, obj2){
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
         obj1.x=20;              //En la posicion correcta
         obj1.y=35;
+/*
+        life = lifes.getFirstAlive();
+
+        if (live)
+        {
+            live.kill();
+        }
+*/        
     }
 }
 
@@ -466,7 +451,7 @@ function onCollisionPara(obj1, obj2)
 
 function onCollisionVegetable(obj1,obj2){
     sumaPuntos(obj2._puntos);
-    Destroy(obj2);
+    obj2.Destroy();
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){
@@ -483,4 +468,4 @@ function Par (x, y) {
 function sumaPuntos (x) {
     puntuacion += x;
     score.text = puntuacion;
-} 
+}
