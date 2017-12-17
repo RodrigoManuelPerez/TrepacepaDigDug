@@ -33,6 +33,9 @@ var maxPuntuacion, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 var vidas=3;
+var spriteVidas;
+var lifes;
+var i;
 
 var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 
@@ -78,6 +81,17 @@ var PlayScene = {
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Times New Roman', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
+
+        //Vidas
+        var thisLifes = this.lifes;
+        thisLifes = this.game.add.group()
+        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
+
+        for (i = 0; i < vidas; i++) 
+        {
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
+            spriteVidas.alpha = 0.4;
+        }
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -293,11 +307,14 @@ var PlayScene = {
 
 
         //PUNTUACION
-        // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
-        //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
-        //         localStorage.setItem("flappymaxPuntuacion", puntuacion);
-        //     }
-        // }
+        highScoreText.text = localStorage.getItem("flappyhighscore"); {
+            if (puntuacion > localStorage.getItem("flappyhighscore")) { 
+                localStorage.setItem("flappyhighscore", puntuacion);
+            }
+        }
+
+        //VIDAS
+        
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -352,6 +369,14 @@ function onCollisionAplasta(obj1, obj2){
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
         obj1.x=20;              //En la posicion correcta
         obj1.y=35;
+/*
+        life = lifes.getFirstAlive();
+
+        if (live)
+        {
+            live.kill();
+        }
+*/        
     }
 }
 
@@ -443,4 +468,4 @@ function Par (x, y) {
 function sumaPuntos (x) {
     puntuacion += x;
     score.text = puntuacion;
-} 
+}
