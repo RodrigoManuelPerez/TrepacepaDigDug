@@ -37,20 +37,22 @@ var spriteVidas;
 var lifes;
 var i;
 
-var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var nivel=19;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 
 //DEL MISMO MODO PODEMOS CREAR UN VECTOR DE STRUCTS DONDE CADA STRUCT REPRESENTA UN NIVEL Y CADA PARTE DEL STRUCT LOS COLORES DEL MAPA
 
 var playerMusic;
 
 var Vegetable;
+var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
+
 var PosCentral = new Par(258, 298);
 
 var PlayScene = {
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
-        this.game.load.text('level0', 'levels/level0.json');
+        this.game.load.text('level0', 'levels/level0.json'); //CAMBIAR ESTO POR EL NUMERO 1 PARA QUE VAYA SEGUN EL VALOR
     },
 
     create: function() {
@@ -98,7 +100,7 @@ var PlayScene = {
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -273,8 +275,8 @@ var PlayScene = {
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
 
             //COLISION ROCAS CON ENEMIGOS Y PLAYER
-            this.game.physics.arcade.collide(roca, GrupoEnemigos, onCollisionAplasta);
-            this.game.physics.arcade.collide(roca, player, onCollisionAplasta);
+            this.game.physics.arcade.collide(GrupoEnemigos, roca, onCollisionAplasta);
+            this.game.physics.arcade.collide(player, roca, onCollisionAplasta);
 
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
@@ -289,9 +291,13 @@ var PlayScene = {
         }
 
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',200);
+            if(nivel<18)
+                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[nivel-1]);
+            else
+                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[PuntosVegetables.length-1]);
             this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
             this.game.world.addChild(Vegetable);
+            Vegetable.Desaparece();
             VegetalGenerado=true;
         }
 
@@ -359,10 +365,11 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingleft=false;
             obj1._Movingright=false;
             obj1._Movingup=false;
+            obj2._PlayerAplastado=true;
         }
         
         obj1._MovementEnable=false;
-        obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+        //obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         if(obj1.angle!=0)
             obj1.angle=0;
         

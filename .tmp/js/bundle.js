@@ -296,7 +296,7 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet, Hook){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
@@ -304,12 +304,13 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
 
+    this._Hook = Hook;
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
-    this._vidas=3;
+
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -359,7 +360,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 24) {
+            if(this.y > this.height + 6) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=90)
@@ -409,7 +410,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 24) {
+            if(this.y > this.height + 6) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=-90)
@@ -462,7 +463,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
+    else if (this._cursors.up.isDown && this.y > this.height + 6 && this._Enableup)
     {   
 
         if (this._Movingright == true)
@@ -582,10 +583,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
     
         this.animations.add('Shaking', [0, 1], 5, true);
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
-        
+        //this._animShake.play(5,true);
 
-        this._PlayerAplastado = false;
-
+        this._game = game;
         this._Falling = false;
         this._HasFallen = false;
         this._FallEnable = false;
@@ -615,6 +615,8 @@ var Roca = function(game, position, sprite,id, spritesheet){
             this._HasFallen = true;
             this._timer.loop(4000,BreakRock,this);
             //DENTRO DE UNA FUNCION PROPIA DE LA ROCA A LO MEJOR SI FUNCIONA PORQUE UNA FUNCION EXTERNA A LO MEJOR NO PUEDE ACCEDER
+            game.RocasCaidas++;
+            console.debug(game.RocasCaidas);
             this._timer.start();
     
             this.body.enable=false;
@@ -637,16 +639,6 @@ var Roca = function(game, position, sprite,id, spritesheet){
             }
         }
         function BreakRock(){
-
-            if(this._PlayerAplastado){
-                for (var i=0; i<this.children.length; i++){
-                    if(this.children[i]._id=='Player'){
-                        this.remove(this[i]);
-                        this.children[i].vidas--;
-                    }
-
-                }
-            }
             this.Destroy();
         }
 
@@ -660,19 +652,14 @@ var Vegetal = function(game, position, sprite,id, puntos){
     
     GameObject.apply(this, [game ,position, sprite, id]);
     this._puntos = puntos;
-    this._timer = this.game.time.create(false);
     }
 
     Vegetal.prototype = Object.create(GameObject.prototype);
     Vegetal.prototype.constructor = Vegetal;
 
-    Vegetal.prototype.Desaparece = function() 
-    {
-        this._timer.loop(7500,Destruirse,this);
-        this._timer.start();
-    }
+    Vegetal.prototype.AumentaPuntos=function() {
 
-    function Destruirse(){
+        puntuacion+=this._puntos;
         this.Destroy();
     }
 
@@ -684,7 +671,7 @@ var PlayScene = require('./play_scene.js');
 
 var BootScene = {
   preload: function () {
-    this.game.load.image('preloader_bar', 'images/preloader_bar.png');
+    //this.game.load.image('preloader_bar', 'images/preloader_bar.png');
   },
 
   create: function () {
@@ -696,9 +683,9 @@ var BootScene = {
 var PreloaderScene = {
   preload: function () {
      
-    this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
-    this.loadingBar.anchor.setTo(0, 0.5);
-    this.load.setPreloadSprite(this.loadingBar);
+    //this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
+    //this.loadingBar.anchor.setTo(0, 0.5);
+    //this.load.setPreloadSprite(this.loadingBar);
     
 
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
@@ -712,12 +699,11 @@ var PreloaderScene = {
 
     //this.game.load.text('level0', 'levels/level0.json');
 
-    this.game.load.image('Saco', 'images/SacoMonedas.png');
+    this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
 
-    //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
     this.game.load.image('tierraHSuperficie', 'images/LaminaTierraSuperficial.png');
     this.game.load.image('tierraVSuperficie', 'images/LaminaTierraVSuperficial.png');
@@ -776,8 +762,6 @@ var roca, rocasCaidas, rocasParaVegetal, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
-var tamañoGrupoRocas=0;
-
 var mapa;
 
 var GrupoEnemigos;
@@ -788,26 +772,23 @@ var maxPuntuacion, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 var vidas=3;
-var spriteVidas;
-var lifes;
-var i;
 
-var nivel=19;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var nivel=0;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 
 //DEL MISMO MODO PODEMOS CREAR UN VECTOR DE STRUCTS DONDE CADA STRUCT REPRESENTA UN NIVEL Y CADA PARTE DEL STRUCT LOS COLORES DEL MAPA
 
 var playerMusic;
 
-var Vegetable;
-var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
+var RocasCaidas=0;
 
-var PosCentral = new Par(258, 298);
+var Vegetable;
+var PosVegetable = new Par(258, 298);
 
 var PlayScene = {
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
-        this.game.load.text('level0', 'levels/level0.json'); //CAMBIAR ESTO POR EL NUMERO 1 PARA QUE VAYA SEGUN EL VALOR
+        this.game.load.text('level0', 'levels/level0.json');
     },
 
     create: function() {
@@ -839,25 +820,12 @@ var PlayScene = {
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Times New Roman', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
 
-        //Vidas
-        var alo = this.lifes;
-        alo = this.game.add.group()
-        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
-
-        for (i = 0; i < vidas; i++) 
-        {
-            //var self = this;
-            spriteVidas = alo.create(556 + (43 * i), 388, 'DigDug');
-            //spriteVidas.anchor.setTo(0.5, 0.5);
-            spriteVidas.alpha = 0.4;
-        }
-
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking', Hook); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -981,8 +949,6 @@ var PlayScene = {
                             var Rock = new Roca(this.game, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
                             this.game.physics.arcade.enable(Rock); 
                             roca.add(Rock);     //AÑADIMOS AL GRUPO
-
-                            tamañoGrupoRocas++;
                             
                         }
                         else if(row[i]=='5'){    //Enemigo
@@ -1003,6 +969,88 @@ var PlayScene = {
             if (j%2==0)
                 posY+=43;
         }
+
+
+        /*var posX;
+        var posy;
+
+        var cont=0;
+        //CREAMOS LA MATRIZ DE 12 * 12.       
+        //Los saltos entre cuadrados son de  43 uds.
+        for(var i = 0; i < limiteDerecho; i += 43)
+        {           
+            for(var j = 83; j < 600; j += 43) //84
+            {
+               
+                if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
+
+                        //TIERRA
+                        var PosTierra = new Par(i, j);
+                        var BloqTierra = new GO(this.game, PosTierra, 'tierra', 'tierra'); 
+
+                        this.game.physics.arcade.enable(BloqTierra);
+                        BloqTierra.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierra);
+                        tierra.add(BloqTierra);
+
+                    
+                }
+                else if(i==129 && j==169){
+
+                    var PosEne = new Par(i+20,j+20);
+                    var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
+                    this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
+                    enemigo.anchor.x = 0.5;
+                    enemigo.anchor.y = 0.5;
+                    this.game.world.addChild(enemigo);
+                    GrupoEnemigos.add(enemigo);
+                
+                }
+                if(!((i==129 && j==169) || (i==172 && j==169)||(i==215 && j==298) || (i==258 && j==298))){
+                    //TIERRA VERTICAL
+                    if (cont<14){
+                        var PosTierraV = new Par(i-3, j);
+                        var VelTierraV = new Par(0, 0);
+                        var BloqTierraV = new GO(this.game, PosTierraV, 'tierraV', 'tierraV'); 
+                        
+                        this.game.physics.arcade.enable(BloqTierraV);
+                        BloqTierraV.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierraV);
+                        tierraV.add(BloqTierraV);
+                    }
+                }
+                
+                        //TIERRA HORIZONTAL
+                    
+                        var PosTierraH = new Par(i-3, j-3);
+                        var BloqTierraH = new GO(this.game, PosTierraH, 'tierraH','tierraH'); 
+                        
+                        this.game.physics.arcade.enable(BloqTierraH);
+                        BloqTierraH.body.immovable = true;
+            
+                        this.game.world.addChild(BloqTierraH);
+                        tierraH.add(BloqTierraH);
+                    
+                
+
+                    //ROCAS
+                    if(!((i==129 && j==169) || (i==172 && j==169) || (i==215 && j==169)||(i==215 && j==298) || (i==258 && j==298) || (i==301 && j==298))){
+                        var a = Math.random();
+                        if (a<0.03 && i!=258){
+                            var PosColl = new Par(i, j-1);
+                            var Coll = new Roca(this.game, PosColl, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                            this.game.physics.arcade.enable(Coll); 
+                            
+                            roca.add(Coll);     //AÑADIMOS AL GRUPO 
+                            //roca.add(RocaBlock);    //AÑADIMOS AL GRUPO 
+                        }
+                    }
+            }
+            cont++;
+        }
+        this.game.world.add(roca);*/
 
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
@@ -1032,8 +1080,8 @@ var PlayScene = {
         this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
 
             //COLISION ROCAS CON ENEMIGOS Y PLAYER
-            this.game.physics.arcade.collide(GrupoEnemigos, roca, onCollisionAplasta);
-            this.game.physics.arcade.collide(player, roca, onCollisionAplasta);
+            this.game.physics.arcade.collide(roca, GrupoEnemigos, onCollisionAplasta);
+            this.game.physics.arcade.collide(roca, player, onCollisionAplasta);
 
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
@@ -1041,43 +1089,21 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
         //ROCAS CAIDAS
-        //Comprobacion de la rotura de rocas
-        if(roca.length!=tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
-        }
-
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            if(nivel<18)
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[nivel-1]);
-            else
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[PuntosVegetables.length-1]);
-            this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
-            this.game.world.addChild(Vegetable);
-            Vegetable.Desaparece();
+            Vegetable = new Vegetal(this.game,PosVegetable,'logo','vegetal',200);
             VegetalGenerado=true;
         }
 
         if(VegetalGenerado){
-            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionEnemyTierra);
         }
-
-        //Comprobacion de la rotura de rocas
-        if(roca.length!=tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
-        }
-
 
         //PUNTUACION
-        highScoreText.text = localStorage.getItem("flappyhighscore"); {
-            if (puntuacion > localStorage.getItem("flappyhighscore")) { 
-                localStorage.setItem("flappyhighscore", puntuacion);
-            }
-        }
-
-        //VIDAS
-        
+        // highScoreText.text = localStorage.getItem("flappymaxPuntuacion"); {
+        //     if (puntuacion > localStorage.getItem("flappymaxPuntuacion")) { 
+        //         localStorage.setItem("flappymaxPuntuacion", puntuacion);
+        //     }
+        // }
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -1122,25 +1148,16 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingleft=false;
             obj1._Movingright=false;
             obj1._Movingup=false;
-            obj2._PlayerAplastado=true;
         }
         
         obj1._MovementEnable=false;
-        //obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+        obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
         obj1.x=20;              //En la posicion correcta
         obj1.y=35;
-/*
-        life = lifes.getFirstAlive();
-
-        if (live)
-        {
-            live.kill();
-        }
-*/        
     }
 }
 
@@ -1215,7 +1232,7 @@ function onCollisionPara(obj1, obj2)
 
 function onCollisionVegetable(obj1,obj2){
     sumaPuntos(obj2._puntos);
-    obj2.Destroy();
+    Destroy(obj2);
 }
 
 function onColisionAñadeEnemigoHijo(obj1, obj2){
@@ -1232,5 +1249,5 @@ function Par (x, y) {
 function sumaPuntos (x) {
     puntuacion += x;
     score.text = puntuacion;
-}
+} 
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);

@@ -6,7 +6,7 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet, Hook){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
@@ -14,13 +14,12 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
 
-    this._Hook = Hook;
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
-
+    this._vidas=3;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -70,7 +69,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 6) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=90)
@@ -120,7 +119,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if (this._dirY == -1) {
-            if(this.y > this.height + 6) {
+            if(this.y > this.height + 24) {
                 this.y -= 1;
                 this._distanceY -= 1;
                 if(this.angle!=-90)
@@ -173,7 +172,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    else if (this._cursors.up.isDown && this.y > this.height + 6 && this._Enableup)
+    else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
     {   
 
         if (this._Movingright == true)

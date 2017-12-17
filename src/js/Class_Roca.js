@@ -8,7 +8,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
     
         this.animations.add('Shaking', [0, 1], 5, true);
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
-        //this._animShake.play(5,true);
+        
+
+        this._PlayerAplastado = false;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -61,6 +63,16 @@ var Roca = function(game, position, sprite,id, spritesheet){
             }
         }
         function BreakRock(){
+
+            if(this._PlayerAplastado){
+                for (var i=0; i<this.children.length; i++){
+                    if(this.children[i]._id=='Player'){
+                        this.remove(this[i]);
+                        this.children[i].vidas--;
+                    }
+
+                }
+            }
             this.Destroy();
         }
 
