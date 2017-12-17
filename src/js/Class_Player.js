@@ -6,7 +6,7 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
@@ -14,6 +14,9 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
 
+    this._posOriginal=posOriginal;
+
+    this._posInicial =position;
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO

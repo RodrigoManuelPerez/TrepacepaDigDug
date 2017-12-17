@@ -2,7 +2,7 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, player, spriteSheet){
+var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
@@ -13,7 +13,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
 
-    this._player=player;
     this._bufferBounce=1;
 
     this._MovementEnable=true;

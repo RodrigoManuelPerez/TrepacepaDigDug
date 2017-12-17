@@ -3,7 +3,7 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, player, spriteSheet){
+var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
@@ -14,7 +14,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
 
-    this._player=player;
     this._bufferBounce=1;
 
     this._MovementEnable=true;
@@ -296,7 +295,7 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior, spriteSheet){
+var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
     Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
@@ -304,6 +303,9 @@ var Player = function(game, position, sprite, id, cursors, limiteDerecho, limite
     this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=false;
 
+    this._posOriginal=posOriginal;
+
+    this._posInicial =position;
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
@@ -684,11 +686,11 @@ var PlayScene = require('./play_scene.js');
 
 var BootScene = {
   preload: function () {
-    this.game.load.image('preloader_bar', 'images/preloader_bar.png');
+    //this.game.load.image('preloader_bar', 'images/preloader_bar.png');
   },
 
   create: function () {
-    this.game.state.start('preloader');
+    //this.game.state.start('preloader');
   }
 };
 
@@ -696,9 +698,9 @@ var BootScene = {
 var PreloaderScene = {
   preload: function () {
      
-    this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
-    this.loadingBar.anchor.setTo(0, 0.5);
-    this.load.setPreloadSprite(this.loadingBar);
+    // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
+    // this.loadingBar.anchor.setTo(0, 0.5);
+    // this.load.setPreloadSprite(this.loadingBar);
     
 
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
@@ -778,7 +780,7 @@ var paredDerecha, paredSuperior;
 
 var tamañoGrupoRocas=0;
 
-var mapa;
+var mapaNivel;
 
 var GrupoEnemigos;
 
@@ -792,9 +794,7 @@ var spriteVidas;
 var lifes;
 var i;
 
-var nivel=19;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
-
-//DEL MISMO MODO PODEMOS CREAR UN VECTOR DE STRUCTS DONDE CADA STRUCT REPRESENTA UN NIVEL Y CADA PARTE DEL STRUCT LOS COLORES DEL MAPA
+var nivel=1;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 
 var playerMusic;
 
@@ -807,7 +807,16 @@ var PlayScene = {
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
-        this.game.load.text('level0', 'levels/level0.json'); //CAMBIAR ESTO POR EL NUMERO 1 PARA QUE VAYA SEGUN EL VALOR
+        this.game.load.text('level1', 'levels/level1.json'); //CAMBIAR ESTO POR EL NUMERO 1 PARA QUE VAYA SEGUN EL VALOR
+        // this.game.load.text('level2', 'levels/level2.json');
+        // this.game.load.text('level3', 'levels/level3.json');
+        // this.game.load.text('level4', 'levels/level4.json');
+        // this.game.load.text('level5', 'levels/level5.json');
+        // this.game.load.text('level6', 'levels/level6.json');
+        // this.game.load.text('level7', 'levels/level7.json');
+        // this.game.load.text('level8', 'levels/level8.json');
+        // this.game.load.text('level9', 'levels/level9.json');
+
     },
 
     create: function() {
@@ -840,15 +849,13 @@ var PlayScene = {
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Lato", fill: "#46c0f9", align: "center" });
 
         //Vidas
-        var alo = this.lifes;
-        alo = this.game.add.group()
+        var thisLifes = this.lifes;
+        thisLifes = this.game.add.group()
         this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
 
         for (i = 0; i < vidas; i++) 
         {
-            //var self = this;
-            spriteVidas = alo.create(556 + (43 * i), 388, 'DigDug');
-            //spriteVidas.anchor.setTo(0.5, 0.5);
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
             spriteVidas.alpha = 0.4;
         }
 
@@ -857,7 +864,7 @@ var PlayScene = {
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -885,18 +892,20 @@ var PlayScene = {
         //Grupo de los enemigos
         GrupoEnemigos = this.game.add.physicsGroup();
         
-        this.game.mapa = JSON.parse(this.game.cache.getText('level0'));
+        LoadMap(1);
+
+        this.game.mapaNivel = JSON.parse(this.game.cache.getText('level'+nivel));
 
         var posX=-3, posY=83;
 
         for (var j = 0; j < 25; j++){
             for (var i = 0; i < 25; i++){
 
-                var row = this.game.mapa.map[j].row;
+                var fila = this.game.mapaNivel.nivel[j].fila;
 
                 if (j%2==0){   //Si estasmos en una fila par
                     if(i%2!=0){     //Si estamos en una columna impar deberia ser 2 para lleno o 0 para vacio
-                        if(row[i]=='2'){
+                        if(fila[i]=='2'){
 
                             var PosTierraH = new Par(posX, posY-3);
                             if(j<9)
@@ -920,7 +929,7 @@ var PlayScene = {
                 }
                 else{   //Si estasmos en una fila impar
                     if(i%2==0){     //Si estamos en una columna par 
-                        if(row[i]=='1'){
+                        if(fila[i]=='1'){
 
                             var PosTierraV = new Par(posX, posY-46);
                             var VelTierraV = new Par(0, 0);
@@ -944,7 +953,7 @@ var PlayScene = {
                     }
                     else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
                     {
-                        if(row[i]=='3'){    //Bloque de Tierra
+                        if(fila[i]=='3'){    //Bloque de Tierra
                             
                             var PosTierra = new Par(posX-40, posY-43);
 
@@ -961,7 +970,7 @@ var PlayScene = {
                             tierra.add(BloqTierra);
 
                         }
-                        else if(row[i]=='4'){    //Bloque de Tierra + Roca
+                        else if(fila[i]=='4'){    //Bloque de Tierra + Roca
                             
                             var PosTierra = new Par(posX-40, posY-43);
                             
@@ -985,7 +994,7 @@ var PlayScene = {
                             tamañoGrupoRocas++;
                             
                         }
-                        else if(row[i]=='5'){    //Enemigo
+                        else if(fila[i]=='5'){    //Enemigo
                             
                             var PosEne = new Par(posX-20,posY-23);
                             var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior,player);
@@ -1232,5 +1241,149 @@ function Par (x, y) {
 function sumaPuntos (x) {
     puntuacion += x;
     score.text = puntuacion;
+} 
+
+function LoadMap (lvl) {
+    this.game.mapaNivel = JSON.parse(this.game.cache.getText('level'+lvl));
+
+    var posX=-3, posY=83;
+
+    for (var j = 0; j < 25; j++){
+        for (var i = 0; i < 25; i++){
+
+            var fila = this.game.mapaNivel.nivel[j].fila;
+
+            if (j%2==0){   //Si estasmos en una fila par
+                if(i%2!=0){     //Si estamos en una columna impar deberia ser 2 para lleno o 0 para vacio
+                    if(fila[i]=='2'){
+
+                        var PosTierraH = new Par(posX, posY-3);
+                        if(j<9)
+                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHSuperficie','tierraH');
+                        else if(j<17)
+                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHIntermedia','tierraH');
+                        else 
+                            var BloqTierraH = new GO(this.game, PosTierraH, 'tierraHInferior','tierraH');
+
+                        this.game.physics.arcade.enable(BloqTierraH);
+                        BloqTierraH.body.immovable = true;
+                        this.game.world.addChild(BloqTierraH);
+                        tierraH.add(BloqTierraH);
+
+                        posX+=43;
+                    }
+                    else{
+                        posX+=43;
+                    }
+                }
+            }
+            else{   //Si estasmos en una fila impar
+                if(i%2==0){     //Si estamos en una columna par 
+                    if(fila[i]=='1'){
+
+                        var PosTierraV = new Par(posX, posY-46);
+                        var VelTierraV = new Par(0, 0);
+
+                        if(j<9)
+                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVSuperficie', 'tierraV');
+                        else if(j<17)
+                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVIntermedia', 'tierraV'); 
+                        else
+                            var BloqTierraV = new GO(this.game, PosTierraV, 'tierraVInferior', 'tierraV');  
+                        this.game.physics.arcade.enable(BloqTierraV);
+                        BloqTierraV.body.immovable = true;
+                        this.game.world.addChild(BloqTierraV);
+                        tierraV.add(BloqTierraV);
+
+                        posX+=43;
+                    }
+                    else{
+                        posX+=43;
+                    }
+                }
+                else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
+                {
+                    if(fila[i]=='3'){    //Bloque de Tierra
+                        
+                        var PosTierra = new Par(posX-40, posY-43);
+
+                        if(j<9)
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                        else if(j<17)
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                        else
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+                        
+                        this.game.physics.arcade.enable(BloqTierra);
+                        BloqTierra.body.immovable = true;
+                        this.game.world.addChild(BloqTierra);
+                        tierra.add(BloqTierra);
+
+                    }
+                    else if(fila[i]=='4'){    //Bloque de Tierra + Roca
+                        
+                        var PosTierra = new Par(posX-40, posY-43);
+                        
+                        if(j<9)
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraSuperficie', 'tierra'); 
+                        else if(j<17)
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraIntermedia', 'tierra'); 
+                        else
+                            var BloqTierra = new GO(this.game, PosTierra, 'tierraInferior', 'tierra');  
+
+                        this.game.physics.arcade.enable(BloqTierra);
+                        BloqTierra.body.immovable = true;
+                        this.game.world.addChild(BloqTierra);
+                        tierra.add(BloqTierra);
+
+                        var PosRock = new Par(posX-40, posY-44);
+                        var Rock = new Roca(this.game, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                        this.game.physics.arcade.enable(Rock); 
+                        roca.add(Rock);     //AÑADIMOS AL GRUPO
+
+                        tamañoGrupoRocas++;
+                        
+                    }
+                    else if(fila[i]=='5'){    //Enemigo
+                        
+                        var PosEne = new Par(posX-20,posY-23);
+                        var enemigo = new Enemy(this.game,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior);
+                        this.game.physics.enable(enemigo, Phaser.Physics.ARCADE);
+                        enemigo.anchor.x = 0.5;
+                        enemigo.anchor.y = 0.5;
+                        this.game.world.addChild(enemigo);
+                        GrupoEnemigos.add(enemigo);
+
+                    }
+                }
+            }
+        }
+        posX=-3;
+        if (j%2==0)
+            posY+=43;
+    }
+} 
+
+function ResetPosition(){       //Coloca al todos los personajes en el lugar original
+    for (var i=0; i< GrupoEnemigos.length; i++){
+        GrupoEnemigos[i].x = GrupoEnemigos[i]._posOriginal.x;
+        GrupoEnemigos[i].y = GrupoEnemigos[i]._posOriginal.y;
+    }
+    player.x=player._posOriginal.x;
+    player.y=player._posOriginal.y;
+}
+
+function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
+
+    LoadMap(n);
+
+    player.x=player._posInicial.x;
+    player.y=player._posInicial.y;
+
+    player._MovementEnable=false;  
+    player._AutomaticMovement=true;
+
+
+
 }
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);
