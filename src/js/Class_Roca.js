@@ -61,6 +61,9 @@ var Roca = function(game, position, sprite,id, spritesheet){
             }
         }
         function BreakRock(){
+
+            
+
             this.Destroy();
         }
 
