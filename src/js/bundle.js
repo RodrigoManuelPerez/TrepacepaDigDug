@@ -1273,9 +1273,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
     player.y=player._posOriginal.y;
 }
 
-function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
+function LoadLevel(n,g){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
 
-    LoadMap(n);
+    LoadMap(n,g);
 
     player.x=player._posInicial.x;
     player.y=player._posInicial.y;
@@ -1285,8 +1285,8 @@ function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el 
 
 }
 
-function LevelComplete(){
+function LevelComplete(g){
     nivel++;
-    LoadLevel(nivel);
+    LoadLevel(nivel,g);
 }
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);

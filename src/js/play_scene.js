@@ -514,9 +514,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
     player.y=player._posOriginal.y;
 }
 
-function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
+function LoadLevel(n,g){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
 
-    LoadMap(n);
+    LoadMap(n,g);
 
     player.x=player._posInicial.x;
     player.y=player._posInicial.y;
@@ -526,7 +526,7 @@ function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el 
 
 }
 
-function LevelComplete(){
+function LevelComplete(g){
     nivel++;
-    LoadLevel(nivel);
+    LoadLevel(nivel,g);
 }
