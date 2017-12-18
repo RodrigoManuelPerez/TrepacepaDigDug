@@ -283,4 +283,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
     }
 
+    
+
 module.exports = Player;

@@ -67,13 +67,15 @@ var Roca = function(game, position, sprite,id, spritesheet){
             if(this._PlayerAplastado){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
-                        this.remove(this[i]);
-                        this.children[i].vidas--;
+                        
+                        this.children[i]._vidas--;
+                        
                     }
 
                 }
             }
-            this.Destroy();
+            game.ResetPosition();
+            //this.Destroy();
         }
 
 module.exports = Roca;

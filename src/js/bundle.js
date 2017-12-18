@@ -574,6 +574,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
     }
 
+    
+
 module.exports = Player;
 },{"./Class_GameObject.js":3,"./Class_Movable.js":5}],7:[function(require,module,exports){
 'use strict';
@@ -645,13 +647,15 @@ var Roca = function(game, position, sprite,id, spritesheet){
             if(this._PlayerAplastado){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
-                        this.remove(this[i]);
-                        this.children[i].vidas--;
+                        
+                        this.children[i]._vidas--;
+                        
                     }
 
                 }
             }
-            this.Destroy();
+            game.ResetPosition();
+            //this.Destroy();
         }
 
 module.exports = Roca;
@@ -791,7 +795,7 @@ var scoreTextA, scoreTextB, score;
 var maxPuntuacion, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
-var vidas=3;
+//var vidas=3;
 var spriteVidas;
 var lifes;
 var i;
@@ -804,6 +808,8 @@ var Vegetable;
 var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
 
 var PosCentral = new Par(258, 298);
+
+var cargado=false;
 
 var PlayScene = {
 
@@ -850,16 +856,6 @@ var PlayScene = {
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
 
-        //Vidas
-        var thisLifes = this.lifes;
-        thisLifes = this.game.add.group()
-        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
-
-        for (i = 0; i < vidas; i++) 
-        {
-            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
-            spriteVidas.alpha = 0.7;
-        }
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -871,6 +867,21 @@ var PlayScene = {
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
         this.game.world.addChild(player); 
+
+        //Vidas
+        var thisLifes = this.lifes;
+        thisLifes = this.game.add.group()
+        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
+
+        for (i = 0; i < player._vidas; i++) 
+        {
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
+            spriteVidas.alpha = 0.7;
+        }
+
+        
+
+        
 
         //Construyo el arma que ahora pasa a ser de tipo Hook   VER COMO HACERLO BIEN
         var PosHook = new Par(5,10);
@@ -894,8 +905,9 @@ var PlayScene = {
         //Grupo de los enemigos
         GrupoEnemigos = this.game.add.physicsGroup();
         
+        
         LoadMap(nivel,this.game);
-
+        cargado=true
         //Pared de la derecha y la superior
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer')
         paredDerecha.anchor.x = 0;
@@ -932,8 +944,8 @@ var PlayScene = {
         
 
         //NIVEL COMPLETADO
-        if(GrupoEnemigos.length==0)
-            LevelComplete();
+        //if(GrupoEnemigos.length==0 && cargado)
+        //    LevelComplete(this.game);
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
@@ -1018,6 +1030,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingright=false;
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
+            obj1._animWalk.stop(); 
         }
         
         obj1._MovementEnable=false;
@@ -1273,9 +1286,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
     player.y=player._posOriginal.y;
 }
 
-function LoadLevel(n,g){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
+function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
 
-    LoadMap(n,g);
+    LoadMap(n);
 
     player.x=player._posInicial.x;
     player.y=player._posInicial.y;
@@ -1286,7 +1299,6 @@ function LoadLevel(n,g){          //Carga un nuevo nivel y coloca al player en e
 }
 
 function LevelComplete(g){
-    nivel++;
-    LoadLevel(nivel,g);
+    g.state.restart('play',false, false);       //RESETEAR LA ESCENA
 }
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);
