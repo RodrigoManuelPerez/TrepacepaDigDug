@@ -2,15 +2,17 @@
 
 var GameObject = require('./Class_GameObject.js');
 
-var Roca = function(game, position, sprite,id, spritesheet){
+var Roca = function(game, position,id, spritesheet){
     
-    GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
+    GameObject.apply(this, [game ,position, spritesheet[0], id, spritesheet]);
     
         this.animations.add('Shaking', [0, 1], 5, true);
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         
 
         this._PlayerAplastado = false;
+
+
 
         this._Falling = false;
         this._HasFallen = false;
@@ -24,7 +26,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
         Roca.prototype.update=function(){
             if(this._Falling){
                 for(var i=0; i<6; i++){
-                    if (this._Falling /*&& this._id=='Collider'*/ && this.y<558){
+                    if (this._Falling && this.y<558){
                         this.y ++;
                     }
                 }
@@ -64,12 +66,13 @@ var Roca = function(game, position, sprite,id, spritesheet){
         }
         function BreakRock(){
 
+            
+
             if(this._PlayerAplastado){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
                         
                         this.children[i]._vidas--;
-                        
                     }
 
                 }

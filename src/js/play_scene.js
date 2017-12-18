@@ -99,7 +99,7 @@ var PlayScene = {
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -112,13 +112,10 @@ var PlayScene = {
 
         for (i = 0; i < player._vidas; i++) 
         {
-            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDugWalking');
+            spriteVidas.frame=0;
             spriteVidas.alpha = 0.7;
         }
-
-        
-
-        
 
         //Construyo el arma que ahora pasa a ser de tipo Hook   VER COMO HACERLO BIEN
         var PosHook = new Par(5,10);
@@ -192,10 +189,14 @@ var PlayScene = {
         }
 
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            if(nivel<18)
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[nivel-1]);
-            else
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[PuntosVegetables.length-1]);
+            if(nivel<18){
+                Vegetable = new Vegetal(this.game,PosCentral,'Bufos','vegetal',PuntosVegetables[nivel-1]);
+                Vegetable.frame = nivel;
+            }
+            else{
+                Vegetable = new Vegetal(this.game,PosCentral,'Bufos'[PuntosVegetables.length-1],'vegetal',PuntosVegetables[PuntosVegetables.length-1]);
+                Vegetable.frame = PuntosVegetables.length-1;
+            }
             this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
             this.game.world.addChild(Vegetable);
             Vegetable.Desaparece();
@@ -487,7 +488,7 @@ function LoadMap (lvl,g) {
                         tierra.add(BloqTierra);
 
                         var PosRock = new Par(posX-40, posY-44);
-                        var Rock = new Roca(g, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                        var Rock = new Roca(g, PosRock, 'Roca', 'RocaCompletaSpriteSheet');
                         g.physics.arcade.enable(Rock); 
                         roca.add(Rock);     //AÑADIMOS AL GRUPO
 

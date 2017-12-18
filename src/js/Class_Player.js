@@ -6,8 +6,8 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
+    Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);

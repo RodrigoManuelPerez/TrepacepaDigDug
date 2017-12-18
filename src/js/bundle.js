@@ -297,8 +297,8 @@ var GO = require('./Class_GameObject.js');
 var playerMusic;
 var MusicaCargada=false;
 
-var Player = function(game, position, sprite, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
+    Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
@@ -582,15 +582,17 @@ module.exports = Player;
 
 var GameObject = require('./Class_GameObject.js');
 
-var Roca = function(game, position, sprite,id, spritesheet){
+var Roca = function(game, position,id, spritesheet){
     
-    GameObject.apply(this, [game ,position, sprite, id, spritesheet]);
+    GameObject.apply(this, [game ,position, spritesheet[0], id, spritesheet]);
     
         this.animations.add('Shaking', [0, 1], 5, true);
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         
 
         this._PlayerAplastado = false;
+
+
 
         this._Falling = false;
         this._HasFallen = false;
@@ -604,7 +606,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
         Roca.prototype.update=function(){
             if(this._Falling){
                 for(var i=0; i<6; i++){
-                    if (this._Falling /*&& this._id=='Collider'*/ && this.y<558){
+                    if (this._Falling && this.y<558){
                         this.y ++;
                     }
                 }
@@ -644,12 +646,13 @@ var Roca = function(game, position, sprite,id, spritesheet){
         }
         function BreakRock(){
 
+            
+
             if(this._PlayerAplastado){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
                         
                         this.children[i]._vidas--;
-                        
                     }
 
                 }
@@ -717,10 +720,11 @@ var PreloaderScene = {
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
+    this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
     //this.game.load.text('level0', 'levels/level0.json');
 
     this.game.load.image('Saco', 'images/SacoMonedas.png');
-    this.game.load.image('DigDug', 'images/DigDugC.png');
+    //this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
 
@@ -741,7 +745,7 @@ var PreloaderScene = {
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     
-    this.game.load.image('RocaCompleta', 'images/PiedraColl.png');
+    this.game.load.image('Fondo', 'images/Fondo.png');
   },
 
   create: function () {
@@ -861,7 +865,7 @@ var PlayScene = {
 
         //Construimos el player
         var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'DigDug', 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -874,13 +878,10 @@ var PlayScene = {
 
         for (i = 0; i < player._vidas; i++) 
         {
-            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDug');
+            spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDugWalking');
+            spriteVidas.frame=0;
             spriteVidas.alpha = 0.7;
         }
-
-        
-
-        
 
         //Construyo el arma que ahora pasa a ser de tipo Hook   VER COMO HACERLO BIEN
         var PosHook = new Par(5,10);
@@ -954,10 +955,14 @@ var PlayScene = {
         }
 
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
-            if(nivel<18)
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[nivel-1]);
-            else
-                Vegetable = new Vegetal(this.game,PosCentral,'Saco','vegetal',PuntosVegetables[PuntosVegetables.length-1]);
+            if(nivel<18){
+                Vegetable = new Vegetal(this.game,PosCentral,'Bufos','vegetal',PuntosVegetables[nivel-1]);
+                Vegetable.frame = nivel;
+            }
+            else{
+                Vegetable = new Vegetal(this.game,PosCentral,'Bufos'[PuntosVegetables.length-1],'vegetal',PuntosVegetables[PuntosVegetables.length-1]);
+                Vegetable.frame = PuntosVegetables.length-1;
+            }
             this.game.physics.enable(Vegetable, Phaser.Physics.ARCADE);
             this.game.world.addChild(Vegetable);
             Vegetable.Desaparece();
@@ -1249,7 +1254,7 @@ function LoadMap (lvl,g) {
                         tierra.add(BloqTierra);
 
                         var PosRock = new Par(posX-40, posY-44);
-                        var Rock = new Roca(g, PosRock, 'RocaCompleta', 'Roca', 'RocaCompletaSpriteSheet');
+                        var Rock = new Roca(g, PosRock, 'Roca', 'RocaCompletaSpriteSheet');
                         g.physics.arcade.enable(Rock); 
                         roca.add(Rock);     //AÑADIMOS AL GRUPO
 
