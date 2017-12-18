@@ -8,7 +8,7 @@ var BootScene = {
   },
 
   create: function () {
-    //this.game.state.start('preloader');
+    this.game.state.start('preloader');
   }
 };
 
