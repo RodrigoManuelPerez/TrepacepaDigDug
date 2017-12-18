@@ -811,6 +811,7 @@ var Vegetable;
 var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
 
 var PosCentral = new Par(258, 298);
+var Fondo;
 
 var cargado=false;
 
@@ -844,6 +845,7 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
+        Fondo=create(0,0,"Fondo");
 
         //Rocas para vegetal
         rocasParaVegetal=2;
