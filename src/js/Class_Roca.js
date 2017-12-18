@@ -74,8 +74,7 @@ var Roca = function(game, position, sprite,id, spritesheet){
 
                 }
             }
-            game.ResetPosition();
-            //this.Destroy();
+            this.Destroy();
         }
 
 module.exports = Roca;
