@@ -194,7 +194,7 @@ var PlayScene = {
         if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
             if(nivel<18){
                 Vegetable = new Vegetal(this.game,PosCentral,'Bufos','vegetal',PuntosVegetables[nivel-1]);
-                Vegetable.frame = nivel;
+                Vegetable.frame = nivel-1;
             }
             else{
                 Vegetable = new Vegetal(this.game,PosCentral,'Bufos'[PuntosVegetables.length-1],'vegetal',PuntosVegetables[PuntosVegetables.length-1]);
