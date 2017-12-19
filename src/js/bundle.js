@@ -3,8 +3,8 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, player, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, player, spriteSheet){
+    Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
@@ -302,8 +302,8 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking');
     this._animWalk.play(6,true);
-    this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
-    this._AutomaticMovement=false;
+    this._MovementEnable=false;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
+    this._AutomaticMovement=true;
 
     this._posOriginal=posOriginal;
 
@@ -718,6 +718,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('SlimeSpriteSheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
@@ -745,7 +746,7 @@ var PreloaderScene = {
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     
-    this.game.load.image('Fondo', 'images/Fondo.png');
+    //this.game.load.image('Fondo', 'images/Fondo.png');
   },
 
   create: function () {
@@ -803,7 +804,7 @@ var spriteVidas;
 var lifes;
 var i;
 
-var nivel=2;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var nivel=1;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 var levelText;
 var levelString = '';
 
@@ -818,6 +819,10 @@ var Fondo;
 var cargado=false;
 
 var PlayScene = {
+
+    init: function(){
+
+    },
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
@@ -847,8 +852,8 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
-        Fondo=new Phaser.Sprite(this.game,0,0,"Fondo");
-        this.game.world.addChild(Fondo);
+        //Fondo=new Phaser.Sprite(this.game,0,0,"Fondo");
+        //this.game.world.addChild(Fondo);
 
         //Rocas para vegetal
         rocasParaVegetal=2;
@@ -871,8 +876,8 @@ var PlayScene = {
         cursors = this.game.input.keyboard.createCursorKeys();
 
         //Construimos el player
-        var PosPlayer = new Par(493, 60);   //AÑADO 18 UNIDADES A LA X POR LA POSICION DEL ANCHOR Y A LA Y
-        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking'); //Le pongo la referencia al objeto Hook NO TENDRA REFERENCIA A HOOK
+        var PosPlayer = new Par(493, 60);
+        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, PosCentral, 'DigDugWalking');
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -891,7 +896,7 @@ var PlayScene = {
         }
 
         //Construyo el arma que ahora pasa a ser de tipo Hook   VER COMO HACERLO BIEN
-        var PosHook = new Par(5,10);
+        /*var PosHook = new Par(5,10);
         Hook = new Hook(this.game,PosHook,'Gancho','Hook',player); //Le pongo una referencia sobre quien es su padre para que pueda influencia sobre él
         this.game.physics.enable(Hook, Phaser.Physics.ARCADE);
         Hook.anchor.x = 1;
@@ -899,7 +904,7 @@ var PlayScene = {
     
         player.Hook=Hook;
         player.addChild(Hook);
-
+*/
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -987,11 +992,11 @@ var PlayScene = {
         }
 
         //PUNTUACION
-        highScoreText.text = localStorage.getItem("flappyhighscore"); {
-            if (puntuacion > localStorage.getItem("flappyhighscore")) { 
-                localStorage.setItem("flappyhighscore", puntuacion);
-            }
-        }
+        // highScoreText.text = localStorage.getItem("flappyhighscore"); {
+        //     if (puntuacion > localStorage.getItem("flappyhighscore")) { 
+        //         localStorage.setItem("flappyhighscore", puntuacion);
+        //     }
+        // }
 
         //VIDAS
         
@@ -1044,8 +1049,12 @@ function onCollisionAplasta(obj1, obj2){
         }
         
         obj1._MovementEnable=false;
-        //obj1._animWalk.stop();      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        if(obj1.angle!=0)
+        if(obj1._id=='Player')
+            obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+        else
+            obj1.frame = 2;     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+        
+            if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
@@ -1270,7 +1279,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior, player);
+                        var enemigo = new Enemy(g,PosEne,'Enemigo',limiteDerecho, limiteSuperior, player, 'SlimeSpriteSheet');
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

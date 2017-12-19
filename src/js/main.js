@@ -28,6 +28,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('SlimeSpriteSheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
@@ -55,7 +56,7 @@ var PreloaderScene = {
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     
-    this.game.load.image('Fondo', 'images/Fondo.png');
+    //this.game.load.image('Fondo', 'images/Fondo.png');
   },
 
   create: function () {
