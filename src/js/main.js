@@ -38,6 +38,7 @@ var PreloaderScene = {
     //this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
+    this.game.load.image('Flor', 'images/flor.png');
 
     //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');

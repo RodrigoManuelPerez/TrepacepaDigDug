@@ -734,6 +734,7 @@ var PreloaderScene = {
     //this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
+    this.game.load.image('Flor', 'images/flor.png');
 
     //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
@@ -803,7 +804,7 @@ var GrupoEnemigos;
 
 var puntuacion=0;
 var scoreTextA, scoreTextB, score;
-var maxPuntuacion, highScoreText;
+var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 //var vidas=3;
@@ -811,9 +812,10 @@ var spriteVidas;
 var lifes;
 var i;
 
-var nivel=1;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var nivel=2    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 var levelText;
 var levelString = '';
+var spriteFlor, flor;
 
 var playerMusic;
 
@@ -878,6 +880,16 @@ var PlayScene = {
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
         levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
         
+        //Niveles
+        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+
+        var thisFlor = this.flor;
+        thisFlor = this.game.add.group();
+
+        for (i = 0; i < nivel; i++)
+        {
+            spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
+        }
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
