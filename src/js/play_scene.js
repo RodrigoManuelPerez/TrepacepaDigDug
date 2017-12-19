@@ -287,14 +287,15 @@ function onCollisionAplasta(obj1, obj2){
 
         if(obj1._id=='Player')
             obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        else if(obj1._id=='Enemigo')
-            obj1.frame = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
-        
+        else if(obj1._id=='Enemigo'){
+            obj1.Sprite = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+            console.debug(obj1.Sprite);
+        }
             if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
-        //obj1.x=20;              //En la posicion correcta
+        obj1.x=20;              //En la posicion correcta
         obj1.y=35;
 /*
         life = lifes.getFirstAlive();
@@ -337,25 +338,28 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
 
 function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
+
+        obj1._Digging=true;
+
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
-                obj2.width = obj2.width-2;
+                obj2.width = obj2.width-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
-                obj2.x = obj2.x+2;
-                obj2.width = obj2.width-2;
+                obj2.x = obj2.x+1;
+                obj2.width = obj2.width-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
-                obj2.y = obj2.y + 2;
-                obj2.height = obj2.height-2;
+                obj2.y = obj2.y + 1;
+                obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
-                obj2.height = obj2.height-2;
+                obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
             if (obj2.width<4 || obj2.height<4)

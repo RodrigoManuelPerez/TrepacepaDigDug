@@ -27,7 +27,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 4);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
@@ -53,7 +53,7 @@ var PreloaderScene = {
     this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
     this.game.load.image('Slime', 'images/Slime.png');
-    this.game.load.image('Slime', 'images/SlimeAplastado.png');
+    this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     

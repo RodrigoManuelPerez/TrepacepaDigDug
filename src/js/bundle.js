@@ -299,9 +299,15 @@ var MusicaCargada=false;
 
 var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
     Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
+    
     this._cursors = cursors;
-    this._animWalk =this.animations.add('Walking');
+    this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animWalk.play(6,true);
+
+    this._animDig =this.animations.add('Digging', [2,3], 6, true);
+
+    this._Digging=false;
+
     this._MovementEnable=false;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=true;
 
@@ -541,8 +547,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }*/
 }
     Player.prototype.update = function() {
-        if (this._MovementEnable)
+        if (this._MovementEnable){
             this.Input();
+            if(this._Digging)
+                this._animDig.play(6,true);
+            if(this._Digging)
+                this._Digging=false;
+        }
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
 
@@ -717,7 +728,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 4);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
@@ -743,7 +754,7 @@ var PreloaderScene = {
     this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
     this.game.load.image('Slime', 'images/Slime.png');
-    this.game.load.image('Slime', 'images/SlimeAplastado.png');
+    this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     
@@ -1055,14 +1066,15 @@ function onCollisionAplasta(obj1, obj2){
 
         if(obj1._id=='Player')
             obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        else if(obj1._id=='Enemigo')
-            obj1.frame = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
-        
+        else if(obj1._id=='Enemigo'){
+            obj1.Sprite = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+            console.debug(obj1.Sprite);
+        }
             if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
-        //obj1.x=20;              //En la posicion correcta
+        obj1.x=20;              //En la posicion correcta
         obj1.y=35;
 /*
         life = lifes.getFirstAlive();
@@ -1105,25 +1117,28 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
 
 function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
+
+        obj1._Digging=true;
+
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
-                obj2.width = obj2.width-2;
+                obj2.width = obj2.width-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
-                obj2.x = obj2.x+2;
-                obj2.width = obj2.width-2;
+                obj2.x = obj2.x+1;
+                obj2.width = obj2.width-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
-                obj2.y = obj2.y + 2;
-                obj2.height = obj2.height-2;
+                obj2.y = obj2.y + 1;
+                obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
-                obj2.height = obj2.height-2;
+                obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
             if (obj2.width<4 || obj2.height<4)

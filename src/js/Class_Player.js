@@ -8,9 +8,15 @@ var MusicaCargada=false;
 
 var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginal, spriteSheet){
     Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
+    
     this._cursors = cursors;
-    this._animWalk =this.animations.add('Walking');
+    this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animWalk.play(6,true);
+
+    this._animDig =this.animations.add('Digging', [2,3], 6, true);
+
+    this._Digging=false;
+
     this._MovementEnable=false;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=true;
 
@@ -250,8 +256,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }*/
 }
     Player.prototype.update = function() {
-        if (this._MovementEnable)
+        if (this._MovementEnable){
             this.Input();
+            if(this._Digging)
+                this._animDig.play(6,true);
+            if(this._Digging)
+                this._Digging=false;
+        }
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
 
