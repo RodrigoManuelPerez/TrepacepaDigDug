@@ -28,10 +28,11 @@ var mapaNivel;
 var GrupoEnemigos;
 
 var puntuacion=0;
-var scoreTextA, scoreTextB, score;
+var scoreTextA, scoreTextB, scoreTextC, score;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
+var scoreStringC = '';
 //var vidas=3;
 var spriteVidas;
 var lifes;
@@ -97,9 +98,11 @@ var PlayScene = {
         //Control de puntuaciones
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
+        //scoreStringC = ' SCORE';
         levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
+        //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
@@ -132,7 +135,7 @@ var PlayScene = {
         //Vidas
         var thisLifes = this.lifes;
         thisLifes = this.game.add.group()
-        this.game.add.text(599, 345, 'Lives: ', { font: '34px Arial', fill: '#fff' });
+        this.game.add.text(599, 345, 'LIVES ', { font: '34px Arial', fill: '#fff' });
 
         for (i = 0; i < player._vidas; i++) 
         {
