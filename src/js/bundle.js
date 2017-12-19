@@ -743,6 +743,7 @@ var PreloaderScene = {
     this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
     this.game.load.image('Slime', 'images/Slime.png');
+    this.game.load.image('Slime', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
     
@@ -1055,7 +1056,7 @@ function onCollisionAplasta(obj1, obj2){
         if(obj1._id=='Player')
             obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo')
-            obj1.frame = 2;     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+            obj1.frame = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         
             if(obj1.angle!=0)
             obj1.angle=0;
