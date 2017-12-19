@@ -66,6 +66,7 @@ var PreloaderScene = {
   }
 };
 
+window.localStorage.setItem( 'highscore', '0' );
 
 window.onload = function () {
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');

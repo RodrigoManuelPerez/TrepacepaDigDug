@@ -37,7 +37,7 @@ var spriteVidas;
 var lifes;
 var i;
 
-var nivel=2    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var nivel=1;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
 var levelText;
 var levelString = '';
 var spriteFlor, flor;
@@ -114,6 +114,8 @@ var PlayScene = {
         for (i = 0; i < nivel; i++)
         {
             spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
+            spriteFlor.anchor.setTo(-0.1, -0.1);
+            spriteFlor.scale.setTo(0.05, 0.05);
         }
 
         //Inicializar los cursores.
@@ -236,11 +238,11 @@ var PlayScene = {
         }
 
         //PUNTUACION
-        // highScoreText.text = localStorage.getItem("flappyhighscore"); {
-        //     if (puntuacion > localStorage.getItem("flappyhighscore")) { 
-        //         localStorage.setItem("flappyhighscore", puntuacion);
-        //     }
-        // }
+        highScoreText.text = localStorage.getItem("highscore"); {
+            if (puntuacion > localStorage.getItem("highscore")) { 
+                localStorage.setItem("highscore", puntuacion);
+            }
+        }
 
         //VIDAS
         
