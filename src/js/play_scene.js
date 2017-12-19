@@ -79,7 +79,8 @@ var PlayScene = {
         //Poner variables a los limites.
         limiteDerecho = 513;
         limiteSuperior = 44;
-        Fondo=create(0,0,"Fondo");
+        Fondo=new Phaser.Sprite(this.game,0,0,"Fondo");
+        this.game.world.addChild(Fondo);
 
         //Rocas para vegetal
         rocasParaVegetal=2;
