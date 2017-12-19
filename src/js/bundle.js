@@ -303,11 +303,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animWalk.play(6,true);
-
-    this._animDig =this.animations.add('Digging', [2,3], 6, true);
-
-    this._Digging=false;
-
+    
     this._MovementEnable=false;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
     this._AutomaticMovement=true;
 
@@ -547,13 +543,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }*/
 }
     Player.prototype.update = function() {
-        if (this._MovementEnable){
+        if (this._MovementEnable)
             this.Input();
-            if(this._Digging)
-                this._animDig.play(6,true);
-            if(this._Digging)
-                this._Digging=false;
-        }
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
 
@@ -583,6 +574,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
     Player.prototype.PlayerRock = function() {
         this._MovementEnable=false;
+    }
+
+    Player.prototype.Aplastado = function() {
+        this.frame=3;
     }
 
     
@@ -728,7 +723,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 4);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
@@ -1062,13 +1057,10 @@ function onCollisionAplasta(obj1, obj2){
         
         obj1._MovementEnable=false;
 
-        console.debug('aplasta');
-
         if(obj1._id=='Player')
-            obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado();     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-            obj1.Sprite = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
-            console.debug(obj1.Sprite);
+                //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
             if(obj1.angle!=0)
             obj1.angle=0;
@@ -1117,8 +1109,6 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
 
 function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
-
-        obj1._Digging=true;
 
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra

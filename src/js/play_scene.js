@@ -283,13 +283,10 @@ function onCollisionAplasta(obj1, obj2){
         
         obj1._MovementEnable=false;
 
-        console.debug('aplasta');
-
         if(obj1._id=='Player')
-            obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado();     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-            obj1.Sprite = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
-            console.debug(obj1.Sprite);
+                //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
             if(obj1.angle!=0)
             obj1.angle=0;
@@ -338,8 +335,6 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
 
 function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
-
-        obj1._Digging=true;
 
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.Destroy(); //Llamamos la la destructora de la tierra
