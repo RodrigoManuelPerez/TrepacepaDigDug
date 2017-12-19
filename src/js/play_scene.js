@@ -38,6 +38,8 @@ var lifes;
 var i;
 
 var nivel=1;    //Podemos utilizar el nivel para acceder a un array de los sprites de los vegetales segun el nivel facilmente
+var levelText;
+var levelString = '';
 
 var playerMusic;
 
@@ -90,12 +92,14 @@ var PlayScene = {
         //Control de puntuaciones
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
+        levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-
+        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+        
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -216,13 +220,12 @@ var PlayScene = {
             tamañoGrupoRocas=roca.length;
         }
 
-
         //PUNTUACION
-        // highScoreText.text = localStorage.getItem("flappyhighscore"); {
-        //     if (puntuacion > localStorage.getItem("flappyhighscore")) { 
-        //         localStorage.setItem("flappyhighscore", puntuacion);
-        //     }
-        // }
+        highScoreText.text = localStorage.getItem("flappyhighscore"); {
+            if (puntuacion > localStorage.getItem("flappyhighscore")) { 
+                localStorage.setItem("flappyhighscore", puntuacion);
+            }
+        }
 
         //VIDAS
         
