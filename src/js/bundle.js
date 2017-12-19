@@ -3,8 +3,8 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, player, spriteSheet){
-    Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, player, spriteSheet){
+    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
@@ -718,7 +718,7 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
-    this.game.load.spritesheet('SlimeSpriteSheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
+    this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 6);
 
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
@@ -1049,16 +1049,19 @@ function onCollisionAplasta(obj1, obj2){
         }
         
         obj1._MovementEnable=false;
+
+        console.debug('aplasta');
+
         if(obj1._id=='Player')
             obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        else(obj1._id=='Enemigo')
+        else if(obj1._id=='Enemigo')
             obj1.frame = 2;     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         
             if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
-        obj1.x=20;              //En la posicion correcta
+        //obj1.x=20;              //En la posicion correcta
         obj1.y=35;
 /*
         life = lifes.getFirstAlive();
@@ -1279,7 +1282,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne,'Enemigo',limiteDerecho, limiteSuperior, player, 'SlimeSpriteSheet');
+                        var enemigo = new Enemy(g,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior, player, 'SlimeSpriteSheet');
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

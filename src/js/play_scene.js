@@ -282,16 +282,19 @@ function onCollisionAplasta(obj1, obj2){
         }
         
         obj1._MovementEnable=false;
+
+        console.debug('aplasta');
+
         if(obj1._id=='Player')
             obj1.frame = 3      //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        else(obj1._id=='Enemigo')
-            obj1.frame = 2;     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+        else if(obj1._id=='Enemigo')
+            obj1.frame = 'SlimeAplastado';     //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         
             if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
-        obj1.x=20;              //En la posicion correcta
+        //obj1.x=20;              //En la posicion correcta
         obj1.y=35;
 /*
         life = lifes.getFirstAlive();
@@ -512,7 +515,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne,'Enemigo',limiteDerecho, limiteSuperior, player, 'SlimeSpriteSheet');
+                        var enemigo = new Enemy(g,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior, player, 'SlimeSpriteSheet');
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
