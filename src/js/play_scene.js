@@ -17,7 +17,7 @@ var cursors;
 var limiteDerecho;
 var limiteSuperior;
 var tierra, tierraH, tierraV;
-var roca, rocasCaidas, rocasParaVegetal, VegetalGenerado;
+var roca, rocasCaidas, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
@@ -89,7 +89,6 @@ var PlayScene = {
         PosCentral = new Par(258, 298);
 
         //Rocas para vegetal
-        rocasParaVegetal=2;
         rocasCaidas=0;
         VegetalGenerado=false;
         
@@ -208,6 +207,8 @@ var PlayScene = {
             }
         }
 
+        console.debug(rocasCaidas);
+        console.debug(tamañoGrupoRocas);
 
         
         //NIVEL COMPLETADO
@@ -216,12 +217,12 @@ var PlayScene = {
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
-        if(roca.length!=tamañoGrupoRocas){
+        if(roca.length<tamañoGrupoRocas){
             rocasCaidas++;
             tamañoGrupoRocas=roca.length;
         }
 
-        if(rocasCaidas==rocasParaVegetal && !VegetalGenerado){
+        if(rocasCaidas==2 && !VegetalGenerado){
             if(nivel<18){
                 Vegetable = new Vegetal(this.game,PosCentral,'Bufos','vegetal',PuntosVegetables[nivel-1]);
                 Vegetable.frame = nivel-1;
@@ -636,7 +637,6 @@ function ComenzarJuego(g){
     nivel=1;
     vidas=3;
     puntuacion=0;
-    rocasCaidas=0;
     VegetalGenerado=false;
     g.state.restart('play', false, false);
 }
