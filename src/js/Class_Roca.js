@@ -20,6 +20,7 @@ var Roca = function(game, position,id, spritesheet){
         this._PuntosContabilizados=false;
 
         this._PlayerAplastado = false;
+        this._i;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -54,26 +55,28 @@ var Roca = function(game, position,id, spritesheet){
             }
             else
             {
+                
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
                         this._PlayerAplastado=true;
                     }
                 }
                 console.debug(this._PlayerAplastado);
-                var i = this.children.length + 5;
-                console.debug(i);
-                if(i<14){
-                    this.Sprite=this._Spritesheet[i];
+                this._i = this.children.length + 5;
+                if(this._i<14){
+                    //this.frame=this._i;
                     this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
                     this._PuntosActualizados=true;
                 }else{
-                    this.Sprite=this._Spritesheet[13]; //El maximo
+                    
+                    //this.frame=13; //El maximo
                     this._PuntosConseguidos=this._PuntosEnemigos[7];
                     this._PuntosActualizados=true;               
                 }
+
+                this._timer.add(2000,DestroyEnemies,this,this._i);
                 
             }
-            
             this._timer.start();
             this.body.enable=false;
             
@@ -92,33 +95,17 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
-            console.debug('ahora');
-
-            for (var j=0; j<this.children.length; j++){
-
-                this.children[j].Destroy();
-
-            }
-            // var NºEnemigos=0;
-
-            // if(this._PlayerAplastado){
-            //     for (var i=0; i<this.children.length; i++){
-            //         if(this.children[i]._id=='Player'){
-            //             this.children[i]._vidas--;
-            //         }
-            //     }
-            // }
-            // else{
-            //     for (var i=0; i<this.children.length; i++){
-            //         if(this.children[i]._id=='Enemigo'){
-            //             NºEnemigos+=1;
-            //         }
-            //     }
-            // }
-            // if(NºEnemigos>=1){
-            //     game.sumaPuntos(this._PuntosEnemigos[NºEnemigos-1]);
-            // }
             this.Destroy();
+        }
+
+        function DestroyEnemies(I){
+            for (var j=0; j<this.children.length; j++){
+                this.children[j].Destroy();
+            }
+            if(I<14)
+                this.frame=I;
+            else
+                this.frame=13;
         }
 
 
