@@ -56,9 +56,13 @@ var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000
 var PosCentral;
 var Fondo;
 
-var cargado=false;
+var cargado;
 
 var PlayScene = {
+
+    init: function(){
+        //rocasCaidas=0;
+    },
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
@@ -91,6 +95,7 @@ var PlayScene = {
         PosCentral = new Par(258, 298);
 
         //Rocas para vegetal
+        cargado=false;
         rocasCaidas=0;
         VegetalGenerado=false;
         
@@ -153,7 +158,7 @@ var PlayScene = {
         
         
         LoadMap(nivel,this.game);
-        cargado=true
+        
         //Pared de la derecha y la superior en la llave inferior
     {
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer');
@@ -170,9 +175,10 @@ var PlayScene = {
 
 },
     update: function(){ 
-        
+        console.debug(rocasCaidas);
+
         //PLAYER
-        this.game.physics.arcade.collide(player, tierra, onCollisionTierra);
+        this.game.physics.arcade.collide(player, tierra, onCollisionTierra,null, {this:this, g:this.game});
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
@@ -218,9 +224,11 @@ var PlayScene = {
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
-        if(roca.length<tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
+        if(cargado){
+            if(roca.length<tamañoGrupoRocas){       //////////////////////////////////////////////////////////
+                rocasCaidas++;                      //CUANDO CARGAMOS LA ESCENA DE OTRO NIVEL ESTO SE LLAMA UNA PRIMERA VEZ Y AUMENTA 1
+                tamañoGrupoRocas=roca.length;
+            }
         }
 
         if(rocasCaidas==2 && !VegetalGenerado){
@@ -240,12 +248,6 @@ var PlayScene = {
 
         if(VegetalGenerado){
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
-        }
-
-        //Comprobacion de la rotura de rocas
-        if(roca.length!=tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
         }
 
         //PUNTUACION
@@ -297,22 +299,24 @@ module.exports = PlayScene;
 
 
 function onCollisionEnemyTierra(obj1,obj2){
-    if(obj1._id=='tierra')
-        obj2.ChangeDirTierra();
-    else if(obj1._id=='tierraH'){
-        if(obj2._bufferBounce==0)
-            obj2.ChangeDirHor();
-        else{
+    if(!obj2._Fanstasma){
+        if(obj1._id=='tierra')
             obj2.ChangeDirTierra();
-            obj2._bufferBounce--;
+        else if(obj1._id=='tierraH'){
+            if(obj2._bufferBounce==0)
+                obj2.ChangeDirHor();
+            else{
+                obj2.ChangeDirTierra();
+                obj2._bufferBounce--;
+            }
         }
-    }
-    else if(obj1._id=='tierraV'){
-        if(obj2._bufferBounce==0)
-            obj2.ChangeDirVer();
-        else{
-            obj2.ChangeDirTierra();
-            obj2._bufferBounce--;
+        else if(obj1._id=='tierraV'){
+            if(obj2._bufferBounce==0)
+                obj2.ChangeDirVer();
+            else{
+                obj2.ChangeDirTierra();
+                obj2._bufferBounce--;
+            }
         }
     }
 }
@@ -398,8 +402,18 @@ function onCollisionTierra (obj1, obj2){
                 obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
-            if (obj2.width<4 || obj2.height<4)
+            if (obj2.width<4 || obj2.height<4){
                 obj2.Destroy();
+                var PosCentralTierra = new Par (obj2._posCentralX, obj2._posCentralY);
+                var BanderaControl = new GO(this.g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                this.g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                BanderaControl.anchor.x = 0.5;
+                BanderaControl.anchor.y = 0.5;
+                this.g.world.addChild(BanderaControl);
+                GrupoBanderas.add(BanderaControl);
+                BanderaControl.body.immovable = true;
+            }
         }
     }
     if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
@@ -449,6 +463,17 @@ function LoadMap (lvl,g) {
         BloqTierraH.body.immovable = true;
         g.world.addChild(BloqTierraH);
         tierraH.add(BloqTierraH);
+
+        var PosCentralTierra = new Par (posX+23, posY-20);
+        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+        BanderaControl.anchor.x = 0.5;
+        BanderaControl.anchor.y = 0.5;
+        g.world.addChild(BanderaControl);
+        GrupoBanderas.add(BanderaControl);
+        BanderaControl.body.immovable = true;
+
         posX+=43;
     }
     
@@ -562,7 +587,7 @@ function LoadMap (lvl,g) {
                         g.physics.arcade.enable(Rock); 
                         roca.add(Rock);     //AÑADIMOS AL GRUPO
 
-                        tamañoGrupoRocas++;
+                        
                         
                     }
                     else if(fila[i]=='5'){    //Enemigo
@@ -575,6 +600,16 @@ function LoadMap (lvl,g) {
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
 
+                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                        BanderaControl.anchor.x = 0.5;
+                        BanderaControl.anchor.y = 0.5;
+                        g.world.addChild(BanderaControl);
+                        GrupoBanderas.add(BanderaControl);
+                        BanderaControl.body.immovable = true;
+
                     }
                 }
             }
@@ -583,6 +618,8 @@ function LoadMap (lvl,g) {
         if (j%2==0)
             posY+=43;
     }
+    tamañoGrupoRocas=roca.length;
+    cargado=true;
 } 
 
 function ResetPosition(){       //Coloca al todos los personajes en el lugar original

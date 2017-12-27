@@ -5,15 +5,16 @@ var Movable = require('./Class_Movable.js');
 var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this.frame=0;
-    this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
 
+    this._giros=0;
+
     this._posOriginalX = position._x;
     this._posOriginalY = position._y;
 
-    console.debug(this._posOriginalX);
+    this._Fantasma=false;
 
     this._player=player;
 
@@ -33,46 +34,67 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
 
     Enemy.prototype.update = function() 
     {
-    if(this._MovementEnable){
-        if(this._Movingleft && this.x>15){
-            this.x--;
-            this._distanceX--;
-        }
-        else if(this._Movingright && this.x<this._limiteDerecho-15){
-            this.x++;
-            this._distanceX++;
-        }
-        else if(this._Movingup && this.y>this._limiteSuperior+10){
-            this.y--;
-            this._distanceY--;
-        }
-        else if(this._Movingdown && this.y<585){
-            this.y++;
-            this._distanceY++;
-        }
+        if(this._MovementEnable){
 
-        if (this._distanceX > 42 || this._distanceX < -42){
-            this._distanceX = 0;
-            if(this._bufferBounce==0){
-                this.ChangeDirVer();
+            if(this._giros>20){
+                this._giros=0;
+                this._Fantasma=true;
+                this.ChangeDirPhantom();
             }
-            else{
-                this._bufferBounce--;
-            }
-        }
-        if (this._distanceY > 42 || this._distanceY < -42){
-            this._distanceY = 0;
-            if(this._bufferBounce==0){
-                this.ChangeDirHor();
-            }
-            else{
-                this._bufferBounce--;
-            }
-        }
-        // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
-        //     this._animWalk.paused=false;
-        //     }
 
+            
+            if(this._Movingleft && this.x>15){
+                this.x--;
+                this._distanceX--;
+            }
+            else if(this._Movingright && this.x<this._limiteDerecho-15){
+                this.x++;
+                this._distanceX++;
+            }
+            if(this._Movingup && this.y>this._limiteSuperior+10){
+                this.y--;
+                this._distanceY--;
+            }
+            else if(this._Movingdown && this.y<585){
+                this.y++;
+                this._distanceY++;
+            }
+
+            if (this._distanceX > 42 || this._distanceX < -42){
+                if(this._Fantasma){
+                    this.ChangeDirPhantom();
+                }
+                else{
+                    this._distanceX = 0;
+                    if(this._bufferBounce==0){
+                        this.ChangeDirVer();
+                        this._giros++;
+                    }
+                    else{
+                        this._bufferBounce--;
+                    }
+                }
+            }
+            if (this._distanceY > 42 || this._distanceY < -42){
+                if(this._Fantasma){
+                    this.ChangeDirPhantom();
+                }
+                else{
+                    this._distanceY = 0;
+                    if(this._bufferBounce==0){
+                        this.ChangeDirHor();
+                        this._giros++;
+                    }
+                    else{
+                        this._bufferBounce--;
+                    }
+                }
+            }
+            // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+            //     this._animWalk.paused=false;
+            //     }
+
+            
         }
     }
 
@@ -120,6 +142,7 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
 
     Enemy.prototype.ChangeDirTierra = function() {
 
+        this._giros++;
 
         if (this._Movingleft){
             this._Movingleft=false;
@@ -142,6 +165,25 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     Enemy.prototype.resetPos = function() {
         this.x=this._posOriginal.x;
         this.y=this._posOriginal.y;
+    }
+
+    Enemy.prototype.ChangeDirPhantom = function() {
+        if(this._player.x > this.x){
+            this._Movingright=true;
+            this._Movingleft=false;
+        }
+        else if (this._player.x < this.x){
+            this._Movingright=false;
+            this._Movingleft=true;
+        }
+        if(this._player.y > this.y){
+            this._Movingup=false;
+            this._Movingdown=true;
+        }
+        else if(this._player.y < this.y){
+            this._Movingup=true;
+            this._Movingdown=false;
+        }
     }
 
 module.exports = Enemy;

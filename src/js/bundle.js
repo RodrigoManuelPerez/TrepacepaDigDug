@@ -6,15 +6,16 @@ var Movable = require('./Class_Movable.js');
 var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     this.frame=0;
-    this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
 
+    this._giros=0;
+
     this._posOriginalX = position._x;
     this._posOriginalY = position._y;
 
-    console.debug(this._posOriginalX);
+    this._Fantasma=false;
 
     this._player=player;
 
@@ -34,46 +35,67 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
 
     Enemy.prototype.update = function() 
     {
-    if(this._MovementEnable){
-        if(this._Movingleft && this.x>15){
-            this.x--;
-            this._distanceX--;
-        }
-        else if(this._Movingright && this.x<this._limiteDerecho-15){
-            this.x++;
-            this._distanceX++;
-        }
-        else if(this._Movingup && this.y>this._limiteSuperior+10){
-            this.y--;
-            this._distanceY--;
-        }
-        else if(this._Movingdown && this.y<585){
-            this.y++;
-            this._distanceY++;
-        }
+        if(this._MovementEnable){
 
-        if (this._distanceX > 42 || this._distanceX < -42){
-            this._distanceX = 0;
-            if(this._bufferBounce==0){
-                this.ChangeDirVer();
+            if(this._giros>20){
+                this._giros=0;
+                this._Fantasma=true;
+                this.ChangeDirPhantom();
             }
-            else{
-                this._bufferBounce--;
-            }
-        }
-        if (this._distanceY > 42 || this._distanceY < -42){
-            this._distanceY = 0;
-            if(this._bufferBounce==0){
-                this.ChangeDirHor();
-            }
-            else{
-                this._bufferBounce--;
-            }
-        }
-        // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
-        //     this._animWalk.paused=false;
-        //     }
 
+            
+            if(this._Movingleft && this.x>15){
+                this.x--;
+                this._distanceX--;
+            }
+            else if(this._Movingright && this.x<this._limiteDerecho-15){
+                this.x++;
+                this._distanceX++;
+            }
+            if(this._Movingup && this.y>this._limiteSuperior+10){
+                this.y--;
+                this._distanceY--;
+            }
+            else if(this._Movingdown && this.y<585){
+                this.y++;
+                this._distanceY++;
+            }
+
+            if (this._distanceX > 42 || this._distanceX < -42){
+                if(this._Fantasma){
+                    this.ChangeDirPhantom();
+                }
+                else{
+                    this._distanceX = 0;
+                    if(this._bufferBounce==0){
+                        this.ChangeDirVer();
+                        this._giros++;
+                    }
+                    else{
+                        this._bufferBounce--;
+                    }
+                }
+            }
+            if (this._distanceY > 42 || this._distanceY < -42){
+                if(this._Fantasma){
+                    this.ChangeDirPhantom();
+                }
+                else{
+                    this._distanceY = 0;
+                    if(this._bufferBounce==0){
+                        this.ChangeDirHor();
+                        this._giros++;
+                    }
+                    else{
+                        this._bufferBounce--;
+                    }
+                }
+            }
+            // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
+            //     this._animWalk.paused=false;
+            //     }
+
+            
         }
     }
 
@@ -121,6 +143,7 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
 
     Enemy.prototype.ChangeDirTierra = function() {
 
+        this._giros++;
 
         if (this._Movingleft){
             this._Movingleft=false;
@@ -143,6 +166,25 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     Enemy.prototype.resetPos = function() {
         this.x=this._posOriginal.x;
         this.y=this._posOriginal.y;
+    }
+
+    Enemy.prototype.ChangeDirPhantom = function() {
+        if(this._player.x > this.x){
+            this._Movingright=true;
+            this._Movingleft=false;
+        }
+        else if (this._player.x < this.x){
+            this._Movingright=false;
+            this._Movingleft=true;
+        }
+        if(this._player.y > this.y){
+            this._Movingup=false;
+            this._Movingdown=true;
+        }
+        else if(this._player.y < this.y){
+            this._Movingup=true;
+            this._Movingdown=false;
+        }
     }
 
 module.exports = Enemy;
@@ -708,7 +750,7 @@ var Roca = function(game, position,id, spritesheet){
         }
 
         function DestroyEnemies(I){
-            for (var j=0; j<this.children.length; j++){
+            for (var j=this.children.length-1; j>=0; j--){
                 this.children[j].Destroy();
             }
             if(I<14)
@@ -902,9 +944,13 @@ var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000
 var PosCentral;
 var Fondo;
 
-var cargado=false;
+var cargado;
 
 var PlayScene = {
+
+    init: function(){
+        //rocasCaidas=0;
+    },
 
     preload: function(){
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
@@ -937,6 +983,7 @@ var PlayScene = {
         PosCentral = new Par(258, 298);
 
         //Rocas para vegetal
+        cargado=false;
         rocasCaidas=0;
         VegetalGenerado=false;
         
@@ -999,7 +1046,7 @@ var PlayScene = {
         
         
         LoadMap(nivel,this.game);
-        cargado=true
+        
         //Pared de la derecha y la superior en la llave inferior
     {
         paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer');
@@ -1016,9 +1063,10 @@ var PlayScene = {
 
 },
     update: function(){ 
-        
+        console.debug(rocasCaidas);
+
         //PLAYER
-        this.game.physics.arcade.collide(player, tierra, onCollisionTierra);
+        this.game.physics.arcade.collide(player, tierra, onCollisionTierra,null, {this:this, g:this.game});
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
         this.game.physics.arcade.collide(player, roca, onCollisionRoca);
@@ -1064,9 +1112,11 @@ var PlayScene = {
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
-        if(roca.length<tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
+        if(cargado){
+            if(roca.length<tamañoGrupoRocas){       //////////////////////////////////////////////////////////
+                rocasCaidas++;                      //CUANDO CARGAMOS LA ESCENA DE OTRO NIVEL ESTO SE LLAMA UNA PRIMERA VEZ Y AUMENTA 1
+                tamañoGrupoRocas=roca.length;
+            }
         }
 
         if(rocasCaidas==2 && !VegetalGenerado){
@@ -1086,12 +1136,6 @@ var PlayScene = {
 
         if(VegetalGenerado){
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
-        }
-
-        //Comprobacion de la rotura de rocas
-        if(roca.length!=tamañoGrupoRocas){
-            rocasCaidas++;
-            tamañoGrupoRocas=roca.length;
         }
 
         //PUNTUACION
@@ -1143,22 +1187,24 @@ module.exports = PlayScene;
 
 
 function onCollisionEnemyTierra(obj1,obj2){
-    if(obj1._id=='tierra')
-        obj2.ChangeDirTierra();
-    else if(obj1._id=='tierraH'){
-        if(obj2._bufferBounce==0)
-            obj2.ChangeDirHor();
-        else{
+    if(!obj2._Fanstasma){
+        if(obj1._id=='tierra')
             obj2.ChangeDirTierra();
-            obj2._bufferBounce--;
+        else if(obj1._id=='tierraH'){
+            if(obj2._bufferBounce==0)
+                obj2.ChangeDirHor();
+            else{
+                obj2.ChangeDirTierra();
+                obj2._bufferBounce--;
+            }
         }
-    }
-    else if(obj1._id=='tierraV'){
-        if(obj2._bufferBounce==0)
-            obj2.ChangeDirVer();
-        else{
-            obj2.ChangeDirTierra();
-            obj2._bufferBounce--;
+        else if(obj1._id=='tierraV'){
+            if(obj2._bufferBounce==0)
+                obj2.ChangeDirVer();
+            else{
+                obj2.ChangeDirTierra();
+                obj2._bufferBounce--;
+            }
         }
     }
 }
@@ -1244,8 +1290,18 @@ function onCollisionTierra (obj1, obj2){
                 obj2.height = obj2.height-1;
                 sumaPuntos(1);
             }
-            if (obj2.width<4 || obj2.height<4)
+            if (obj2.width<4 || obj2.height<4){
                 obj2.Destroy();
+                var PosCentralTierra = new Par (obj2._posCentralX, obj2._posCentralY);
+                var BanderaControl = new GO(this.g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                this.g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                BanderaControl.anchor.x = 0.5;
+                BanderaControl.anchor.y = 0.5;
+                this.g.world.addChild(BanderaControl);
+                GrupoBanderas.add(BanderaControl);
+                BanderaControl.body.immovable = true;
+            }
         }
     }
     if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
@@ -1295,6 +1351,17 @@ function LoadMap (lvl,g) {
         BloqTierraH.body.immovable = true;
         g.world.addChild(BloqTierraH);
         tierraH.add(BloqTierraH);
+
+        var PosCentralTierra = new Par (posX+23, posY-20);
+        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+        BanderaControl.anchor.x = 0.5;
+        BanderaControl.anchor.y = 0.5;
+        g.world.addChild(BanderaControl);
+        GrupoBanderas.add(BanderaControl);
+        BanderaControl.body.immovable = true;
+
         posX+=43;
     }
     
@@ -1408,7 +1475,7 @@ function LoadMap (lvl,g) {
                         g.physics.arcade.enable(Rock); 
                         roca.add(Rock);     //AÑADIMOS AL GRUPO
 
-                        tamañoGrupoRocas++;
+                        
                         
                     }
                     else if(fila[i]=='5'){    //Enemigo
@@ -1421,6 +1488,16 @@ function LoadMap (lvl,g) {
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
 
+                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                        BanderaControl.anchor.x = 0.5;
+                        BanderaControl.anchor.y = 0.5;
+                        g.world.addChild(BanderaControl);
+                        GrupoBanderas.add(BanderaControl);
+                        BanderaControl.body.immovable = true;
+
                     }
                 }
             }
@@ -1429,6 +1506,8 @@ function LoadMap (lvl,g) {
         if (j%2==0)
             posY+=43;
     }
+    tamañoGrupoRocas=roca.length;
+    cargado=true;
 } 
 
 function ResetPosition(){       //Coloca al todos los personajes en el lugar original

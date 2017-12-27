@@ -104,7 +104,7 @@ var Roca = function(game, position,id, spritesheet){
         }
 
         function DestroyEnemies(I){
-            for (var j=0; j<this.children.length; j++){
+            for (var j=this.children.length-1; j>=0; j--){
                 this.children[j].Destroy();
             }
             if(I<14)
