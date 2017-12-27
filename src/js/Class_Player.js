@@ -13,7 +13,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    this._animDie =this.animations.add('Diying', [5,6,7,8,9, 10], 3, false);
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 3, false);
 
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
@@ -294,7 +294,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     Player.prototype.Muerte = function() {
-        this._animDie.play(3,false);
+        this._animDie.play(2,false);
+
     }
 
     

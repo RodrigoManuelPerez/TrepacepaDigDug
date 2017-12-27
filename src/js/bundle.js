@@ -312,7 +312,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    this._animDie =this.animations.add('Diying', [5,6,7,8,9, 10], 3, false);
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 3, false);
 
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
@@ -593,7 +593,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     Player.prototype.Muerte = function() {
-        this._animDie.play(3,false);
+        this._animDie.play(2,false);
+
     }
 
     
@@ -698,6 +699,7 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
+            console.debug(this.children.length);
             if(this._PlayerAplastado){
                 this.removeChildAt(this._indicePlayer);
             }
@@ -792,7 +794,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
 
