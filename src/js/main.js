@@ -55,6 +55,8 @@ var PreloaderScene = {
     this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
+
+    this.game.load.image('Banderita', 'images/Bandera.png');
   },
 
   create: function () {

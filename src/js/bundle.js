@@ -312,7 +312,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 3, false);
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
 
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
@@ -593,6 +593,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     Player.prototype.Muerte = function() {
+        this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
 
     }
@@ -822,6 +823,8 @@ var PreloaderScene = {
     this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
+
+    this.game.load.image('Banderita', 'images/Bandera.png');
   },
 
   create: function () {
@@ -866,6 +869,7 @@ var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
 var tamañoGrupoRocas=0;
+var GrupoBanderas;
 
 var mapaNivel;
 
@@ -990,6 +994,8 @@ var PlayScene = {
         roca = this.game.add.physicsGroup();
         //Grupo de los enemigos
         GrupoEnemigos = this.game.add.physicsGroup();
+        //Grupo de las banderas de control
+        GrupoBanderas = this.game.add.physicsGroup();
         
         
         LoadMap(nivel,this.game);
@@ -1350,7 +1356,19 @@ function LoadMap (lvl,g) {
                 }
                 else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
                 {
-                    if(fila[i]=='3'){    //Bloque de Tierra
+                    if(fila[i]=='0'){    //Bloque de Tierra
+                        
+                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                        BanderaControl.anchor.x = 0.5;
+                        BanderaControl.anchor.y = 0.5;
+                        g.world.addChild(BanderaControl);
+                        GrupoBanderas.add(BanderaControl);
+                        BanderaControl.body.immovable = true;
+                    }
+                    else if(fila[i]=='3'){    //Bloque de Tierra
                         
                         var PosTierra = new Par(posX-40, posY-43);
                         var PosCentralTierra = new Par(posX-20, posY-23);
