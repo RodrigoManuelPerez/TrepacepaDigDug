@@ -9,6 +9,7 @@ var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
 var Hook = require('./Class_Hook.js');
+var BloqueTierra = require('./Class_Tierra.js');
 
 
 var player;
@@ -509,13 +510,14 @@ function LoadMap (lvl,g) {
                     if(fila[i]=='3'){    //Bloque de Tierra
                         
                         var PosTierra = new Par(posX-40, posY-43);
+                        var PosCentralTierra = new Par(posX-20, posY-23);
 
                         if(j<9)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra',PosCentralTierra); 
                         else if(j<17)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraIntermedia', 'tierra', PosCentralTierra); 
                         else
-                            var BloqTierra = new GO(g, PosTierra, 'tierraInferior', 'tierra');  
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraInferior', 'tierra', PosCentralTierra);  
                         
                         g.physics.arcade.enable(BloqTierra);
                         BloqTierra.body.immovable = true;
@@ -526,13 +528,14 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='4'){    //Bloque de Tierra + Roca
                         
                         var PosTierra = new Par(posX-40, posY-43);
+                        var PosCentralTierra = new Par(posX-20, posY-23);
                         
                         if(j<9)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra', PosCentralTierra); 
                         else if(j<17)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraIntermedia', 'tierra', PosCentralTierra); 
                         else
-                            var BloqTierra = new GO(g, PosTierra, 'tierraInferior', 'tierra');  
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraInferior', 'tierra', PosCentralTierra);  
 
                         g.physics.arcade.enable(BloqTierra);
                         BloqTierra.body.immovable = true;
@@ -583,6 +586,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
     player._Enableleft = true;
     player._Enabledown = true;
     player._Enableup = true;
+    player._animDig.stop();
+    player._animDie.stop();
+    player._animWalk.play(6,true);
 
 
     if(player.width<0)

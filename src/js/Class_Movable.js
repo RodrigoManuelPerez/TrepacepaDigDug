@@ -30,6 +30,5 @@ var Movable = function(game, position, id, limiteDerecho, limiteSuperior, sprite
 
     Movable.prototype.Aplastado = function(f) { //Recibe el parametro f que indica el frame
         this.frame=f;
-        console.debug(f);
     }
 module.exports = Movable;

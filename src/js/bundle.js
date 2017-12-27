@@ -294,7 +294,6 @@ var Movable = function(game, position, id, limiteDerecho, limiteSuperior, sprite
 
     Movable.prototype.Aplastado = function(f) { //Recibe el parametro f que indica el frame
         this.frame=f;
-        console.debug(f);
     }
 module.exports = Movable;
 },{"./Class_GameObject.js":3}],6:[function(require,module,exports){
@@ -313,7 +312,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 3, false);
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9, 10], 3, false);
 
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
@@ -594,7 +593,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     Player.prototype.Muerte = function() {
-        this._animDie.play();
+        this._animDie.play(3,false);
     }
 
     
@@ -699,9 +698,9 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
-
-            if(this._PlayerAplastado)
+            if(this._PlayerAplastado){
                 this.removeChildAt(this._indicePlayer);
+            }
             this.Destroy();
         }
 
@@ -717,7 +716,27 @@ var Roca = function(game, position,id, spritesheet){
 
 
 module.exports = Roca;
-},{"./Class_GameObject.js":3,"./play_scene.js":10}],8:[function(require,module,exports){
+},{"./Class_GameObject.js":3,"./play_scene.js":11}],8:[function(require,module,exports){
+'use strict';
+
+var GameObject = require('./Class_GameObject.js');
+
+
+var Tierra = function(game, position,sprite, id, posCentral){
+    
+    GameObject.apply(this, [game ,position, sprite, id]);
+    
+        this._posCentralX = posCentral._x;
+        this._posCentralY = posCentral._y;
+        
+        }
+    
+        Tierra.prototype = Object.create(GameObject.prototype);
+        Tierra.prototype.constructor = Tierra;
+
+
+module.exports = Tierra;
+},{"./Class_GameObject.js":3}],9:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -743,7 +762,7 @@ var Vegetal = function(game, position, sprite,id, puntos){
     }
 
 module.exports = Vegetal;
-},{"./Class_GameObject.js":3}],9:[function(require,module,exports){
+},{"./Class_GameObject.js":3}],10:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
@@ -819,7 +838,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./play_scene.js":10}],10:[function(require,module,exports){
+},{"./play_scene.js":11}],11:[function(require,module,exports){
 
  'use strict';
 
@@ -831,6 +850,7 @@ var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
 var Hook = require('./Class_Hook.js');
+var BloqueTierra = require('./Class_Tierra.js');
 
 
 var player;
@@ -1331,13 +1351,14 @@ function LoadMap (lvl,g) {
                     if(fila[i]=='3'){    //Bloque de Tierra
                         
                         var PosTierra = new Par(posX-40, posY-43);
+                        var PosCentralTierra = new Par(posX-20, posY-23);
 
                         if(j<9)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra',PosCentralTierra); 
                         else if(j<17)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraIntermedia', 'tierra', PosCentralTierra); 
                         else
-                            var BloqTierra = new GO(g, PosTierra, 'tierraInferior', 'tierra');  
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraInferior', 'tierra', PosCentralTierra);  
                         
                         g.physics.arcade.enable(BloqTierra);
                         BloqTierra.body.immovable = true;
@@ -1348,13 +1369,14 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='4'){    //Bloque de Tierra + Roca
                         
                         var PosTierra = new Par(posX-40, posY-43);
+                        var PosCentralTierra = new Par(posX-20, posY-23);
                         
                         if(j<9)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraSuperficie', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra', PosCentralTierra); 
                         else if(j<17)
-                            var BloqTierra = new GO(g, PosTierra, 'tierraIntermedia', 'tierra'); 
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraIntermedia', 'tierra', PosCentralTierra); 
                         else
-                            var BloqTierra = new GO(g, PosTierra, 'tierraInferior', 'tierra');  
+                            var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraInferior', 'tierra', PosCentralTierra);  
 
                         g.physics.arcade.enable(BloqTierra);
                         BloqTierra.body.immovable = true;
@@ -1405,6 +1427,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
     player._Enableleft = true;
     player._Enabledown = true;
     player._Enableup = true;
+    player._animDig.stop();
+    player._animDie.stop();
+    player._animWalk.play(6,true);
 
 
     if(player.width<0)
@@ -1460,4 +1485,4 @@ function ComenzarJuego(g){
     VegetalGenerado=false;
     g.state.restart('play', false, false);
 }
-},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Vegetal.js":8}]},{},[9]);
+},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);

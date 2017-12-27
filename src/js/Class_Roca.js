@@ -96,9 +96,9 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
-
-            if(this._PlayerAplastado)
+            if(this._PlayerAplastado){
                 this.removeChildAt(this._indicePlayer);
+            }
             this.Destroy();
         }
 
