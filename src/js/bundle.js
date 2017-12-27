@@ -310,11 +310,16 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
+
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 4, false);
+
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
+
+    this._Muerto=false;
+    this._AnimMuerto=false;
 
     this._MovementEnable=true;
     this._AutomaticMovement=false;
@@ -327,8 +332,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-
-    this._vidas=3;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -590,6 +593,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
     }
 
+    Player.prototype.Muerte = function() {
+        this._animDie.play();
+    }
+
     
 
 module.exports = Player;
@@ -616,6 +623,7 @@ var Roca = function(game, position,id, spritesheet){
 
         this._PlayerAplastado = false;
         this._i;
+        this._indicePlayer=0;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -655,11 +663,12 @@ var Roca = function(game, position,id, spritesheet){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
                         this._PlayerAplastado=true;
+                        this.children[i].Muerte();
+                        this._indicePlayer=i;
                     }
                 }
-                if(this._PlayerAplastado)
-                    this.animations.play('Breaking');
-                else{
+                if(!this._PlayerAplastado)
+                {
                     this._i = this.children.length + 5;
                     if(this._i<14){
                         this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
@@ -690,6 +699,9 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
+
+            if(this._PlayerAplastado)
+                this.children.removeChildAt(this._indicePlayer);
             this.Destroy();
         }
 
@@ -761,12 +773,11 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 5);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
 
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
-    //this.game.load.text('level0', 'levels/level0.json');
 
     this.game.load.image('Saco', 'images/SacoMonedas.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
@@ -790,8 +801,6 @@ var PreloaderScene = {
     this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
-    
-    //this.game.load.image('Fondo', 'images/Fondo.png');
   },
 
   create: function () {
@@ -1136,6 +1145,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
             obj1._animWalk.stop();
+            obj1._animDig.stop();
         }
         
         obj1._MovementEnable=false;

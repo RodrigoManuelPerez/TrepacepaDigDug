@@ -10,11 +10,16 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
+
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
-    
+    this._animDie =this.animations.add('Diying', [5,6,7,8,9], 3, false);
+
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
+
+    this._Muerto=false;
+    this._AnimMuerto=false;
 
     this._MovementEnable=true;
     this._AutomaticMovement=false;
@@ -27,8 +32,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-
-    this._vidas=3;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -288,6 +291,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
     Player.prototype.PlayerRock = function() {
         this._MovementEnable=false;
+    }
+
+    Player.prototype.Muerte = function() {
+        this._animDie.play();
     }
 
     

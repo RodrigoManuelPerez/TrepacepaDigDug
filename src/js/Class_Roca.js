@@ -20,6 +20,7 @@ var Roca = function(game, position,id, spritesheet){
 
         this._PlayerAplastado = false;
         this._i;
+        this._indicePlayer=0;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -59,11 +60,12 @@ var Roca = function(game, position,id, spritesheet){
                 for (var i=0; i<this.children.length; i++){
                     if(this.children[i]._id=='Player'){
                         this._PlayerAplastado=true;
+                        this.children[i].Muerte();
+                        this._indicePlayer=i;
                     }
                 }
-                if(this._PlayerAplastado)
-                    this.animations.play('Breaking');
-                else{
+                if(!this._PlayerAplastado)
+                {
                     this._i = this.children.length + 5;
                     if(this._i<14){
                         this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
@@ -94,6 +96,9 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
+
+            if(this._PlayerAplastado)
+                this.removeChildAt(this._indicePlayer);
             this.Destroy();
         }
 

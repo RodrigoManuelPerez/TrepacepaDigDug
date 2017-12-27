@@ -323,6 +323,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
             obj1._animWalk.stop();
+            obj1._animDig.stop();
         }
         
         obj1._MovementEnable=false;
