@@ -761,7 +761,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 4);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 5);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
 
@@ -1141,9 +1141,8 @@ function onCollisionAplasta(obj1, obj2){
         obj1._MovementEnable=false;
 
         if(obj1._id=='Player')
-            obj1.Aplastado(3);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado(4);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-            console.debug("cambio de frame");
             obj1.Aplastado(1);    //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
         if(obj1.angle!=0)

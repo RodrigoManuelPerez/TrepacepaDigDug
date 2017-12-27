@@ -328,9 +328,8 @@ function onCollisionAplasta(obj1, obj2){
         obj1._MovementEnable=false;
 
         if(obj1._id=='Player')
-            obj1.Aplastado(3);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado(4);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-            console.debug("cambio de frame");
             obj1.Aplastado(1);    //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
         if(obj1.angle!=0)
