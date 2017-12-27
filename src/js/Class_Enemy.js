@@ -2,15 +2,16 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, posOriginalX, posOriginalY, player, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
+    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
+    this.frame=0;
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
 
-    this._posOriginalX = posOriginalX;
-    this._posOriginalY = posOriginalY;
+    this._posOriginalX = position._x;
+    this._posOriginalY = position._y;
 
     console.debug(this._posOriginalX);
 
@@ -24,6 +25,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._MovementEnable=true;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
+    //console.debug(spriteSheet);
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -73,7 +75,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
 
         }
     }
-
 
 
     Enemy.prototype.ChangeDirHor = function() {

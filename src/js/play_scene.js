@@ -192,7 +192,7 @@ var PlayScene = {
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
 
             //////////////////PRUEBA CAMBIO LEVEL///////////////
-            if(key.keyCode === 48){
+            if(key.keyCode === 48){     //El 0
                 LevelComplete(this.game);
             }
 
@@ -202,13 +202,10 @@ var PlayScene = {
             }
 
             ///////////////////NIVEL 1 A FULL VIDAS//////////////////
-            if(key.keyCode === 49){
+            if(key.keyCode === 49){     //El 1
                 ComenzarJuego(this.game);
             }
         }
-
-        console.debug(rocasCaidas);
-        console.debug(tamañoGrupoRocas);
 
         
         //NIVEL COMPLETADO
@@ -325,17 +322,18 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingright=false;
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
-            obj1._animWalk.stop(); 
+            obj1._animWalk.stop();
         }
         
         obj1._MovementEnable=false;
 
         if(obj1._id=='Player')
-            obj1.Aplastado();     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado(3);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-                //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+            console.debug("cambio de frame");
+            obj1.Aplastado(1);    //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
-            if(obj1.angle!=0)
+        if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
@@ -552,7 +550,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior, posX-20,posY-23, player,  'SlimeSpriteSheet');
+                        var enemigo = new Enemy(g,PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'SlimeSpritesheet', player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

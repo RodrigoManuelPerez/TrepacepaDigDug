@@ -3,15 +3,16 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, posOriginalX, posOriginalY, player, spriteSheet){
-    Movable.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
+    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
+    this.frame=0;
     this._IntentosDeGiro=2;
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
 
-    this._posOriginalX = posOriginalX;
-    this._posOriginalY = posOriginalY;
+    this._posOriginalX = position._x;
+    this._posOriginalY = position._y;
 
     console.debug(this._posOriginalX);
 
@@ -25,6 +26,7 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     this._MovementEnable=true;
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
+    //console.debug(spriteSheet);
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -74,7 +76,6 @@ var Enemy = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
 
         }
     }
-
 
 
     Enemy.prototype.ChangeDirHor = function() {
@@ -265,9 +266,9 @@ module.exports = Hook;
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
+var Movable = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet){
     
-    GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
+    GameObject.apply(this, [game ,position, spriteSheet[0], id, spriteSheet]);
 
     this._MovementEnable = true;
 
@@ -291,6 +292,10 @@ var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior
     Movable.prototype = Object.create(GameObject.prototype);
     Movable.prototype.constructor = Movable;
 
+    Movable.prototype.Aplastado = function(f) { //Recibe el parametro f que indica el frame
+        this.frame=f;
+        console.debug(f);
+    }
 module.exports = Movable;
 },{"./Class_GameObject.js":3}],6:[function(require,module,exports){
 'use strict';
@@ -302,13 +307,16 @@ var playerMusic;
 var MusicaCargada=false;
 
 var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginalX,posOriginalY, spriteSheet){
-    Movable.apply(this, [game, position, spriteSheet[0], id, limiteDerecho, limiteSuperior, spriteSheet]);
+    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
-    this._animWalk.play(6,true);
+    this._animDig =this.animations.add('Digging', [2,3], 6, true);
     
-    this._MovementEnable=true;    //NO DEBERIA HACER FALTA PORQUE LO HEREDA DE MOVABLE
+    this._animWalk.play(6,true);
+    //this._animDig.play(6,true);
+
+    this._MovementEnable=true;
     this._AutomaticMovement=false;
 
     this._posOriginalX=posOriginalX;
@@ -540,7 +548,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
 
     if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
         this._animWalk.paused=false;
-        }
+        //this._animDig.paused=false;
+    }
 
     /*if(this._fireButton.isDown)
     {
@@ -581,10 +590,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
     }
 
-    Player.prototype.Aplastado = function() {
-        this.frame=3;
-    }
-
     
 
 module.exports = Player;
@@ -603,7 +608,6 @@ var Roca = function(game, position,id, spritesheet){
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         
         this._PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
-        this._Spritesheet = spritesheet;
 
         this._Broken=false;
         this._PuntosConseguidos=0;
@@ -641,6 +645,7 @@ var Roca = function(game, position,id, spritesheet){
             this._HasFallen = true;
 
             this._timer.add(4000,BreakRock,this);
+
             if(this.children.length==0){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
                 this.animations.play('Breaking');
             }
@@ -652,21 +657,20 @@ var Roca = function(game, position,id, spritesheet){
                         this._PlayerAplastado=true;
                     }
                 }
-                console.debug(this._PlayerAplastado);
-                this._i = this.children.length + 5;
-                if(this._i<14){
-                    //this.frame=this._i;
-                    this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
-                    this._PuntosActualizados=true;
-                }else{
-                    
-                    //this.frame=13; //El maximo
-                    this._PuntosConseguidos=this._PuntosEnemigos[7];
-                    this._PuntosActualizados=true;               
-                }
+                if(this._PlayerAplastado)
+                    this.animations.play('Breaking');
+                else{
+                    this._i = this.children.length + 5;
+                    if(this._i<14){
+                        this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
+                        this._PuntosActualizados=true;
+                    }else{
+                        this._PuntosConseguidos=this._PuntosEnemigos[7];
+                        this._PuntosActualizados=true;               
+                    }
 
-                this._timer.add(2000,DestroyEnemies,this,this._i);
-                
+                    this._timer.add(2000,DestroyEnemies,this,this._i);
+                }
             }
             this._timer.start();
             this.body.enable=false;
@@ -757,7 +761,7 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 2);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 4);
     this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
 
@@ -765,7 +769,6 @@ var PreloaderScene = {
     //this.game.load.text('level0', 'levels/level0.json');
 
     this.game.load.image('Saco', 'images/SacoMonedas.png');
-    //this.game.load.image('DigDug', 'images/DigDugC.png');
     this.game.load.image('latDer', 'images/latDerecho.png');
     this.game.load.image('latSup', 'images/latSuperior.png');
     this.game.load.image('Flor', 'images/flor.png');
@@ -1002,7 +1005,7 @@ var PlayScene = {
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
 
             //////////////////PRUEBA CAMBIO LEVEL///////////////
-            if(key.keyCode === 48){
+            if(key.keyCode === 48){     //El 0
                 LevelComplete(this.game);
             }
 
@@ -1012,13 +1015,10 @@ var PlayScene = {
             }
 
             ///////////////////NIVEL 1 A FULL VIDAS//////////////////
-            if(key.keyCode === 49){
+            if(key.keyCode === 49){     //El 1
                 ComenzarJuego(this.game);
             }
         }
-
-        console.debug(rocasCaidas);
-        console.debug(tamañoGrupoRocas);
 
         
         //NIVEL COMPLETADO
@@ -1135,17 +1135,18 @@ function onCollisionAplasta(obj1, obj2){
             obj1._Movingright=false;
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
-            obj1._animWalk.stop(); 
+            obj1._animWalk.stop();
         }
         
         obj1._MovementEnable=false;
 
         if(obj1._id=='Player')
-            obj1.Aplastado();     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
+            obj1.Aplastado(3);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
         else if(obj1._id=='Enemigo'){
-                //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
+            console.debug("cambio de frame");
+            obj1.Aplastado(1);    //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
         }
-            if(obj1.angle!=0)
+        if(obj1.angle!=0)
             obj1.angle=0;
         
         obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
@@ -1362,7 +1363,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne,'Slime','Enemigo',limiteDerecho, limiteSuperior, posX-20,posY-23, player,  'SlimeSpriteSheet');
+                        var enemigo = new Enemy(g,PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'SlimeSpritesheet', player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

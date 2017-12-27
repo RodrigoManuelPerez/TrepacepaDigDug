@@ -2,9 +2,9 @@
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
+var Movable = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet){
     
-    GameObject.apply(this, [game ,position, sprite, id, spriteSheet]);
+    GameObject.apply(this, [game ,position, spriteSheet[0], id, spriteSheet]);
 
     this._MovementEnable = true;
 
@@ -28,4 +28,8 @@ var Movable = function(game, position, sprite, id, limiteDerecho, limiteSuperior
     Movable.prototype = Object.create(GameObject.prototype);
     Movable.prototype.constructor = Movable;
 
+    Movable.prototype.Aplastado = function(f) { //Recibe el parametro f que indica el frame
+        this.frame=f;
+        console.debug(f);
+    }
 module.exports = Movable;

@@ -12,7 +12,6 @@ var Roca = function(game, position,id, spritesheet){
         this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
         
         this._PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
-        this._Spritesheet = spritesheet;
 
         this._Broken=false;
         this._PuntosConseguidos=0;
@@ -50,6 +49,7 @@ var Roca = function(game, position,id, spritesheet){
             this._HasFallen = true;
 
             this._timer.add(4000,BreakRock,this);
+
             if(this.children.length==0){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
                 this.animations.play('Breaking');
             }
@@ -61,21 +61,20 @@ var Roca = function(game, position,id, spritesheet){
                         this._PlayerAplastado=true;
                     }
                 }
-                console.debug(this._PlayerAplastado);
-                this._i = this.children.length + 5;
-                if(this._i<14){
-                    //this.frame=this._i;
-                    this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
-                    this._PuntosActualizados=true;
-                }else{
-                    
-                    //this.frame=13; //El maximo
-                    this._PuntosConseguidos=this._PuntosEnemigos[7];
-                    this._PuntosActualizados=true;               
-                }
+                if(this._PlayerAplastado)
+                    this.animations.play('Breaking');
+                else{
+                    this._i = this.children.length + 5;
+                    if(this._i<14){
+                        this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
+                        this._PuntosActualizados=true;
+                    }else{
+                        this._PuntosConseguidos=this._PuntosEnemigos[7];
+                        this._PuntosActualizados=true;               
+                    }
 
-                this._timer.add(2000,DestroyEnemies,this,this._i);
-                
+                    this._timer.add(2000,DestroyEnemies,this,this._i);
+                }
             }
             this._timer.start();
             this.body.enable=false;
