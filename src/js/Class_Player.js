@@ -21,13 +21,17 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._Muerto=false;
     this._AnimMuerto=false;
 
-    this._MovementEnable=true;
-    this._AutomaticMovement=false;
+    this._MovementEnable=false;
+    this._AutomaticMovement=true;
+    this._EnPosicion=false;
+    this._EsperandoComenzar=false;
 
     this._posOriginalX=posOriginalX;
     this._posOriginalY=posOriginalY;
 
     this._posInicial =position;
+
+    this._timer = this.game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
 
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
@@ -285,8 +289,12 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 this.width=-this.width;
             if(this.angle!=0)
                 this.angle=0;
-            this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse
-            this._AutomaticMovement=false;      
+            if(!this._EsperandoComenzar){
+            this._timer.add(3000, StartGame, this)
+            this._timer.start();
+            this._animWalk.paused=true;
+            this._EsperandoComenzar=true;    
+            }
         }
     }
     Player.prototype.PlayerRock = function() {
@@ -294,9 +302,22 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     Player.prototype.Muerte = function() {
+        this._MovementEnable=false;
         this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
+        this._timer.add(2000,PlayerMuerto,this);
+        this._timer.start();
+    }
 
+    function PlayerMuerto(){
+        this._Muerto=true;
+    }
+
+    function StartGame(){
+        this._MovementEnable=true;  //Esto tiene que activar una funcion contador para lanzar el juego todo a la vez permitiendo a todos los personajes moverse
+        this._AutomaticMovement=false;
+        this._EnPosicion=true;
+        this._animWalk.paused=false;
     }
 
     

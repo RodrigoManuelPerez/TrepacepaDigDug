@@ -173,6 +173,8 @@ var PlayScene = {
         this.game.world.addChild(paredSuperior);   
     }
 
+    StopEnemies();
+
 },
     update: function(){
 
@@ -215,6 +217,11 @@ var PlayScene = {
             ///////////////////NIVEL 1 A FULL VIDAS//////////////////
             if(key.keyCode === 49){     //El 1
                 ComenzarJuego(this.game);
+            }
+
+            if(key.keyCode === Phaser.KeyCode.SPACEBAR){     //El 
+                player.Muerte();
+                StopEnemies();
             }
         }
 
@@ -270,18 +277,23 @@ var PlayScene = {
             else if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
                 roca.children[k]._PuntosContabilizados=true;
                 sumaPuntos(roca.children[k]._PuntosConseguidos);
-                console.debug(roca.children[k]._PuntosConseguidos);
             }
-            
-
         }
 
-        /*if (player._Muerto){
-            if (vidas>0)
-                ContinuarLevel(this.game, thisLifes);
-            else
-                {//CARGARIAMOS OTRO ESTADO POR EJEMPLO O GENERAMOS UN SPRITE DE MUERTO Y PASAMOS A OTRO ESTADO PERO ME GUSTA MAS LO PRIMERO}
-        }*/
+        if(player._EnPosicion){
+            StartEnemies();
+            player._EnPosicion=false;
+        }
+
+        if (player._Muerto){
+            if (vidas>0){
+                console.debug('Paso nivel');
+                ContinuarLevel(this.game, thisLifes); //El player se muere y se restaura su posicion restandole una vida
+            }
+            else{
+            //CARGARIAMOS OTRO ESTADO POR EJEMPLO O GENERAMOS UN SPRITE DE MUERTO Y PASAMOS A OTRO ESTADO PERO ME GUSTA MAS LO PRIMERO}
+            }
+        }
         
 
         //MUSICA
@@ -338,15 +350,18 @@ function onCollisionAplasta(obj1, obj2){
             obj2._PlayerAplastado=true;
             obj1._animWalk.stop();
             obj1._animDig.stop();
+            obj1.Aplastado(4);
+        }
+        else if(obj1._id=='Enemigo'){
+
+            obj1._animWalk.stop();
+            obj1._animFant.stop();
+            obj1.Aplastado(4);
         }
         
         obj1._MovementEnable=false;
 
-        if(obj1._id=='Player')
-            obj1.Aplastado(4);     //ES NECESARIO QUE LAS ANIMACIONES DE MOVIMIENTO DE TODOS LOS PERSONAJES SE LLAMEN IGUAL
-        else if(obj1._id=='Enemigo'){
-            obj1.Aplastado(1);    //TEMPORAL HASTA TENER UN SPRITESHEET FINAL PARA EL ENEMIGO
-        }
+        
         if(obj1.angle!=0)
             obj1.angle=0;
         
@@ -416,6 +431,7 @@ function onCollisionTierra (obj1, obj2){
                 this.g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
                 BanderaControl.anchor.x = 0.5;
                 BanderaControl.anchor.y = 0.5;
+                BanderaControl.visible=false;
                 this.g.world.addChild(BanderaControl);
                 GrupoBanderas.add(BanderaControl);
                 BanderaControl.body.immovable = true;
@@ -460,6 +476,24 @@ function LoadMap (lvl,g) {
     g.mapaNivel = JSON.parse(g.cache.getText('level'+lvl));
 
     var posX=-3, posY=80;
+    
+    var V1 = new Par(-3, posY-43);
+    var V2 = new Par(513, posY-43);
+
+    var BloqTierraleft = new GO(g, V1, 'tierraVInferior', 'tierraV');  
+    g.physics.arcade.enable(BloqTierraleft);
+    BloqTierraleft.body.immovable = true;
+    BloqTierraleft.visible=false;
+    g.world.addChild(BloqTierraleft);
+    tierraV.add(BloqTierraleft);
+
+    var BloqTierraright = new GO(g, V2, 'tierraVInferior', 'tierraV');  
+    g.physics.arcade.enable(BloqTierraright);
+    BloqTierraright.body.immovable = true;
+    BloqTierraright.visible=false;
+    g.world.addChild(BloqTierraright);
+    tierraV.add(BloqTierraright);
+    
 
     for(var h=0; h<12; h++){
         var PosTierraH = new Par(posX, posY-43);
@@ -476,6 +510,7 @@ function LoadMap (lvl,g) {
         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
         BanderaControl.anchor.x = 0.5;
         BanderaControl.anchor.y = 0.5;
+        BanderaControl.visible=false;
         g.world.addChild(BanderaControl);
         GrupoBanderas.add(BanderaControl);
         BanderaControl.body.immovable = true;
@@ -520,7 +555,6 @@ function LoadMap (lvl,g) {
                     if(fila[i]=='1'){
 
                         var PosTierraV = new Par(posX, posY-46);
-                        var VelTierraV = new Par(0, 0);
 
                         if(j<9)
                             var BloqTierraV = new GO(g, PosTierraV, 'tierraVSuperficie', 'tierraV');
@@ -549,6 +583,7 @@ function LoadMap (lvl,g) {
                         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
                         BanderaControl.anchor.x = 0.5;
                         BanderaControl.anchor.y = 0.5;
+                        BanderaControl.visible=false;
                         g.world.addChild(BanderaControl);
                         GrupoBanderas.add(BanderaControl);
                         BanderaControl.body.immovable = true;
@@ -599,7 +634,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'PookaSpriteSheet', player);
+                        var enemigo = new Enemy('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
@@ -612,6 +647,7 @@ function LoadMap (lvl,g) {
                         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
                         BanderaControl.anchor.x = 0.5;
                         BanderaControl.anchor.y = 0.5;
+                        BanderaControl.visible=false;
                         g.world.addChild(BanderaControl);
                         GrupoBanderas.add(BanderaControl);
                         BanderaControl.body.immovable = true;
@@ -655,6 +691,24 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
         player.angle=0;
 }
 
+function StopEnemies(){
+    for (var t=0; t<GrupoEnemigos.length; t++){
+        GrupoEnemigos.children[t]._MovementEnable=false;
+        GrupoEnemigos.children[t]._animWalk.stop();
+    }
+}
+
+function StartEnemies(){
+    for (var t=0; t<GrupoEnemigos.length; t++){
+        GrupoEnemigos.children[t]._animWalk.play(6,true);
+        GrupoEnemigos.children[t]._MovementEnable=true;
+        GrupoEnemigos.children[t]._Fantasma=false;
+        GrupoEnemigos.children[t]._giros=0;
+        GrupoEnemigos.children[t]._posicionInicial=0;
+        GrupoEnemigos.children[t]._bufferBounce=1;
+    }
+}
+
 function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
 
     LoadMap(n);
@@ -690,8 +744,11 @@ function ActualizaHUD(g,lfs){       //ACTUALIZA EL HUD DE LAS VIDAS
 }
 
 function ContinuarLevel(g,lfs){
+    player._Muerto=false;
+    player._MovementEnable=true;
     vidas--;
     ResetPosition();
+    StartEnemies();
     ActualizaHUD(g,lfs);
 }
 

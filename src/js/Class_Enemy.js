@@ -2,9 +2,15 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesheet, player){
+var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spritesheet]);
     
+    this._animWalk =this.animations.add('Walking', [0,1], 6, true);
+    this._animFant =this.animations.add('Digging', [2,3], 6, true);
+    //console.debug(player._id);
+
+    this._animWalk.play(6,true);
+
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
@@ -38,9 +44,14 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesh
     {
         if(this._MovementEnable){
 
-            if(this._giros>20 && !this._Fantasma){
+            if(this._giros>25 && !this._Fantasma){
                 this._giros=0;
+                this._animWalk.stop();
+                this._animFant.play(6,true);
                 this._Fantasma=true;
+                this.angle=0;
+                if(this.width<0)
+                    this.width=-this.width;
                 this.ChangeDirPhantom();
             }
 
@@ -48,18 +59,42 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesh
                 if(this._Movingleft && this.x>15){
                     this.x--;
                     this._distanceX--;
+                    if(!this._Fantasma){
+                        if(this.width>0)
+                            this.width=-this.width;
+                        if(this.angle!=0)
+                            this.angle=0;
+                    }
                 }
                 else if(this._Movingright && this.x<this._limiteDerecho-15){
                     this.x++;
                     this._distanceX++;
+                    if(!this._Fantasma){
+                        if(this.width<0)
+                            this.width=-this.width;
+                        if(this.angle!=0)
+                            this.angle=0;
+                    }
                 }
                 if(this._Movingup && this.y>this._limiteSuperior+10){
                     this.y--;
                     this._distanceY--;
+                    if(!this._Fantasma){
+                        if(this.angle!=-90)
+                            this.angle=-90;
+                        if(this.width<0)
+                            this.width=-this.width;
+                    }
                 }
                 else if(this._Movingdown && this.y<585){
                     this.y++;
                     this._distanceY++;
+                    if(!this._Fantasma){
+                        if(this.angle!=90)
+                            this.angle=90;
+                        if(this.width<0)
+                            this.width=-this.width;
+                    }
                 }
             }
             else{
@@ -210,6 +245,8 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesh
         this._distanceY=0;
         this.x=Px;
         this.y=Py;
+        this._animFant.stop();
+        this._animWalk.play(6,true);
     }
 
 module.exports = Enemy;
