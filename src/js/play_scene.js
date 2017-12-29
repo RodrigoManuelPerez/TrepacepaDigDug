@@ -174,8 +174,7 @@ var PlayScene = {
     }
 
 },
-    update: function(){ 
-        console.debug(rocasCaidas);
+    update: function(){
 
         //PLAYER
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra,null, {this:this, g:this.game});
@@ -196,6 +195,8 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+        //ENEMIGOS CON BANDERITAS DE CONTROL
+        this.game.physics.arcade.collide(GrupoBanderas, GrupoEnemigos, onCollisionBandera);
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -297,9 +298,14 @@ var PlayScene = {
 
 module.exports = PlayScene;
 
+function onCollisionBandera(obj1,obj2){
+    if(obj2._Fantasma && obj2._posicionInicial>0){
+        obj2.BackToNormal(obj1.x,obj1.y);
+    }
+}
 
 function onCollisionEnemyTierra(obj1,obj2){
-    if(!obj2._Fanstasma){
+    if(!obj2._Fantasma){
         if(obj1._id=='tierra')
             obj2.ChangeDirTierra();
         else if(obj1._id=='tierraH'){
@@ -593,7 +599,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'SlimeSpritesheet', player);
+                        var enemigo = new Enemy(g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'PookaSpriteSheet', player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

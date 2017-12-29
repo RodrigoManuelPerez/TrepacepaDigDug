@@ -2,9 +2,9 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
-    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
-    this.frame=0;
+var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesheet, player){
+    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spritesheet]);
+    
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
@@ -15,6 +15,8 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     this._posOriginalY = position._y;
 
     this._Fantasma=false;
+    this._SemiVelocidad=0;
+    this._posicionInicial=0;
 
     this._player=player;
 
@@ -36,33 +38,44 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     {
         if(this._MovementEnable){
 
-            if(this._giros>20){
+            if(this._giros>20 && !this._Fantasma){
                 this._giros=0;
                 this._Fantasma=true;
                 this.ChangeDirPhantom();
             }
 
-            
-            if(this._Movingleft && this.x>15){
-                this.x--;
-                this._distanceX--;
+            if(this._Fantasma && this._SemiVelocidad==0 || !this._Fantasma){
+                if(this._Movingleft && this.x>15){
+                    this.x--;
+                    this._distanceX--;
+                }
+                else if(this._Movingright && this.x<this._limiteDerecho-15){
+                    this.x++;
+                    this._distanceX++;
+                }
+                if(this._Movingup && this.y>this._limiteSuperior+10){
+                    this.y--;
+                    this._distanceY--;
+                }
+                else if(this._Movingdown && this.y<585){
+                    this.y++;
+                    this._distanceY++;
+                }
             }
-            else if(this._Movingright && this.x<this._limiteDerecho-15){
-                this.x++;
-                this._distanceX++;
+            else{
+                if(this._SemiVelocidad==500)
+                    this._SemiVelocidad=0;
+                else
+                    this._SemiVelocidad++;
             }
-            if(this._Movingup && this.y>this._limiteSuperior+10){
-                this.y--;
-                this._distanceY--;
-            }
-            else if(this._Movingdown && this.y<585){
-                this.y++;
-                this._distanceY++;
-            }
+
 
             if (this._distanceX > 42 || this._distanceX < -42){
                 if(this._Fantasma){
+                    if(this._posicionInicial<2)
+                        this._posicionInicial++;
                     this.ChangeDirPhantom();
+                    this._distanceX = 0;
                 }
                 else{
                     this._distanceX = 0;
@@ -77,7 +90,10 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
             }
             if (this._distanceY > 42 || this._distanceY < -42){
                 if(this._Fantasma){
+                    if(this._posicionInicial<2)
+                        this._posicionInicial++;
                     this.ChangeDirPhantom();
+                    this._distanceY = 0;
                 }
                 else{
                     this._distanceY = 0;
@@ -184,6 +200,16 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
             this._Movingup=true;
             this._Movingdown=false;
         }
+    }
+
+    Enemy.prototype.BackToNormal = function(Px,Py) {
+        this._giros=0;
+        this._posicionInicial=0;
+        this._Fantasma=false;
+        this._distanceX=0;
+        this._distanceY=0;
+        this.x=Px;
+        this.y=Py;
     }
 
 module.exports = Enemy;

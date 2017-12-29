@@ -3,9 +3,9 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet, player){
-    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
-    this.frame=0;
+var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spritesheet, player){
+    Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spritesheet]);
+    
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
     this._Movingright=true;
@@ -16,6 +16,8 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     this._posOriginalY = position._y;
 
     this._Fantasma=false;
+    this._SemiVelocidad=0;
+    this._posicionInicial=0;
 
     this._player=player;
 
@@ -37,33 +39,44 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
     {
         if(this._MovementEnable){
 
-            if(this._giros>20){
+            if(this._giros>20 && !this._Fantasma){
                 this._giros=0;
                 this._Fantasma=true;
                 this.ChangeDirPhantom();
             }
 
-            
-            if(this._Movingleft && this.x>15){
-                this.x--;
-                this._distanceX--;
+            if(this._Fantasma && this._SemiVelocidad==0 || !this._Fantasma){
+                if(this._Movingleft && this.x>15){
+                    this.x--;
+                    this._distanceX--;
+                }
+                else if(this._Movingright && this.x<this._limiteDerecho-15){
+                    this.x++;
+                    this._distanceX++;
+                }
+                if(this._Movingup && this.y>this._limiteSuperior+10){
+                    this.y--;
+                    this._distanceY--;
+                }
+                else if(this._Movingdown && this.y<585){
+                    this.y++;
+                    this._distanceY++;
+                }
             }
-            else if(this._Movingright && this.x<this._limiteDerecho-15){
-                this.x++;
-                this._distanceX++;
+            else{
+                if(this._SemiVelocidad==500)
+                    this._SemiVelocidad=0;
+                else
+                    this._SemiVelocidad++;
             }
-            if(this._Movingup && this.y>this._limiteSuperior+10){
-                this.y--;
-                this._distanceY--;
-            }
-            else if(this._Movingdown && this.y<585){
-                this.y++;
-                this._distanceY++;
-            }
+
 
             if (this._distanceX > 42 || this._distanceX < -42){
                 if(this._Fantasma){
+                    if(this._posicionInicial<2)
+                        this._posicionInicial++;
                     this.ChangeDirPhantom();
+                    this._distanceX = 0;
                 }
                 else{
                     this._distanceX = 0;
@@ -78,7 +91,10 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
             }
             if (this._distanceY > 42 || this._distanceY < -42){
                 if(this._Fantasma){
+                    if(this._posicionInicial<2)
+                        this._posicionInicial++;
                     this.ChangeDirPhantom();
+                    this._distanceY = 0;
                 }
                 else{
                     this._distanceY = 0;
@@ -185,6 +201,16 @@ var Enemy = function(game, position, id, limiteDerecho, limiteSuperior, spriteSh
             this._Movingup=true;
             this._Movingdown=false;
         }
+    }
+
+    Enemy.prototype.BackToNormal = function(Px,Py) {
+        this._giros=0;
+        this._posicionInicial=0;
+        this._Fantasma=false;
+        this._distanceX=0;
+        this._distanceY=0;
+        this.x=Px;
+        this.y=Py;
     }
 
 module.exports = Enemy;
@@ -308,9 +334,9 @@ module.exports = Hook;
 
 var GameObject = require('./Class_GameObject.js');
 
-var Movable = function(game, position, id, limiteDerecho, limiteSuperior, spriteSheet){
+var Movable = function(game, position, id, limiteDerecho, limiteSuperior, spritesheet){
     
-    GameObject.apply(this, [game ,position, spriteSheet[0], id, spriteSheet]);
+    GameObject.apply(this, [game ,position, spritesheet[0], id, spritesheet]);
 
     this._MovementEnable = true;
 
@@ -837,8 +863,8 @@ var PreloaderScene = {
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
     // TODO: load here the assets for the game
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
-    this.game.load.spritesheet('SlimeSpritesheet', 'images/SlimeSpriteSheet.png', 36, 36, 2);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
+    this.game.load.spritesheet('PookaSpriteSheet', 'images/PookaSpriteSheet.png', 36, 36, 10);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
 
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
@@ -1062,8 +1088,7 @@ var PlayScene = {
     }
 
 },
-    update: function(){ 
-        console.debug(rocasCaidas);
+    update: function(){
 
         //PLAYER
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra,null, {this:this, g:this.game});
@@ -1084,6 +1109,8 @@ var PlayScene = {
         this.game.physics.arcade.collide(tierraH, GrupoEnemigos, onCollisionEnemyTierra);
         this.game.physics.arcade.collide(tierraV, GrupoEnemigos, onCollisionEnemyTierra);
         
+        //ENEMIGOS CON BANDERITAS DE CONTROL
+        this.game.physics.arcade.collide(GrupoBanderas, GrupoEnemigos, onCollisionBandera);
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -1185,9 +1212,14 @@ var PlayScene = {
 
 module.exports = PlayScene;
 
+function onCollisionBandera(obj1,obj2){
+    if(obj2._Fantasma && obj2._posicionInicial>0){
+        obj2.BackToNormal(obj1.x,obj1.y);
+    }
+}
 
 function onCollisionEnemyTierra(obj1,obj2){
-    if(!obj2._Fanstasma){
+    if(!obj2._Fantasma){
         if(obj1._id=='tierra')
             obj2.ChangeDirTierra();
         else if(obj1._id=='tierraH'){
@@ -1481,7 +1513,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy(g,PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'SlimeSpritesheet', player);
+                        var enemigo = new Enemy(g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior, 'PookaSpriteSheet', player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
