@@ -54,9 +54,12 @@ var Vegetable;
 var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
 
 var PosCentral;
-var Fondo;
 
+//BOOLEANOS DE CONTROL
 var cargado;
+var NextLevel;
+
+var timerControl;
 
 var PlayScene = {
 
@@ -79,6 +82,10 @@ var PlayScene = {
     },
 
     create: function() {
+
+        //TIMER PARA EL PASO DE NIVEL 
+        timerControl= this.game.time.create(false);
+        NextLevel=false;
 
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
@@ -158,22 +165,8 @@ var PlayScene = {
         
         
         LoadMap(nivel,this.game);
-        
-        //Pared de la derecha y la superior en la llave inferior
-    {
-        paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer');
-        paredDerecha.anchor.x = 0;
-        paredDerecha.anchor.y = 0;
-        paredDerecha.visible=false;
-        paredSuperior = new Phaser.Sprite(this.game, 0, 0, 'latSup');
-        paredSuperior.anchor.x = 0;
-        paredSuperior.anchor.y = 0;
-        paredSuperior.visible=false;
-        this.game.world.addChild(paredDerecha);
-        this.game.world.addChild(paredSuperior);   
-    }
 
-    StopEnemies();
+        StopEnemies();
 
 },
     update: function(){
@@ -209,26 +202,29 @@ var PlayScene = {
                 LevelComplete(this.game);
             }
 
-            //////////////////PRUEBA REPOSICIONAMIENTO//////////////
-            if(key.keyCode === Phaser.KeyCode.ENTER){
-                ContinuarLevel(this.game,thisLifes);
-            }
-
             ///////////////////NIVEL 1 A FULL VIDAS//////////////////
             if(key.keyCode === 49){     //El 1
                 ComenzarJuego(this.game);
             }
 
-            if(key.keyCode === Phaser.KeyCode.SPACEBAR){     //El 
-                player.Muerte();
-                StopEnemies();
+            if(key.keyCode === Phaser.KeyCode.ENTER){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+                MuertePlayer();
+            }
+
+            if(key.keyCode === Phaser.KeyCode.SPACEBAR){
+                for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
+                    GrupoEnemigos.children[gh].Destroy();
+                }
             }
         }
 
         
         //NIVEL COMPLETADO
-        //if(GrupoEnemigos.length==0 && cargado)
-        //    LevelComplete(this.game);
+        if(GrupoEnemigos.length==0 && !NextLevel){
+            NextLevel=true;
+            timerControl.add(1500,LevelWin,this, this.game);
+            timerControl.start();
+        }
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
@@ -287,7 +283,6 @@ var PlayScene = {
 
         if (player._Muerto){
             if (vidas>0){
-                console.debug('Paso nivel');
                 ContinuarLevel(this.game, thisLifes); //El player se muere y se restaura su posicion restandole una vida
             }
             else{
@@ -295,6 +290,7 @@ var PlayScene = {
             }
         }
         
+        console.debug(GrupoEnemigos.length);
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -709,22 +705,8 @@ function StartEnemies(){
     }
 }
 
-function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
-
-    LoadMap(n);
-
-    player.x=player._posInicial.x;
-    player.y=player._posInicial.y;
-
-    player._MovementEnable=false;  
-    player._AutomaticMovement=true;
-
-}
-
 function LevelComplete(g){
     nivel++;
-    rocasCaidas=0;
-    VegetalGenerado=false;
     g.state.restart('play', false, false);
 }
 
@@ -743,6 +725,22 @@ function ActualizaHUD(g,lfs){       //ACTUALIZA EL HUD DE LAS VIDAS
     }
 }
 
+function LevelWin(g){    //Para el sonido de victoria
+    if(!player._Muerto || !player._animMuerto){
+        playerMusic.stop();
+        player._animDig.stop();
+        player._animWalk.stop();
+        player._MovementEnable=false;
+        //Lanzar la musiquita de victoria (ajustar el timer a cuando se acabe el sonido)
+        timerControl.add(2500,LevelComplete,this,g);
+        timerControl.start();
+    }
+    else{
+        MuertePlayer();
+    }
+    
+}
+
 function ContinuarLevel(g,lfs){
     player._Muerto=false;
     player._MovementEnable=true;
@@ -753,9 +751,15 @@ function ContinuarLevel(g,lfs){
 }
 
 function ComenzarJuego(g){
+    playerMusic.stop();
     nivel=1;
     vidas=3;
     puntuacion=0;
     VegetalGenerado=false;
     g.state.restart('play', false, false);
+}
+
+function MuertePlayer(){
+    player.Muerte();
+    StopEnemies();
 }

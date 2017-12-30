@@ -1,6 +1,7 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var MenuScene = require('./menu.js');
 
 var BootScene = {
   preload: function () {
@@ -57,10 +58,16 @@ var PreloaderScene = {
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');
+
+
+    //COSAS DEL MENU
+    this.game.load.image('MenuFondo', 'images/Menu.png');
+    this.game.load.image('MenuFlecha', 'images/Flecha.png');
   },
 
   create: function () {
-    this.game.state.start('play');
+    this.game.state.start('menu');
+    //this.game.state.start('play');
   }
 };
 
@@ -71,6 +78,7 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
+  game.state.add('menu', MenuScene);
   game.state.add('play', PlayScene);
 
   game.state.start('boot');

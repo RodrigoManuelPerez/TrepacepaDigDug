@@ -99,7 +99,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                 }
             }
             else{
-                if(this._SemiVelocidad==500)
+                if(this._SemiVelocidad==2000)
                     this._SemiVelocidad=0;
                 else
                     this._SemiVelocidad++;
@@ -696,6 +696,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             if(!this._EsperandoComenzar){
             this._timer.add(3000, StartGame, this)
             this._timer.start();
+
             this._animWalk.paused=true;
             this._EsperandoComenzar=true;    
             }
@@ -709,7 +710,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
         this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
-        this._timer.add(2000,PlayerMuerto,this);
+        this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
     }
 
@@ -845,7 +846,7 @@ var Roca = function(game, position,id, spritesheet){
 
 
 module.exports = Roca;
-},{"./Class_GameObject.js":3,"./play_scene.js":11}],8:[function(require,module,exports){
+},{"./Class_GameObject.js":3,"./play_scene.js":12}],8:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -895,6 +896,7 @@ module.exports = Vegetal;
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var MenuScene = require('./menu.js');
 
 var BootScene = {
   preload: function () {
@@ -951,10 +953,16 @@ var PreloaderScene = {
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');
+
+
+    //COSAS DEL MENU
+    this.game.load.image('MenuFondo', 'images/Menu.png');
+    this.game.load.image('MenuFlecha', 'images/Flecha.png');
   },
 
   create: function () {
-    this.game.state.start('play');
+    this.game.state.start('menu');
+    //this.game.state.start('play');
   }
 };
 
@@ -965,11 +973,136 @@ window.onload = function () {
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
+  game.state.add('menu', MenuScene);
   game.state.add('play', PlayScene);
 
   game.state.start('boot');
 };
-},{"./play_scene.js":11}],11:[function(require,module,exports){
+},{"./menu.js":11,"./play_scene.js":12}],11:[function(require,module,exports){
+
+'use strict';
+
+var PlayScene = require('./play_scene.js');
+
+var musicaMenu;
+var menu;
+var Flechita;
+var cursors;  //cursores
+var PosicionSuperior, PosicionInferior;    //Coordenadas
+var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
+var timerControl;
+var Eleccion=false;
+
+var MenuScene = {
+
+    preload: function(){
+
+    },
+
+    create: function() {
+
+    this.game.time.create(false);
+
+    PosicionSuperior = new Par(350,400);
+    PosicionInferior = new Par(350,500);
+    ///////////////////////////////////////////////////MUSICA PARA EL PLAYER AL MOVERSE
+    //musicaMenu=this.game.add.audio('running90s');
+    //musicaMenu.play();
+
+    /*PUEDE SER UTIL PARA PONERLO EN EL MENU
+        
+    //Control de puntuaciones
+    scoreStringA = 'HI -';
+    scoreStringB = ' SCORE';
+    //scoreStringC = ' SCORE';
+    levelString = ' ROUND ';
+    scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
+    scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
+    //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
+        // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
+    score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
+    highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
+        
+    */
+
+    //Inicializar los cursores.
+    cursors = this.game.input.keyboard.createCursorKeys();
+    
+    menu = new Phaser.Sprite(this.game, 0, 800, 'MenuFondo');
+    menu.anchor.x = 0;
+    menu.anchor.y = 0;
+    Flechita = new Phaser.Sprite(this.game, PosicionSuperior._x, PosicionSuperior._y, 'MenuFlecha');
+    Flechita.anchor.x = 0;
+    Flechita.anchor.y = 0;
+    this.game.world.addChild(menu);
+    this.game.world.addChild(Flechita);   
+    
+
+},
+    update: function(){
+
+        if(menu.y>0)
+            menu.y--;
+
+
+        ///////////////////////HACKS//////////////////////////////////////
+        this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
+
+            ////////////////////MOVIMIENTO FLECHAS/////////////////
+            if(menu.y==0 && !Eleccion){
+                if(key.keyCode === cursors.up){
+                    if(Flechita.y == PosicionInferior._y){
+                        Flechita.y = PosicionSuperior._y;
+                        PosicionFlecha=true;
+                    }
+                }
+                if (key.keyCode === cursors.down){
+                    if(Flechita.y == PosicionSuperior._y){
+                        Flechita.y = PosicionInferior._y;
+                        PosicionFlecha=false;
+                    }
+                }
+            }
+
+            //////////////////ELECCION//////////////
+            if(key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
+                if(menu.y>0)
+                    menu.y=0;
+                else{
+                    Eleccion=true;
+                    timerControl.add(1000,Comienzo,this,this.game);
+                    timerControl.start();
+                }
+            }
+        }
+
+
+        //PUNTUACION
+        // highScoreText.text = localStorage.getItem("highscore"); {
+        //     if (puntuacion > localStorage.getItem("highscore")) { 
+        //         localStorage.setItem("highscore", puntuacion);
+        //     }
+        // }
+
+    },
+    render: function(){
+        
+    }
+}
+
+module.exports = MenuScene;
+
+
+function Par (x, y) {
+    this._x = x;
+    this._y = y;
+}
+
+function Comienzo(g){
+    if(PosicionFlecha)
+        g.state.start('play');
+}
+},{"./play_scene.js":12}],12:[function(require,module,exports){
 
  'use strict';
 
@@ -1026,9 +1159,12 @@ var Vegetable;
 var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
 
 var PosCentral;
-var Fondo;
 
+//BOOLEANOS DE CONTROL
 var cargado;
+var NextLevel;
+
+var timerControl;
 
 var PlayScene = {
 
@@ -1051,6 +1187,10 @@ var PlayScene = {
     },
 
     create: function() {
+
+        //TIMER PARA EL PASO DE NIVEL 
+        timerControl= this.game.time.create(false);
+        NextLevel=false;
 
         //MUSICA PARA EL PLAYER AL MOVERSE
         playerMusic=this.game.add.audio('running90s');
@@ -1130,22 +1270,8 @@ var PlayScene = {
         
         
         LoadMap(nivel,this.game);
-        
-        //Pared de la derecha y la superior en la llave inferior
-    {
-        paredDerecha = new Phaser.Sprite(this.game, limiteDerecho, 0, 'latDer');
-        paredDerecha.anchor.x = 0;
-        paredDerecha.anchor.y = 0;
-        paredDerecha.visible=false;
-        paredSuperior = new Phaser.Sprite(this.game, 0, 0, 'latSup');
-        paredSuperior.anchor.x = 0;
-        paredSuperior.anchor.y = 0;
-        paredSuperior.visible=false;
-        this.game.world.addChild(paredDerecha);
-        this.game.world.addChild(paredSuperior);   
-    }
 
-    StopEnemies();
+        StopEnemies();
 
 },
     update: function(){
@@ -1181,26 +1307,29 @@ var PlayScene = {
                 LevelComplete(this.game);
             }
 
-            //////////////////PRUEBA REPOSICIONAMIENTO//////////////
-            if(key.keyCode === Phaser.KeyCode.ENTER){
-                ContinuarLevel(this.game,thisLifes);
-            }
-
             ///////////////////NIVEL 1 A FULL VIDAS//////////////////
             if(key.keyCode === 49){     //El 1
                 ComenzarJuego(this.game);
             }
 
-            if(key.keyCode === Phaser.KeyCode.SPACEBAR){     //El 
-                player.Muerte();
-                StopEnemies();
+            if(key.keyCode === Phaser.KeyCode.ENTER){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+                MuertePlayer();
+            }
+
+            if(key.keyCode === Phaser.KeyCode.SPACEBAR){
+                for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
+                    GrupoEnemigos.children[gh].Destroy();
+                }
             }
         }
 
         
         //NIVEL COMPLETADO
-        //if(GrupoEnemigos.length==0 && cargado)
-        //    LevelComplete(this.game);
+        if(GrupoEnemigos.length==0 && !NextLevel){
+            NextLevel=true;
+            timerControl.add(1500,LevelWin,this, this.game);
+            timerControl.start();
+        }
 
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
@@ -1259,7 +1388,6 @@ var PlayScene = {
 
         if (player._Muerto){
             if (vidas>0){
-                console.debug('Paso nivel');
                 ContinuarLevel(this.game, thisLifes); //El player se muere y se restaura su posicion restandole una vida
             }
             else{
@@ -1267,6 +1395,7 @@ var PlayScene = {
             }
         }
         
+        console.debug(GrupoEnemigos.length);
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -1681,22 +1810,8 @@ function StartEnemies(){
     }
 }
 
-function LoadLevel(n){          //Carga un nuevo nivel y coloca al player en el sitio de spawn
-
-    LoadMap(n);
-
-    player.x=player._posInicial.x;
-    player.y=player._posInicial.y;
-
-    player._MovementEnable=false;  
-    player._AutomaticMovement=true;
-
-}
-
 function LevelComplete(g){
     nivel++;
-    rocasCaidas=0;
-    VegetalGenerado=false;
     g.state.restart('play', false, false);
 }
 
@@ -1715,6 +1830,22 @@ function ActualizaHUD(g,lfs){       //ACTUALIZA EL HUD DE LAS VIDAS
     }
 }
 
+function LevelWin(g){    //Para el sonido de victoria
+    if(!player._Muerto || !player._animMuerto){
+        playerMusic.stop();
+        player._animDig.stop();
+        player._animWalk.stop();
+        player._MovementEnable=false;
+        //Lanzar la musiquita de victoria (ajustar el timer a cuando se acabe el sonido)
+        timerControl.add(2500,LevelComplete,this,g);
+        timerControl.start();
+    }
+    else{
+        MuertePlayer();
+    }
+    
+}
+
 function ContinuarLevel(g,lfs){
     player._Muerto=false;
     player._MovementEnable=true;
@@ -1725,10 +1856,16 @@ function ContinuarLevel(g,lfs){
 }
 
 function ComenzarJuego(g){
+    playerMusic.stop();
     nivel=1;
     vidas=3;
     puntuacion=0;
     VegetalGenerado=false;
     g.state.restart('play', false, false);
+}
+
+function MuertePlayer(){
+    player.Muerte();
+    StopEnemies();
 }
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);

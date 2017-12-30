@@ -292,6 +292,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             if(!this._EsperandoComenzar){
             this._timer.add(3000, StartGame, this)
             this._timer.start();
+
             this._animWalk.paused=true;
             this._EsperandoComenzar=true;    
             }
@@ -305,7 +306,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
         this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
-        this._timer.add(2000,PlayerMuerto,this);
+        this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
     }
 

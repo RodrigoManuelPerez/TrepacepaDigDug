@@ -98,7 +98,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                 }
             }
             else{
-                if(this._SemiVelocidad==500)
+                if(this._SemiVelocidad==2000)
                     this._SemiVelocidad=0;
                 else
                     this._SemiVelocidad++;
