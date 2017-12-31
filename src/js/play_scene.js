@@ -31,11 +31,13 @@ var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
 var puntuacion=0;
-var scoreTextA, scoreTextB, scoreTextC, score;
+var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 var scoreStringC = '';
+var pauseString = '';
+var PAUSED=false;
 
 var vidas=3;
 var spriteVidas;
@@ -83,6 +85,11 @@ var PlayScene = {
 
     create: function() {
 
+        //TIMER PARA LA PAUSA
+        var timerPause = this.game.time.create(false);
+        timerPause.loop(500,switchPause,this);
+        timerPause.start();
+
         //TIMER PARA EL PASO DE NIVEL 
         timerControl= this.game.time.create(false);
         NextLevel=false;
@@ -110,10 +117,15 @@ var PlayScene = {
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
+        pauseString = 'PAUSED';
+
         levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
         //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
+        pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
+        pauseText.visible=false;
+        
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
@@ -141,7 +153,9 @@ var PlayScene = {
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
-        this.game.world.addChild(player); 
+        this.game.world.addChild(player);
+
+
 
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
@@ -211,12 +225,31 @@ var PlayScene = {
                 MuertePlayer();
             }
 
+            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._animMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+                if(!PAUSED){
+                    player._MovementEnable=false;
+                    player._animWalk.paused=true;
+                    StopEnemies();
+                    PAUSED=true;
+                    pauseText.visible=true;
+                }
+                else{
+                    player._MovementEnable=true;
+                    player._animWalk.paused=false;
+                    StartEnemies();
+                    PAUSED=false;
+                    pauseText.visible=false;
+                }
+            }
+
             if(key.keyCode === Phaser.KeyCode.SPACEBAR){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
                     GrupoEnemigos.children[gh].Destroy();
                 }
             }
         }
+
+
 
         
         //NIVEL COMPLETADO
@@ -305,6 +338,12 @@ var PlayScene = {
 }
 
 module.exports = PlayScene;
+
+function switchPause(){
+    if(PAUSED){
+        pauseText.visible=!pauseText.visible;
+    }
+}
 
 function onCollisionBandera(obj1,obj2){
     if(obj2._Fantasma && obj2._posicionInicial>0){

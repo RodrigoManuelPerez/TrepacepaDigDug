@@ -290,11 +290,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             if(this.angle!=0)
                 this.angle=0;
             if(!this._EsperandoComenzar){
-            this._timer.add(3000, StartGame, this)
-            this._timer.start();
-
-            this._animWalk.paused=true;
-            this._EsperandoComenzar=true;    
+                this._timer.add(3000, StartGame, this)
+                this._timer.start();
+                this._animWalk.paused=true;
+                this._EsperandoComenzar=true;    
             }
         }
     }
@@ -319,6 +318,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._AutomaticMovement=false;
         this._EnPosicion=true;
         this._animWalk.paused=false;
+        this._EsperandoComenzar=false;
     }
 
     

@@ -20,10 +20,10 @@ var MenuScene = {
 
     create: function() {
 
-    this.game.time.create(false);
+    timerControl = this.game.time.create(false);
 
-    PosicionSuperior = new Par(350,400);
-    PosicionInferior = new Par(350,500);
+    PosicionSuperior = new Par(300,330);
+    PosicionInferior = new Par(300,400);
     ///////////////////////////////////////////////////MUSICA PARA EL PLAYER AL MOVERSE
     //musicaMenu=this.game.add.audio('running90s');
     //musicaMenu.play();
@@ -47,12 +47,13 @@ var MenuScene = {
     //Inicializar los cursores.
     cursors = this.game.input.keyboard.createCursorKeys();
     
-    menu = new Phaser.Sprite(this.game, 0, 800, 'MenuFondo');
+    menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
     menu.anchor.x = 0;
     menu.anchor.y = 0;
     Flechita = new Phaser.Sprite(this.game, PosicionSuperior._x, PosicionSuperior._y, 'MenuFlecha');
     Flechita.anchor.x = 0;
     Flechita.anchor.y = 0;
+    Flechita.visible=false;
     this.game.world.addChild(menu);
     this.game.world.addChild(Flechita);   
     
@@ -60,8 +61,11 @@ var MenuScene = {
 },
     update: function(){
 
-        if(menu.y>0)
-            menu.y--;
+        if(menu.y>0){
+            menu.y-=2;
+        }
+        else if(!Flechita.visible)
+            Flechita.visible=true;
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -69,13 +73,15 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === cursors.up){
+                if(!Flechita.visible)
+                    Flechita.visible=true;
+                if(key.keyCode === Phaser.KeyCode.W){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === cursors.down){
+                if (key.keyCode === Phaser.KeyCode.S){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -89,7 +95,7 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
-                    timerControl.add(1000,Comienzo,this,this.game);
+                    timerControl.add(1200,Comienzo,this,this.game);
                     timerControl.start();
                 }
             }

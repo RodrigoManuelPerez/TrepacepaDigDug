@@ -694,11 +694,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             if(this.angle!=0)
                 this.angle=0;
             if(!this._EsperandoComenzar){
-            this._timer.add(3000, StartGame, this)
-            this._timer.start();
-
-            this._animWalk.paused=true;
-            this._EsperandoComenzar=true;    
+                this._timer.add(3000, StartGame, this)
+                this._timer.start();
+                this._animWalk.paused=true;
+                this._EsperandoComenzar=true;    
             }
         }
     }
@@ -723,6 +722,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._AutomaticMovement=false;
         this._EnPosicion=true;
         this._animWalk.paused=false;
+        this._EsperandoComenzar=false;
     }
 
     
@@ -1001,10 +1001,10 @@ var MenuScene = {
 
     create: function() {
 
-    this.game.time.create(false);
+    timerControl = this.game.time.create(false);
 
-    PosicionSuperior = new Par(350,400);
-    PosicionInferior = new Par(350,500);
+    PosicionSuperior = new Par(300,330);
+    PosicionInferior = new Par(300,400);
     ///////////////////////////////////////////////////MUSICA PARA EL PLAYER AL MOVERSE
     //musicaMenu=this.game.add.audio('running90s');
     //musicaMenu.play();
@@ -1028,12 +1028,13 @@ var MenuScene = {
     //Inicializar los cursores.
     cursors = this.game.input.keyboard.createCursorKeys();
     
-    menu = new Phaser.Sprite(this.game, 0, 800, 'MenuFondo');
+    menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
     menu.anchor.x = 0;
     menu.anchor.y = 0;
     Flechita = new Phaser.Sprite(this.game, PosicionSuperior._x, PosicionSuperior._y, 'MenuFlecha');
     Flechita.anchor.x = 0;
     Flechita.anchor.y = 0;
+    Flechita.visible=false;
     this.game.world.addChild(menu);
     this.game.world.addChild(Flechita);   
     
@@ -1041,8 +1042,11 @@ var MenuScene = {
 },
     update: function(){
 
-        if(menu.y>0)
-            menu.y--;
+        if(menu.y>0){
+            menu.y-=2;
+        }
+        else if(!Flechita.visible)
+            Flechita.visible=true;
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -1050,13 +1054,15 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === cursors.up){
+                if(!Flechita.visible)
+                    Flechita.visible=true;
+                if(key.keyCode === Phaser.KeyCode.W){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === cursors.down){
+                if (key.keyCode === Phaser.KeyCode.S){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -1070,7 +1076,7 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
-                    timerControl.add(1000,Comienzo,this,this.game);
+                    timerControl.add(1200,Comienzo,this,this.game);
                     timerControl.start();
                 }
             }
@@ -1136,11 +1142,13 @@ var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
 var puntuacion=0;
-var scoreTextA, scoreTextB, scoreTextC, score;
+var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
 var scoreStringB = '';
 var scoreStringC = '';
+var pauseString = '';
+var PAUSED=false;
 
 var vidas=3;
 var spriteVidas;
@@ -1188,6 +1196,11 @@ var PlayScene = {
 
     create: function() {
 
+        //TIMER PARA LA PAUSA
+        var timerPause = this.game.time.create(false);
+        timerPause.loop(500,switchPause,this);
+        timerPause.start();
+
         //TIMER PARA EL PASO DE NIVEL 
         timerControl= this.game.time.create(false);
         NextLevel=false;
@@ -1215,10 +1228,15 @@ var PlayScene = {
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
+        pauseString = 'PAUSED';
+
         levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
         //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
+        pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
+        pauseText.visible=false;
+        
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
@@ -1246,7 +1264,9 @@ var PlayScene = {
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
-        this.game.world.addChild(player); 
+        this.game.world.addChild(player);
+
+
 
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
@@ -1316,12 +1336,31 @@ var PlayScene = {
                 MuertePlayer();
             }
 
+            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._animMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+                if(!PAUSED){
+                    player._MovementEnable=false;
+                    player._animWalk.paused=true;
+                    StopEnemies();
+                    PAUSED=true;
+                    pauseText.visible=true;
+                }
+                else{
+                    player._MovementEnable=true;
+                    player._animWalk.paused=false;
+                    StartEnemies();
+                    PAUSED=false;
+                    pauseText.visible=false;
+                }
+            }
+
             if(key.keyCode === Phaser.KeyCode.SPACEBAR){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
                     GrupoEnemigos.children[gh].Destroy();
                 }
             }
         }
+
+
 
         
         //NIVEL COMPLETADO
@@ -1410,6 +1449,12 @@ var PlayScene = {
 }
 
 module.exports = PlayScene;
+
+function switchPause(){
+    if(PAUSED){
+        pauseText.visible=!pauseText.visible;
+    }
+}
 
 function onCollisionBandera(obj1,obj2){
     if(obj2._Fantasma && obj2._posicionInicial>0){
