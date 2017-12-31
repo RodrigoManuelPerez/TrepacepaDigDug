@@ -42,12 +42,15 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     Enemy.prototype.update = function() 
     {
+
+        console.debug(this._SemiVelocidad);
+
         if(this._MovementEnable){
 
             if(this._giros>25 && !this._Fantasma){
                 this._giros=0;
                 this._animWalk.stop();
-                this._animFant.play(6,true);
+                this._animFant.play(4,true);
                 this._Fantasma=true;
                 this.angle=0;
                 if(this.width<0)
@@ -55,7 +58,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                 this.ChangeDirPhantom();
             }
 
-            if(this._Fantasma && this._SemiVelocidad==0 || !this._Fantasma){
+            if((this._Fantasma && this._SemiVelocidad==0) || !this._Fantasma){
                 if(this._Movingleft && this.x>15){
                     this.x--;
                     this._distanceX--;
@@ -96,10 +99,13 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                             this.width=-this.width;
                     }
                 }
+                if(this._Fantasma)
+                    this._SemiVelocidad++;
             }
             else{
-                if(this._SemiVelocidad==2000)
+                if(this._SemiVelocidad>=1){
                     this._SemiVelocidad=0;
+                }
                 else
                     this._SemiVelocidad++;
             }

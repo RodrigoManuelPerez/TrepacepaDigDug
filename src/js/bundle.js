@@ -43,12 +43,15 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     Enemy.prototype.update = function() 
     {
+
+        console.debug(this._SemiVelocidad);
+
         if(this._MovementEnable){
 
             if(this._giros>25 && !this._Fantasma){
                 this._giros=0;
                 this._animWalk.stop();
-                this._animFant.play(6,true);
+                this._animFant.play(4,true);
                 this._Fantasma=true;
                 this.angle=0;
                 if(this.width<0)
@@ -56,7 +59,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                 this.ChangeDirPhantom();
             }
 
-            if(this._Fantasma && this._SemiVelocidad==0 || !this._Fantasma){
+            if((this._Fantasma && this._SemiVelocidad==0) || !this._Fantasma){
                 if(this._Movingleft && this.x>15){
                     this.x--;
                     this._distanceX--;
@@ -97,10 +100,13 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                             this.width=-this.width;
                     }
                 }
+                if(this._Fantasma)
+                    this._SemiVelocidad++;
             }
             else{
-                if(this._SemiVelocidad==2000)
+                if(this._SemiVelocidad>=1){
                     this._SemiVelocidad=0;
+                }
                 else
                     this._SemiVelocidad++;
             }
@@ -421,6 +427,15 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
+
+    this._core = new Phaser.Sprite(game, 0, 0, 'Banderita');
+    game.physics.enable(this._core, Phaser.Physics.ARCADE);
+    this._core.anchor.x = 0.5;
+    this._core.anchor.y = 0.5;
+    this._core.width = this._core.width/2;
+    this._core.height = this._core.height/2;
+    //this._core.visible=false;
+    this.addChild(this._core);
 
     this._Muerto=false;
     this._AnimMuerto=false;
@@ -1141,7 +1156,7 @@ var mapaNivel;
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
-var puntuacion=0;
+var puntuacion;
 var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
@@ -1225,6 +1240,7 @@ var PlayScene = {
         VegetalGenerado=false;
         
         //Control de puntuaciones
+        puntuacion=0;
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
@@ -1241,7 +1257,7 @@ var PlayScene = {
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
         levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
-        
+        score.text=puntuacion;
         //Niveles
         levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
 
@@ -1265,6 +1281,8 @@ var PlayScene = {
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
         this.game.world.addChild(player);
+
+        
 
 
 
@@ -1318,6 +1336,9 @@ var PlayScene = {
         //ENEMIGOS CON BANDERITAS DE CONTROL
         this.game.physics.arcade.collide(GrupoBanderas, GrupoEnemigos, onCollisionBandera);
 
+        //ENEMIGOS CON EL PLAYER
+        this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
+
 
         ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
@@ -1359,6 +1380,8 @@ var PlayScene = {
                 }
             }
         }
+
+
 
 
 
@@ -1430,11 +1453,9 @@ var PlayScene = {
                 ContinuarLevel(this.game, thisLifes); //El player se muere y se restaura su posicion restandole una vida
             }
             else{
-            //CARGARIAMOS OTRO ESTADO POR EJEMPLO O GENERAMOS UN SPRITE DE MUERTO Y PASAMOS A OTRO ESTADO PERO ME GUSTA MAS LO PRIMERO}
+                this.game.state.start('menu');
             }
         }
-        
-        console.debug(GrupoEnemigos.length);
 
         //MUSICA
         if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
@@ -1893,8 +1914,10 @@ function LevelWin(g){    //Para el sonido de victoria
 
 function ContinuarLevel(g,lfs){
     player._Muerto=false;
+    player._AnimMuerto=false;
     player._MovementEnable=true;
     vidas--;
+    PAUSED=false;
     ResetPosition();
     StartEnemies();
     ActualizaHUD(g,lfs);
@@ -1910,7 +1933,9 @@ function ComenzarJuego(g){
 }
 
 function MuertePlayer(){
-    player.Muerte();
-    StopEnemies();
+    if(!player._AnimMuerto){
+        player.Muerte();
+        StopEnemies();
+    }
 }
 },{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);
