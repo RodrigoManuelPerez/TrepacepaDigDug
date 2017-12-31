@@ -18,6 +18,7 @@ var Roca = function(game, position,id, spritesheet){
         this._PuntosActualizados=false;
         this._PuntosContabilizados=false;
 
+        this._RefPlayer;
         this._PlayerAplastado = false;
         this._i;
         this._indicePlayer=0;
@@ -36,6 +37,8 @@ var Roca = function(game, position,id, spritesheet){
                 for(var i=0; i<6; i++){
                     if (this._Falling && this.y<558){
                         this.y ++;
+                        if(this._PlayerAplastado)
+                            this._RefPlayer.y++;
                     }
                 }
             }
@@ -51,20 +54,16 @@ var Roca = function(game, position,id, spritesheet){
 
             this._timer.add(4000,BreakRock,this);
 
-            if(this.children.length==0){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
+            if(this.children.length==0 && !this._PlayerAplastado){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
                 this.animations.play('Breaking');
             }
             else
             {
-                
-                for (var i=0; i<this.children.length; i++){
-                    if(this.children[i]._id=='Player'){
-                        this._PlayerAplastado=true;
-                        this.children[i].Muerte();
-                        this._indicePlayer=i;
-                    }
+                if(this._PlayerAplastado){
+                    this._RefPlayer.Muerte();
+                    this._timer.add(100,BreakRock,this);
                 }
-                if(!this._PlayerAplastado)
+                else
                 {
                     this._i = this.children.length + 5;
                     if(this._i<14){
@@ -96,10 +95,6 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
-            console.debug(this.children.length);
-            if(this._PlayerAplastado){
-                this.removeChildAt(this._indicePlayer);
-            }
             this.Destroy();
         }
 

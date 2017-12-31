@@ -24,7 +24,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._core.anchor.y = 0.5;
     this._core.width = this._core.width/2;
     this._core.height = this._core.height/2;
-    //this._core.visible=false;
     this.addChild(this._core);
 
     this._Muerto=false;

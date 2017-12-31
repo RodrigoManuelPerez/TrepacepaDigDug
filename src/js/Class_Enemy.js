@@ -43,8 +43,6 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     Enemy.prototype.update = function() 
     {
 
-        console.debug(this._SemiVelocidad);
-
         if(this._MovementEnable){
 
             if(this._giros>25 && !this._Fantasma){

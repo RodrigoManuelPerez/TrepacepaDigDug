@@ -55,7 +55,7 @@ var MenuScene = {
     Flechita.anchor.y = 0;
     Flechita.visible=false;
     this.game.world.addChild(menu);
-    this.game.world.addChild(Flechita);   
+    this.game.world.addChild(Flechita);
     
 
 },

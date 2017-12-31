@@ -44,8 +44,6 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     Enemy.prototype.update = function() 
     {
 
-        console.debug(this._SemiVelocidad);
-
         if(this._MovementEnable){
 
             if(this._giros>25 && !this._Fantasma){
@@ -434,7 +432,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._core.anchor.y = 0.5;
     this._core.width = this._core.width/2;
     this._core.height = this._core.height/2;
-    //this._core.visible=false;
     this.addChild(this._core);
 
     this._Muerto=false;
@@ -764,6 +761,7 @@ var Roca = function(game, position,id, spritesheet){
         this._PuntosActualizados=false;
         this._PuntosContabilizados=false;
 
+        this._RefPlayer;
         this._PlayerAplastado = false;
         this._i;
         this._indicePlayer=0;
@@ -782,6 +780,8 @@ var Roca = function(game, position,id, spritesheet){
                 for(var i=0; i<6; i++){
                     if (this._Falling && this.y<558){
                         this.y ++;
+                        if(this._PlayerAplastado)
+                            this._RefPlayer.y++;
                     }
                 }
             }
@@ -797,20 +797,16 @@ var Roca = function(game, position,id, spritesheet){
 
             this._timer.add(4000,BreakRock,this);
 
-            if(this.children.length==0){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
+            if(this.children.length==0 && !this._PlayerAplastado){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
                 this.animations.play('Breaking');
             }
             else
             {
-                
-                for (var i=0; i<this.children.length; i++){
-                    if(this.children[i]._id=='Player'){
-                        this._PlayerAplastado=true;
-                        this.children[i].Muerte();
-                        this._indicePlayer=i;
-                    }
+                if(this._PlayerAplastado){
+                    this._RefPlayer.Muerte();
+                    this._timer.add(100,BreakRock,this);
                 }
-                if(!this._PlayerAplastado)
+                else
                 {
                     this._i = this.children.length + 5;
                     if(this._i<14){
@@ -842,10 +838,6 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
-            console.debug(this.children.length);
-            if(this._PlayerAplastado){
-                this.removeChildAt(this._indicePlayer);
-            }
             this.Destroy();
         }
 
@@ -1051,7 +1043,7 @@ var MenuScene = {
     Flechita.anchor.y = 0;
     Flechita.visible=false;
     this.game.world.addChild(menu);
-    this.game.world.addChild(Flechita);   
+    this.game.world.addChild(Flechita);
     
 
 },
@@ -1240,7 +1232,8 @@ var PlayScene = {
         VegetalGenerado=false;
         
         //Control de puntuaciones
-        puntuacion=0;
+        if(nivel==1)
+            puntuacion=0;
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
@@ -1275,11 +1268,12 @@ var PlayScene = {
         cursors = this.game.input.keyboard.createCursorKeys();
 
         //Construimos el player
-        var PosPlayer = new Par(493, 60);
+        var PosPlayer = new Par(358, 60);
         player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, 278, 318, 'DigDugWalking');
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
+        player.body.enable=true;
         this.game.world.addChild(player);
 
         
@@ -1453,6 +1447,7 @@ var PlayScene = {
                 ContinuarLevel(this.game, thisLifes); //El player se muere y se restaura su posicion restandole una vida
             }
             else{
+                nivel=1;
                 this.game.state.start('menu');
             }
         }
@@ -1510,31 +1505,33 @@ function onCollisionAplasta(obj1, obj2){
     if(obj2._Falling){
         if(obj1._id=='Player')  //Si el objeto es el digdug es necesario para su movimiento y asi pausar la cancion
         {
-            obj1._Movingdown=false;     //Pongo todas las variables que dicen que se esta moviendo el player a false
+            obj1.y-=15;
+            obj1._Movingdown=false;     
             obj1._Movingleft=false;
             obj1._Movingright=false;
             obj1._Movingup=false;
             obj2._PlayerAplastado=true;
+            obj2._RefPlayer=player;
             obj1._animWalk.stop();
             obj1._animDig.stop();
             obj1.Aplastado(4);
+            obj1.body.enable=false;
         }
-        else if(obj1._id=='Enemigo'){
-
+        else if(obj1._id=='Enemigo')
+        {
             obj1._animWalk.stop();
             obj1._animFant.stop();
             obj1.Aplastado(4);
+            obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
+            obj1.x=20;              //En la posicion correcta
+            obj1.y=35;
         }
         
         obj1._MovementEnable=false;
-
         
         if(obj1.angle!=0)
             obj1.angle=0;
-        
-        obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
-        obj1.x=20;              //En la posicion correcta
-        obj1.y=35;  
+          
     }
 }
 
@@ -1913,6 +1910,7 @@ function LevelWin(g){    //Para el sonido de victoria
 }
 
 function ContinuarLevel(g,lfs){
+    player.body.enable=true;
     player._Muerto=false;
     player._AnimMuerto=false;
     player._MovementEnable=true;
