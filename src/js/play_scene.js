@@ -148,7 +148,7 @@ var PlayScene = {
             // spriteFlor.anchor.setTo(-0.1, -0.1);
             // spriteFlor.scale.setTo(0.05, 0.05);
 
-            spriteFlor = new Flower(this.game,470 - (43 * i), 44, 'FlorSpriteSheet')
+            spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
 

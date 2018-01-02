@@ -262,8 +262,8 @@ var Flower = function(game, posx, posy, spriteSheet){
     
     Phaser.Sprite.apply(this,[game ,posx, posy, spriteSheet, 0]);
 
-    this._Anim =this.animations.add('Move', [0,1], 4, true);
-    this._Anim.play(4,true);
+    this._Anim =this.animations.add('Move', [0,1], 2, true);
+    this._Anim.play(2,true);
 
 }
 Flower.prototype = Object.create(Phaser.Sprite.prototype);
@@ -1290,7 +1290,7 @@ var PlayScene = {
             // spriteFlor.anchor.setTo(-0.1, -0.1);
             // spriteFlor.scale.setTo(0.05, 0.05);
 
-            spriteFlor = new Flower(this.game,470 - (43 * i), 44, 'FlorSpriteSheet')
+            spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
 
