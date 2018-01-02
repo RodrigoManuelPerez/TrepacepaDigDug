@@ -164,10 +164,6 @@ var PlayScene = {
         player.body.enable=true;
         this.game.world.addChild(player);
 
-        
-
-
-
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
         thisLifes = this.game.add.group()
