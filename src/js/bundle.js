@@ -1216,9 +1216,9 @@ var PlayScene = {
         //this.load.text('level'+ nivel, 'levels/level'+nivel+'1.json');
         this.game.load.text('level1', 'levels/level1.json'); //CAMBIAR ESTO POR EL NUMERO 1 PARA QUE VAYA SEGUN EL VALOR
         this.game.load.text('level2', 'levels/level2.json');
-        // this.game.load.text('level3', 'levels/level3.json');
-        // this.game.load.text('level4', 'levels/level4.json');
-        // this.game.load.text('level5', 'levels/level5.json');
+        this.game.load.text('level3', 'levels/level3.json');
+        this.game.load.text('level4', 'levels/level4.json');
+        this.game.load.text('level5', 'levels/level5.json');
         // this.game.load.text('level6', 'levels/level6.json');
         // this.game.load.text('level7', 'levels/level7.json');
         // this.game.load.text('level8', 'levels/level8.json');
@@ -1832,7 +1832,7 @@ function LoadMap (lvl,g) {
                         
                         
                     }
-                    else if(fila[i]=='5'){    //Enemigo
+                    else if(fila[i]=='5'){    //Enemigo Pooka
                         
                         var PosEne = new Par(posX-20,posY-23);
                         var enemigo = new Enemy('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
@@ -1854,6 +1854,28 @@ function LoadMap (lvl,g) {
                         BanderaControl.body.immovable = true;
 
                     }
+                    // else if(fila[i]=='6'){    //Enemigo Fygar
+                        
+                    //     var PosEne = new Par(posX-20,posY-23);
+                    //     var enemigo = new Fygar('F', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
+                    //     g.physics.enable(enemigo, Phaser.Physics.ARCADE);
+                    //     enemigo.anchor.x = 0.5;
+                    //     enemigo.anchor.y = 0.5;
+                    //     g.world.addChild(enemigo);
+                    //     GrupoEnemigos.add(enemigo);
+
+                    //     var PosCentralTierra = new Par(posX-20, posY-23);
+                    //     var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                    //     g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                    //     BanderaControl.anchor.x = 0.5;
+                    //     BanderaControl.anchor.y = 0.5;
+                    //     BanderaControl.visible=false;
+                    //     g.world.addChild(BanderaControl);
+                    //     GrupoBanderas.add(BanderaControl);
+                    //     BanderaControl.body.immovable = true;
+
+                    // }
                 }
             }
         }
