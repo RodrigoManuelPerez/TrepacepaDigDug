@@ -5,12 +5,15 @@ var PlayScene = require('./play_scene.js');
 
 var musicaMenu;
 var menu;
-var Flechita;
+var Flechita, parpadeando=false;
 var cursors;  //cursores
 var PosicionSuperior, PosicionInferior;    //Coordenadas
 var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
 var timerControl;
 var Eleccion=false;
+
+
+var scoreStringA,scoreTextA,highScoreText;
 
 var MenuScene = {
 
@@ -24,25 +27,9 @@ var MenuScene = {
 
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
-    ///////////////////////////////////////////////////MUSICA PARA EL PLAYER AL MOVERSE
+
     //musicaMenu=this.game.add.audio('running90s');
     //musicaMenu.play();
-
-    /*PUEDE SER UTIL PARA PONERLO EN EL MENU
-        
-    //Control de puntuaciones
-    scoreStringA = 'HI -';
-    scoreStringB = ' SCORE';
-    //scoreStringC = ' SCORE';
-    levelString = ' ROUND ';
-    scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
-    scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
-    //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
-        // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-    score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
-    highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        
-    */
 
     //Inicializar los cursores.
     cursors = this.game.input.keyboard.createCursorKeys();
@@ -57,6 +44,14 @@ var MenuScene = {
     this.game.world.addChild(menu);
     this.game.world.addChild(Flechita);
     
+    //Control de puntuaciones
+    scoreStringA = 'HI - SCORE: ';
+    scoreTextA = this.game.add.text(20, 20, scoreStringA, { font: '25px Arial', fill: '#fff' });
+    scoreTextA.visible=false;
+    highScoreText = this.game.add.text(180, 20, '0', { font: "bold 25px Arial", fill: "#46c0f9", align: "center" });
+    highScoreText.visible=false;
+    highScoreText.text = localStorage.getItem("highscore");
+    
 
 },
     update: function(){
@@ -64,8 +59,14 @@ var MenuScene = {
         if(menu.y>0){
             menu.y-=2;
         }
-        else if(!Flechita.visible)
-            Flechita.visible=true;
+        else if(!parpadeando){
+            parpadeando=true;
+            scoreTextA.visible=true;
+            highScoreText.visible=true;
+            var timerFlecha = this.game.time.create(false);
+            timerFlecha.loop(250,switchFlechita,this);
+            timerFlecha.start();
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -73,15 +74,13 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(!Flechita.visible)
-                    Flechita.visible=true;
-                if(key.keyCode === Phaser.KeyCode.W){
+                if(key.keyCode === Phaser.KeyCode.W || key.KeyCode === cursors.up){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S){
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === cursors.down){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -126,4 +125,10 @@ function Par (x, y) {
 function Comienzo(g){
     if(PosicionFlecha)
         g.state.start('play');
+}
+function switchFlechita(){
+    if(!Eleccion)
+        Flechita.visible=!Flechita.visible;
+    else
+    Flechita.visible=true;
 }

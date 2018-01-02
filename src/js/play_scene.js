@@ -30,7 +30,7 @@ var mapaNivel;
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
-var puntuacion;
+var puntuacion, puntuacionControl;
 var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
@@ -114,8 +114,10 @@ var PlayScene = {
         VegetalGenerado=false;
         
         //Control de puntuaciones
-        if(nivel==1)
+        if(nivel==1){
             puntuacion=0;
+            puntuacionControl=0;
+        }
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
@@ -167,7 +169,7 @@ var PlayScene = {
         thisLifes = this.game.add.group()
         this.game.add.text(599, 345, 'LIVES ', { font: '34px Arial', fill: '#fff' });
 
-        ActualizaHUD(this.game,thisLifes);
+        ActualizaHUD(this.game);
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -214,6 +216,11 @@ var PlayScene = {
 
         //ENEMIGOS CON EL PLAYER
         this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
+
+        //PLAYER CON VEGETAL
+        if(VegetalGenerado){
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -293,9 +300,7 @@ var PlayScene = {
             VegetalGenerado=true;
         }
 
-        if(VegetalGenerado){
-            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
-        }
+        
 
         //PUNTUACION
         highScoreText.text = localStorage.getItem("highscore"); {
@@ -315,7 +320,7 @@ var PlayScene = {
             }
             else if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
                 roca.children[k]._PuntosContabilizados=true;
-                sumaPuntos(roca.children[k]._PuntosConseguidos);
+                sumaPuntos(roca.children[k]._PuntosConseguidos,this.game);
             }
         }
 
@@ -453,21 +458,21 @@ function onCollisionTierra (obj1, obj2){
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+1;
                 obj2.width = obj2.width-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 1;
                 obj2.height = obj2.height-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             if (obj2.width<4 || obj2.height<4){
                 obj2.Destroy();
@@ -498,14 +503,8 @@ function onCollisionPara(obj1, obj2){
 }
 
 function onCollisionVegetable(obj1,obj2){
-    sumaPuntos(obj2._puntos);
+    sumaPuntos(obj2._puntos, this.g);
     obj2.Destroy();
-}
-
-function onColisionAñadeEnemigoHijo(obj1, obj2){
-
-    obj2._Enable = false; //Para parar al enemigo
-    obj1.addChild(obj2);
 }
 
 function Par (x, y) {
@@ -513,8 +512,18 @@ function Par (x, y) {
     this._y = y;
 }
 
-function sumaPuntos (x) {
+function sumaPuntos (x,g) {
     puntuacion += x;
+    puntuacionControl += x;
+    // timerUP = g.time.create(false);
+    // timerUP.add(1500,OneUPOFF)
+    if(puntuacionControl>=20000){
+        puntuacionControl-=20000;
+        if(vidas<6){
+            vidas++;
+            ActualizaHUD(g);
+        }
+    }
     score.text = puntuacion;
 } 
 
@@ -760,16 +769,16 @@ function LevelComplete(g){
     g.state.restart('play', false, false);
 }
 
-function ActualizaHUD(g,lfs){       //ACTUALIZA EL HUD DE LAS VIDAS
+function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
 
-    for (i = 0; i < lfs.length; i++) 
+    for (i = 0; i < thisLifes.length; i++) 
     {
-        lfs.removeChildren();
+        thisLifes.removeChildren();
     }
 
     for (i = 0; i < vidas; i++) 
     {
-        spriteVidas = lfs.create(556 + (43 * i), 388, 'DigDugWalking');
+        spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDugWalking');
         spriteVidas.frame=0;
         spriteVidas.alpha = 0.7;
     }

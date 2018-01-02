@@ -22,8 +22,8 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     game.physics.enable(this._core, Phaser.Physics.ARCADE);
     this._core.anchor.x = 0.5;
     this._core.anchor.y = 0.5;
-    this._core.width = this._core.width/2;
-    this._core.height = this._core.height/2;
+    this._core.width = this._core.width/4;
+    this._core.height = this._core.height/4;
     this.addChild(this._core);
 
     this._Muerto=false;

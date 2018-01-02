@@ -430,8 +430,8 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     game.physics.enable(this._core, Phaser.Physics.ARCADE);
     this._core.anchor.x = 0.5;
     this._core.anchor.y = 0.5;
-    this._core.width = this._core.width/2;
-    this._core.height = this._core.height/2;
+    this._core.width = this._core.width/4;
+    this._core.height = this._core.height/4;
     this.addChild(this._core);
 
     this._Muerto=false;
@@ -765,6 +765,8 @@ var Roca = function(game, position,id, spritesheet){
         this._PlayerAplastado = false;
         this._i;
         this._indicePlayer=0;
+        this._PlayerMovido=false;
+        this._PlayerMuerto=false;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -802,7 +804,8 @@ var Roca = function(game, position,id, spritesheet){
             }
             else
             {
-                if(this._PlayerAplastado){
+                if(this._PlayerAplastado && !this._PlayerMuerto){
+                    this._PlayerMuerto=true;
                     this._RefPlayer.Muerte();
                     this._timer.add(100,BreakRock,this);
                 }
@@ -838,6 +841,10 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
+            if(this._PlayerAplastado && !this._PlayerMovido){
+                this._RefPlayer.y-=25;
+                this._PlayerMovido=true;
+            }
             this.Destroy();
         }
 
@@ -993,12 +1000,15 @@ var PlayScene = require('./play_scene.js');
 
 var musicaMenu;
 var menu;
-var Flechita;
+var Flechita, parpadeando=false;
 var cursors;  //cursores
 var PosicionSuperior, PosicionInferior;    //Coordenadas
 var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
 var timerControl;
 var Eleccion=false;
+
+
+var scoreStringA,scoreTextA,highScoreText;
 
 var MenuScene = {
 
@@ -1012,25 +1022,9 @@ var MenuScene = {
 
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
-    ///////////////////////////////////////////////////MUSICA PARA EL PLAYER AL MOVERSE
+
     //musicaMenu=this.game.add.audio('running90s');
     //musicaMenu.play();
-
-    /*PUEDE SER UTIL PARA PONERLO EN EL MENU
-        
-    //Control de puntuaciones
-    scoreStringA = 'HI -';
-    scoreStringB = ' SCORE';
-    //scoreStringC = ' SCORE';
-    levelString = ' ROUND ';
-    scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
-    scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
-    //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
-        // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-    score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
-    highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        
-    */
 
     //Inicializar los cursores.
     cursors = this.game.input.keyboard.createCursorKeys();
@@ -1045,6 +1039,14 @@ var MenuScene = {
     this.game.world.addChild(menu);
     this.game.world.addChild(Flechita);
     
+    //Control de puntuaciones
+    scoreStringA = 'HI - SCORE: ';
+    scoreTextA = this.game.add.text(20, 20, scoreStringA, { font: '25px Arial', fill: '#fff' });
+    scoreTextA.visible=false;
+    highScoreText = this.game.add.text(180, 20, '0', { font: "bold 25px Arial", fill: "#46c0f9", align: "center" });
+    highScoreText.visible=false;
+    highScoreText.text = localStorage.getItem("highscore");
+    
 
 },
     update: function(){
@@ -1052,8 +1054,14 @@ var MenuScene = {
         if(menu.y>0){
             menu.y-=2;
         }
-        else if(!Flechita.visible)
-            Flechita.visible=true;
+        else if(!parpadeando){
+            parpadeando=true;
+            scoreTextA.visible=true;
+            highScoreText.visible=true;
+            var timerFlecha = this.game.time.create(false);
+            timerFlecha.loop(250,switchFlechita,this);
+            timerFlecha.start();
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -1061,15 +1069,13 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(!Flechita.visible)
-                    Flechita.visible=true;
-                if(key.keyCode === Phaser.KeyCode.W){
+                if(key.keyCode === Phaser.KeyCode.W || key.KeyCode === cursors.up){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S){
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === cursors.down){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -1115,6 +1121,12 @@ function Comienzo(g){
     if(PosicionFlecha)
         g.state.start('play');
 }
+function switchFlechita(){
+    if(!Eleccion)
+        Flechita.visible=!Flechita.visible;
+    else
+    Flechita.visible=true;
+}
 },{"./play_scene.js":12}],12:[function(require,module,exports){
 
  'use strict';
@@ -1148,7 +1160,7 @@ var mapaNivel;
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
-var puntuacion;
+var puntuacion, puntuacionControl;
 var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
 var maxPuntuacion = 0, highScoreText;
 var scoreStringA = '';
@@ -1232,8 +1244,10 @@ var PlayScene = {
         VegetalGenerado=false;
         
         //Control de puntuaciones
-        if(nivel==1)
+        if(nivel==1){
             puntuacion=0;
+            puntuacionControl=0;
+        }
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         //scoreStringC = ' SCORE';
@@ -1285,7 +1299,7 @@ var PlayScene = {
         thisLifes = this.game.add.group()
         this.game.add.text(599, 345, 'LIVES ', { font: '34px Arial', fill: '#fff' });
 
-        ActualizaHUD(this.game,thisLifes);
+        ActualizaHUD(this.game);
 
         //Añadir la tierra.
         tierra = this.game.add.physicsGroup();
@@ -1332,6 +1346,11 @@ var PlayScene = {
 
         //ENEMIGOS CON EL PLAYER
         this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
+
+        //PLAYER CON VEGETAL
+        if(VegetalGenerado){
+            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -1411,9 +1430,7 @@ var PlayScene = {
             VegetalGenerado=true;
         }
 
-        if(VegetalGenerado){
-            this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable);
-        }
+        
 
         //PUNTUACION
         highScoreText.text = localStorage.getItem("highscore"); {
@@ -1433,7 +1450,7 @@ var PlayScene = {
             }
             else if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
                 roca.children[k]._PuntosContabilizados=true;
-                sumaPuntos(roca.children[k]._PuntosConseguidos);
+                sumaPuntos(roca.children[k]._PuntosConseguidos,this.game);
             }
         }
 
@@ -1571,21 +1588,21 @@ function onCollisionTierra (obj1, obj2){
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
                 obj2.x = obj2.x+1;
                 obj2.width = obj2.width-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
                 obj2.y = obj2.y + 1;
                 obj2.height = obj2.height-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
                 obj2.height = obj2.height-1;
-                sumaPuntos(1);
+                sumaPuntos(1,this.g);
             }
             if (obj2.width<4 || obj2.height<4){
                 obj2.Destroy();
@@ -1616,14 +1633,8 @@ function onCollisionPara(obj1, obj2){
 }
 
 function onCollisionVegetable(obj1,obj2){
-    sumaPuntos(obj2._puntos);
+    sumaPuntos(obj2._puntos, this.g);
     obj2.Destroy();
-}
-
-function onColisionAñadeEnemigoHijo(obj1, obj2){
-
-    obj2._Enable = false; //Para parar al enemigo
-    obj1.addChild(obj2);
 }
 
 function Par (x, y) {
@@ -1631,8 +1642,18 @@ function Par (x, y) {
     this._y = y;
 }
 
-function sumaPuntos (x) {
+function sumaPuntos (x,g) {
     puntuacion += x;
+    puntuacionControl += x;
+    // timerUP = g.time.create(false);
+    // timerUP.add(1500,OneUPOFF)
+    if(puntuacionControl>=20000){
+        puntuacionControl-=20000;
+        if(vidas<6){
+            vidas++;
+            ActualizaHUD(g);
+        }
+    }
     score.text = puntuacion;
 } 
 
@@ -1878,16 +1899,16 @@ function LevelComplete(g){
     g.state.restart('play', false, false);
 }
 
-function ActualizaHUD(g,lfs){       //ACTUALIZA EL HUD DE LAS VIDAS
+function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
 
-    for (i = 0; i < lfs.length; i++) 
+    for (i = 0; i < thisLifes.length; i++) 
     {
-        lfs.removeChildren();
+        thisLifes.removeChildren();
     }
 
     for (i = 0; i < vidas; i++) 
     {
-        spriteVidas = lfs.create(556 + (43 * i), 388, 'DigDugWalking');
+        spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDugWalking');
         spriteVidas.frame=0;
         spriteVidas.alpha = 0.7;
     }

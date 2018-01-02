@@ -22,6 +22,8 @@ var Roca = function(game, position,id, spritesheet){
         this._PlayerAplastado = false;
         this._i;
         this._indicePlayer=0;
+        this._PlayerMovido=false;
+        this._PlayerMuerto=false;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -59,7 +61,8 @@ var Roca = function(game, position,id, spritesheet){
             }
             else
             {
-                if(this._PlayerAplastado){
+                if(this._PlayerAplastado && !this._PlayerMuerto){
+                    this._PlayerMuerto=true;
                     this._RefPlayer.Muerte();
                     this._timer.add(100,BreakRock,this);
                 }
@@ -95,6 +98,10 @@ var Roca = function(game, position,id, spritesheet){
             }
         }
         function BreakRock(){
+            if(this._PlayerAplastado && !this._PlayerMovido){
+                this._RefPlayer.y-=25;
+                this._PlayerMovido=true;
+            }
             this.Destroy();
         }
 
