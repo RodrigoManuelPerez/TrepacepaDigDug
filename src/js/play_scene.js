@@ -10,6 +10,7 @@ var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
 var Hook = require('./Class_Hook.js');
 var BloqueTierra = require('./Class_Tierra.js');
+var Flower = require('./Class_Flor.js');
 
 
 var player;
@@ -143,9 +144,12 @@ var PlayScene = {
 
         for (i = 0; i < nivel; i++)
         {
-            spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
-            spriteFlor.anchor.setTo(-0.1, -0.1);
-            spriteFlor.scale.setTo(0.05, 0.05);
+            // spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
+            // spriteFlor.anchor.setTo(-0.1, -0.1);
+            // spriteFlor.scale.setTo(0.05, 0.05);
+
+            spriteFlor = new Flower(this.game,470 - (43 * i), 44, 'FlorSpriteSheet')
+            thisFlor.addChild(spriteFlor);
         }
 
         //Inicializar los cursores.
