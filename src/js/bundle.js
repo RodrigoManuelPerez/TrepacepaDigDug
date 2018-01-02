@@ -255,7 +255,22 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     }
 
 module.exports = Enemy;
-},{"./Class_Movable.js":5}],2:[function(require,module,exports){
+},{"./Class_Movable.js":6}],2:[function(require,module,exports){
+'use strict';
+
+var Flower = function(game, posx, posy, spriteSheet){
+    
+    Phaser.Sprite.apply(this,[game ,posx, posy, spriteSheet, 0]);
+
+    this._Anim =this.animations.add('Move', [0,1], 4, true);
+    this._Anim.play(4,true);
+
+}
+Flower.prototype = Object.create(Phaser.Sprite.prototype);
+Flower.prototype.constructor = Flower;
+
+module.exports = Flower;
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var Enemy = require('./Class_Enemy.js');
@@ -276,7 +291,7 @@ var Fygar = function(game, position, sprite, id, limiteDerecho, limiteSuperior, 
     }
 
 module.exports = Fygar;
-},{"./Class_Enemy.js":1}],3:[function(require,module,exports){
+},{"./Class_Enemy.js":1}],4:[function(require,module,exports){
 'use strict';
 
 var GameObject = function(game, position, sprite,id,spriteSheet){
@@ -300,7 +315,7 @@ GameObject.prototype.Destroy = function()
 }
 
 module.exports = GameObject;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -370,7 +385,7 @@ var Hook = function(game, position, sprite,id, player){
         }
 
 module.exports = Hook;
-},{"./Class_GameObject.js":3}],5:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],6:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -405,7 +420,7 @@ var Movable = function(game, position, id, limiteDerecho, limiteSuperior, sprite
         this.frame=f;
     }
 module.exports = Movable;
-},{"./Class_GameObject.js":3}],6:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],7:[function(require,module,exports){
 'use strict';
 
 var Movable = require('./Class_Movable.js');
@@ -740,7 +755,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     
 
 module.exports = Player;
-},{"./Class_GameObject.js":3,"./Class_Movable.js":5}],7:[function(require,module,exports){
+},{"./Class_GameObject.js":4,"./Class_Movable.js":6}],8:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -860,7 +875,7 @@ var Roca = function(game, position,id, spritesheet){
 
 
 module.exports = Roca;
-},{"./Class_GameObject.js":3,"./play_scene.js":12}],8:[function(require,module,exports){
+},{"./Class_GameObject.js":4,"./play_scene.js":13}],9:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -880,7 +895,7 @@ var Tierra = function(game, position,sprite, id, posCentral){
 
 
 module.exports = Tierra;
-},{"./Class_GameObject.js":3}],9:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],10:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -906,7 +921,7 @@ var Vegetal = function(game, position, sprite,id, puntos){
     }
 
 module.exports = Vegetal;
-},{"./Class_GameObject.js":3}],10:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],11:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
@@ -940,12 +955,9 @@ var PreloaderScene = {
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
-
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
+    this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
 
-    this.game.load.image('Saco', 'images/SacoMonedas.png');
-    this.game.load.image('latDer', 'images/latDerecho.png');
-    this.game.load.image('latSup', 'images/latSuperior.png');
     this.game.load.image('Flor', 'images/flor.png');
 
     //DIFERENTES TIPOS DE TIERRA
@@ -992,7 +1004,7 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./menu.js":11,"./play_scene.js":12}],11:[function(require,module,exports){
+},{"./menu.js":12,"./play_scene.js":13}],12:[function(require,module,exports){
 
 'use strict';
 
@@ -1127,7 +1139,7 @@ function switchFlechita(){
     else
     Flechita.visible=true;
 }
-},{"./play_scene.js":12}],12:[function(require,module,exports){
+},{"./play_scene.js":13}],13:[function(require,module,exports){
 
  'use strict';
 
@@ -1140,6 +1152,7 @@ var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
 var Hook = require('./Class_Hook.js');
 var BloqueTierra = require('./Class_Tierra.js');
+var Flower = require('./Class_Flor.js');
 
 
 var player;
@@ -1273,9 +1286,12 @@ var PlayScene = {
 
         for (i = 0; i < nivel; i++)
         {
-            spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
-            spriteFlor.anchor.setTo(-0.1, -0.1);
-            spriteFlor.scale.setTo(0.05, 0.05);
+            // spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
+            // spriteFlor.anchor.setTo(-0.1, -0.1);
+            // spriteFlor.scale.setTo(0.05, 0.05);
+
+            spriteFlor = new Flower(this.game,470 - (43 * i), 44, 'FlorSpriteSheet')
+            thisFlor.addChild(spriteFlor);
         }
 
         //Inicializar los cursores.
@@ -1957,4 +1973,4 @@ function MuertePlayer(){
         StopEnemies();
     }
 }
-},{"./Class_Enemy.js":1,"./Class_Fygar.js":2,"./Class_GameObject.js":3,"./Class_Hook.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);
+},{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Hook.js":5,"./Class_Movable.js":6,"./Class_Player.js":7,"./Class_Roca.js":8,"./Class_Tierra.js":9,"./Class_Vegetal.js":10}]},{},[11]);
