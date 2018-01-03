@@ -5,7 +5,7 @@ var Enemy = require('./Class_Enemy.js');
 var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, fireBullet){
     Enemy.apply(this, [spritesheet, game, position, id, limiteDerecho, limiteSuperior, player]);
 
-    //this._animBreathFire = this.animations.add('Breathing',[9,10,11],3,false);   //animacion de coger fuego con 3 frames y sin loop
+    this._animBreathFire = this.animations.add('Breathing',[1,9],5,true);   //animacion de coger fuego con 2 frames y 3 loops
 
     this._TimerFuego = game.time.create(false);
     this._TimeToFire= Math.random() * (5000) + 10000;
@@ -26,7 +26,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             console.debug('Pueh Me paro');
             this._MovementEnable=false;
             this._animWalk.stop();
-            //this._animBreathFire.play(3,false);
+            this._animBreathFire.play(5,true);
             this._TimerFuego.add(1000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
             this._TimerFuego.start();
         }
@@ -39,13 +39,14 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     function ThrowFire(){
         console.debug('Te escupofuego LK');
+        this._animBreathFire.stop();
         this._ThrowingFire=true;
-        this._TimerFuego.add(1000,Continue,this);
+        this._TimerFuego.add(500,Continue,this);
         this._TimerFuego.start();
     }
 
     function Continue(){
-        console.debug(this._id);
+        console.debug('Continúo');
         this._MovementEnable=true;
         this._ThrowingFire=false;
         this._animWalk.play(6,true);
