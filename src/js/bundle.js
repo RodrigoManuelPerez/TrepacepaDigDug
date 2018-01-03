@@ -275,19 +275,45 @@ module.exports = Flower;
 
 var Enemy = require('./Class_Enemy.js');
 
-var Fygar = function(game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet){
-    Enemy.apply(this, [game, position, sprite, id, limiteDerecho, limiteSuperior, spriteSheet]);
+var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, fireBullet){
+    Enemy.apply(this, [spritesheet, game, position, id, limiteDerecho, limiteSuperior, player]);
 
-    //PARA MONTAR LAS ANIMACIONES DEL DRAGON
-    this._animWalk =this.animations.add('Walking');
-    this._animWalk.play(6,true);
+    //this._animBreathFire = this.animations.add('Breathing',[9,10,11],3,false);   //animacion de coger fuego con 3 frames y sin loop
+
+    this._TimerFuego = game.time.create(false);
+    this._TimeToFire= Math.random() * (5000) + 5000;
+
+    this._TimerFuego.add(this._TimeToFire,StopToFire,this);
+    this._TimerFuego.start();
+
+    this._ThrowingFire=false;
+    
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
     Fygar.prototype.constructor = Fygar;
 
-    Fygar.prototype.PlayerRock = function() {
-        this._Enable=false;
+    Fygar.prototype.update = function() {
+
+        if(this._ThrowingFire){
+            
+        }
+
+
+    }
+
+    function StopToFire(){
+        if(this._MovementEnable){
+            this._MovementEnable=false;
+            this._animWalk.stop();
+            //this._animBreathFire.play(3,false);
+            this._TimerFuego.add(2000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
+            this._TimerFuego.start();
+        }
+    }
+
+    function ThrowFire(){
+        this._ThrowingFire=true;
     }
 
 module.exports = Fygar;
@@ -1172,6 +1198,7 @@ var mapaNivel;
 
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
+var Fire, GrupoFireBullets;
 
 var puntuacion, puntuacionControl;
 var scoreTextA, scoreTextB, scoreTextC, score, pauseText;
@@ -1325,7 +1352,8 @@ var PlayScene = {
         GrupoEnemigos = this.game.add.physicsGroup();
         //Grupo de las banderas de control
         GrupoBanderas = this.game.add.physicsGroup();
-        
+        //Grupo de las balas de los Fygar
+        GrupoFireBullets = this.game.add.physicsGroup();
         
         LoadMap(nivel,this.game);
 
@@ -1850,28 +1878,39 @@ function LoadMap (lvl,g) {
                         BanderaControl.body.immovable = true;
 
                     }
-                    // else if(fila[i]=='6'){    //Enemigo Fygar
+                    else if(fila[i]=='6'){    //Enemigo Fygar
                         
-                    //     var PosEne = new Par(posX-20,posY-23);
-                    //     var enemigo = new Fygar('F', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
-                    //     g.physics.enable(enemigo, Phaser.Physics.ARCADE);
-                    //     enemigo.anchor.x = 0.5;
-                    //     enemigo.anchor.y = 0.5;
-                    //     g.world.addChild(enemigo);
-                    //     GrupoEnemigos.add(enemigo);
+                        console.debug('Creacion del Fygar');
 
-                    //     var PosCentralTierra = new Par(posX-20, posY-23);
-                    //     var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+                        var FireBullet = new Phaser.Sprite(this.game, 0, 0, 'Banderita');
+                        this.game.physics.enable(FireBullet, Phaser.Physics.ARCADE);
+                        FireBullet.anchor.x = 0.5;
+                        FireBullet.anchor.y = 0.5;
+                        FireBullet.width = FireBullet.width/4;
+                        FireBullet.height = FireBullet.height/4;
+                        GrupoFireBullets.addChild(FireBullet);
 
-                    //     g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
-                    //     BanderaControl.anchor.x = 0.5;
-                    //     BanderaControl.anchor.y = 0.5;
-                    //     BanderaControl.visible=false;
-                    //     g.world.addChild(BanderaControl);
-                    //     GrupoBanderas.add(BanderaControl);
-                    //     BanderaControl.body.immovable = true;
+                        var PosEne = new Par(posX-20,posY-23);
+                        var enemigo = new Fygar('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
+                        g.physics.enable(enemigo, Phaser.Physics.ARCADE);
+                        enemigo.anchor.x = 0.5;
+                        enemigo.anchor.y = 0.5;
+                        g.world.addChild(enemigo);
+                        GrupoEnemigos.add(enemigo);
+                        enemigo.addChild(FireBullet);
 
-                    // }
+                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
+
+                        g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
+                        BanderaControl.anchor.x = 0.5;
+                        BanderaControl.anchor.y = 0.5;
+                        BanderaControl.visible=false;
+                        g.world.addChild(BanderaControl);
+                        GrupoBanderas.add(BanderaControl);
+                        BanderaControl.body.immovable = true;
+
+                    }
                 }
             }
         }
