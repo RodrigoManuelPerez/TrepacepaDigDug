@@ -43,7 +43,6 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     Enemy.prototype.update = function() 
     {
-
         if(this._MovementEnable){
 
             if(this._giros>25 && !this._Fantasma){
@@ -275,7 +274,7 @@ module.exports = Flower;
 
 var Enemy = require('./Class_Enemy.js');
 
-var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, fireBullet){
+var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
     Enemy.apply(this, [spritesheet, game, position, id, limiteDerecho, limiteSuperior, player]);
 
     this._animBreathFire = this.animations.add('Breathing',[1,9],5,true);   //animacion de coger fuego con 2 frames y 3 loops
@@ -286,13 +285,26 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     this._TimerFuego.start();
 
     this._ThrowingFire=false;
-    this._MovementEnable=true;
-    
+
+    this._game = game;
+    this._GrupoTierra = grupoTierra;
+    this._FireBullet;
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
     Fygar.prototype.constructor = Fygar;
 
+    Fygar.prototype.update = function() 
+    {
+        this._game.physics.arcade.collide(this._FireBullet, this._GrupoTierra, onCollisionBulletTierra);
+        
+
+        Enemy.prototype.update.call(this);
+    }
+
+    function onCollisionBulletTierra(){
+
+    }
 
     function StopToFire(){
         if(this._MovementEnable && !this._Fantasma){
@@ -302,6 +314,13 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             this._animBreathFire.play(5,true);
             this._TimerFuego.add(1000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
             this._TimerFuego.start();
+
+            this._FireBullet = new Phaser.Sprite(this._game, 0, 0, 'Banderita');
+            this._game.physics.enable(this._FireBullet, Phaser.Physics.ARCADE);
+            this._FireBullet.anchor.x = 0.5;
+            this._FireBullet.anchor.y = 0.5;
+            this._FireBullet.width = this._FireBullet.width/4;
+            this._FireBullet.height = this._FireBullet.height/4;
         }
         else{
             this._TimeToFire= Math.random() * (5000) + 10000;
@@ -1591,10 +1610,12 @@ function onCollisionAplasta(obj1, obj2){
         {
             obj1._animWalk.stop();
             obj1._animFant.stop();
+            obj1.__animBreathFire.stop();
             obj1.Aplastado(4);
             obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
             obj1.x=20;              //En la posicion correcta
             obj1.y=35;
+            obj1.body.enable=false;
         }
         
         obj1._MovementEnable=false;
@@ -1893,22 +1914,13 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='6'){    //Enemigo Fygar
 
-                        var FireBullet = new Phaser.Sprite(g, 0, 0, 'Banderita');
-                        g.physics.enable(FireBullet, Phaser.Physics.ARCADE);
-                        FireBullet.anchor.x = 0.5;
-                        FireBullet.anchor.y = 0.5;
-                        FireBullet.width = FireBullet.width/4;
-                        FireBullet.height = FireBullet.height/4;
-                        GrupoFireBullets.addChild(FireBullet);
-
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
+                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
-                        enemigo.addChild(FireBullet);
 
                         var PosCentralTierra = new Par(posX-20, posY-23);
                         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 

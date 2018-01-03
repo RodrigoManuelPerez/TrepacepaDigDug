@@ -410,10 +410,12 @@ function onCollisionAplasta(obj1, obj2){
         {
             obj1._animWalk.stop();
             obj1._animFant.stop();
+            obj1.__animBreathFire.stop();
             obj1.Aplastado(4);
             obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
             obj1.x=20;              //En la posicion correcta
             obj1.y=35;
+            obj1.body.enable=false;
         }
         
         obj1._MovementEnable=false;
@@ -712,22 +714,13 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='6'){    //Enemigo Fygar
 
-                        var FireBullet = new Phaser.Sprite(g, 0, 0, 'Banderita');
-                        g.physics.enable(FireBullet, Phaser.Physics.ARCADE);
-                        FireBullet.anchor.x = 0.5;
-                        FireBullet.anchor.y = 0.5;
-                        FireBullet.width = FireBullet.width/4;
-                        FireBullet.height = FireBullet.height/4;
-                        GrupoFireBullets.addChild(FireBullet);
-
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
+                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
-                        enemigo.addChild(FireBullet);
 
                         var PosCentralTierra = new Par(posX-20, posY-23);
                         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
