@@ -281,39 +281,50 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     //this._animBreathFire = this.animations.add('Breathing',[9,10,11],3,false);   //animacion de coger fuego con 3 frames y sin loop
 
     this._TimerFuego = game.time.create(false);
-    this._TimeToFire= Math.random() * (5000) + 5000;
-
+    this._TimeToFire= Math.random() * (5000) + 10000;
     this._TimerFuego.add(this._TimeToFire,StopToFire,this);
     this._TimerFuego.start();
 
     this._ThrowingFire=false;
+    this._MovementEnable=true;
     
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
     Fygar.prototype.constructor = Fygar;
 
-    Fygar.prototype.update = function() {
-
-        if(this._ThrowingFire){
-            
-        }
-
-
-    }
 
     function StopToFire(){
-        if(this._MovementEnable){
+        if(this._MovementEnable && !this._Fantasma){
+            console.debug('Pueh Me paro');
             this._MovementEnable=false;
             this._animWalk.stop();
             //this._animBreathFire.play(3,false);
-            this._TimerFuego.add(2000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
+            this._TimerFuego.add(1000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
+            this._TimerFuego.start();
+        }
+        else{
+            this._TimeToFire= Math.random() * (5000) + 10000;
+            this._TimerFuego.add(this._TimeToFire,StopToFire,this);
             this._TimerFuego.start();
         }
     }
 
     function ThrowFire(){
+        console.debug('Te escupofuego LK');
         this._ThrowingFire=true;
+        this._TimerFuego.add(1000,Continue,this);
+        this._TimerFuego.start();
+    }
+
+    function Continue(){
+        console.debug(this._id);
+        this._MovementEnable=true;
+        this._ThrowingFire=false;
+        this._animWalk.play(6,true);
+        this._TimeToFire= Math.random() * (5000) + 10000;
+        this._TimerFuego.add(this._TimeToFire,StopToFire,this);
+        this._TimerFuego.start();
     }
 
 module.exports = Fygar;
@@ -979,7 +990,8 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
-    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);
+    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
+    this.game.load.spritesheet('FygarSpriteSheet', 'images/FygarSpriteSheet.png', 36, 36, 10);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
@@ -1879,11 +1891,9 @@ function LoadMap (lvl,g) {
 
                     }
                     else if(fila[i]=='6'){    //Enemigo Fygar
-                        
-                        console.debug('Creacion del Fygar');
 
-                        var FireBullet = new Phaser.Sprite(this.game, 0, 0, 'Banderita');
-                        this.game.physics.enable(FireBullet, Phaser.Physics.ARCADE);
+                        var FireBullet = new Phaser.Sprite(g, 0, 0, 'Banderita');
+                        g.physics.enable(FireBullet, Phaser.Physics.ARCADE);
                         FireBullet.anchor.x = 0.5;
                         FireBullet.anchor.y = 0.5;
                         FireBullet.width = FireBullet.width/4;
@@ -1891,7 +1901,7 @@ function LoadMap (lvl,g) {
                         GrupoFireBullets.addChild(FireBullet);
 
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
+                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;

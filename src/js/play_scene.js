@@ -711,11 +711,9 @@ function LoadMap (lvl,g) {
 
                     }
                     else if(fila[i]=='6'){    //Enemigo Fygar
-                        
-                        console.debug('Creacion del Fygar');
 
-                        var FireBullet = new Phaser.Sprite(this.game, 0, 0, 'Banderita');
-                        this.game.physics.enable(FireBullet, Phaser.Physics.ARCADE);
+                        var FireBullet = new Phaser.Sprite(g, 0, 0, 'Banderita');
+                        g.physics.enable(FireBullet, Phaser.Physics.ARCADE);
                         FireBullet.anchor.x = 0.5;
                         FireBullet.anchor.y = 0.5;
                         FireBullet.width = FireBullet.width/4;
@@ -723,7 +721,7 @@ function LoadMap (lvl,g) {
                         GrupoFireBullets.addChild(FireBullet);
 
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
+                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player,FireBullet);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
