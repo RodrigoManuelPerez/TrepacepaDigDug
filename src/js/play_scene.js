@@ -410,7 +410,8 @@ function onCollisionAplasta(obj1, obj2){
         {
             obj1._animWalk.stop();
             obj1._animFant.stop();
-            obj1.__animBreathFire.stop();
+            if(obj1._animBreathFire!=undefined)
+                obj1._animBreathFire.stop();
             obj1.Aplastado(4);
             obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
             obj1.x=20;              //En la posicion correcta
@@ -849,6 +850,7 @@ function ComenzarJuego(g){
 
 function MuertePlayer(){
     if(!player._AnimMuerto){
+        playerMusic.stop();
         player.Muerte();
         StopEnemies();
     }
