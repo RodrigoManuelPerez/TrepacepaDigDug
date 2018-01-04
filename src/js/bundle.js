@@ -296,16 +296,8 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     this._Fire;
 
-    this._Fire1;
-    this._Fire1 = this._game.add.sprite('1Fire');
-    
-    this._Fire2;
-    this._Fire2 = this.game.add.sprite('2Fires');
-    this._2FiresAnim = this._Fire2.animations.add('2FramesFire',[0,1],10,false);
-
-    this._Fire3;
-    this._Fire3 = this.game.add.sprite('3Fires');
-    this._3FiresAnim = this._Fire2.animations.add('3FramesFire',[0,1,2],10,false);
+    this._2FiresAnim;
+    this._3FiresAnim;
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -394,22 +386,25 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         console.debug('Te escupofuego LK');
 
         if(Math.abs(this._distanciaX)>100 || Math.abs(this._distanciaY)>100){
-            this._Fire=this.game.add.sprite('3Fires');
-            this._3FiresAnim = this._Fire2.animations.add('3FramesFire',[0,1],10,false);
+            this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '1Fire');       //CAMBIAR EL 1 FIRE
+            // this._Fire.frame=0;
+            // this._Fire.animations.add('3FramesFire',[0,1,2],10,false);
             
+            console.debug(this._Fire.x);
+            console.debug(this._Fire.y);
 
             if(this._Movingleft){
-                this._Fire.anchor.x=0;
+                this._Fire.anchor.x=0.5;
                 this._Fire.anchor.y=0.5;
                 this._Fire.width=-this._Fire.width;
-                this._Fire.x = this.x - 15;
-                this._3FiresAnim.play(10,false);
+                this._Fire.x-=20;
+                //this._3FiresAnim.play(10,false);
             }
             else if (this._Movingright){
-                this._Fire.anchor.x=0;
+                this._Fire.anchor.x=0.5;
                 this._Fire.anchor.y=0.5;
-                this._Fire.x = this.x + 15;
-                this._3FiresAnim.play(10,false);
+                this._Fire.x+=20;
+                //this._3FiresAnim.play(10,false);
             }
             else if (this._Movingup){
                 
@@ -419,7 +414,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             }
 
         }
-        else if(this.Math.abs(this._distanciaX)>60 || Math.abs(this._distanciaX)>60){
+        else if(Math.abs(this._distanciaX)>60 || Math.abs(this._distanciaX)>60){
             this._Fire=this.game.add.sprite('2Fires');
             this._2FiresAnim = this._Fire2.animations.add('2FramesFire',[0,1],10,false);
         }
