@@ -36,8 +36,8 @@ var PreloaderScene = {
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
-    this.game.load.spritesheet('2Fires', 'images/2FramesFire.png', 80, 40, 2);
-    this.game.load.spritesheet('3Fires', 'images/3FramesFire.png', 160, 40, 3);
+    this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
+    this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
 
     //this.game.load.image('Flor', 'images/flor.png');
 
@@ -60,6 +60,8 @@ var PreloaderScene = {
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');
+
+    this.game.load.image('col', 'images/RocaColl.png')
 
 
     //COSAS DEL MENU

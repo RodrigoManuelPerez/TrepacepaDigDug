@@ -87,6 +87,9 @@ var PlayScene = {
 
     create: function() {
 
+        if(nivel==1)
+            vidas=3;
+
         //TIMER PARA LA PAUSA
         var timerPause = this.game.time.create(false);
         timerPause.loop(500,switchPause,this);
@@ -224,6 +227,8 @@ var PlayScene = {
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
         }
 
+        if(player._AnimMuerto)
+            StopEnemies();
 
         ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
@@ -238,11 +243,7 @@ var PlayScene = {
                 ComenzarJuego(this.game);
             }
 
-            if(key.keyCode === Phaser.KeyCode.ENTER){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
-                MuertePlayer();
-            }
-
-            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._animMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._AnimMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
                 if(!PAUSED){
                     player._MovementEnable=false;
                     player._animWalk.paused=true;
@@ -266,11 +267,6 @@ var PlayScene = {
             }
         }
 
-
-
-
-
-        
         //NIVEL COMPLETADO
         if(GrupoEnemigos.length==0 && !NextLevel){
             NextLevel=true;
@@ -520,8 +516,6 @@ function Par (x, y) {
 function sumaPuntos (x,g) {
     puntuacion += x;
     puntuacionControl += x;
-    // timerUP = g.time.create(false);
-    // timerUP.add(1500,OneUPOFF)
     if(puntuacionControl>=20000){
         puntuacionControl-=20000;
         if(vidas<6){
@@ -788,6 +782,8 @@ function StartEnemies(){
         GrupoEnemigos.children[t]._giros=0;
         GrupoEnemigos.children[t]._posicionInicial=0;
         GrupoEnemigos.children[t]._bufferBounce=1;
+        if(GrupoEnemigos.children[t]._playerBurnt!=undefined)
+            GrupoEnemigos.children[t]._playerBurnt=false;
     }
 }
 
@@ -812,7 +808,7 @@ function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
 }
 
 function LevelWin(g){    //Para el sonido de victoria
-    if(!player._Muerto || !player._animMuerto){
+    if(!player._Muerto || !player._AnimMuerto){
         playerMusic.stop();
         player._animDig.stop();
         player._animWalk.stop();

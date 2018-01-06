@@ -23,6 +23,10 @@ var MenuScene = {
 
     create: function() {
 
+    Eleccion=false;
+    parpadeando=false;
+    PosicionFlecha = true;
+
     timerControl = this.game.time.create(false);
 
     PosicionSuperior = new Par(300,330);
@@ -99,15 +103,6 @@ var MenuScene = {
                 }
             }
         }
-
-
-        //PUNTUACION
-        // highScoreText.text = localStorage.getItem("highscore"); {
-        //     if (puntuacion > localStorage.getItem("highscore")) { 
-        //         localStorage.setItem("highscore", puntuacion);
-        //     }
-        // }
-
     },
     render: function(){
         

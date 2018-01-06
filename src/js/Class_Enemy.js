@@ -44,7 +44,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     {
         if(this._MovementEnable){
 
-            if(this._giros>25 && !this._Fantasma){
+            if(this._giros>300 && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
                 this._animWalk.stop();
                 this._animFant.play(4,true);

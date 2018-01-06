@@ -100,6 +100,7 @@ var Roca = function(game, position,id, spritesheet){
         function BreakRock(){
             if(this._PlayerAplastado && !this._PlayerMovido){
                 this._RefPlayer.y-=25;
+                this._RefPlayer.x = this.x + this.width/2;
                 this._PlayerMovido=true;
             }
             this.Destroy();

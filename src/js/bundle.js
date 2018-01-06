@@ -45,7 +45,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     {
         if(this._MovementEnable){
 
-            if(this._giros>25 && !this._Fantasma){
+            if(this._giros>300 && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
                 this._animWalk.stop();
                 this._animFant.play(4,true);
@@ -285,8 +285,10 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     this._TimerFuego.start();
 
     this._ThrowingBullet=false;
+    this._ThrowingFire=false;
     this._playerBurnt=false;
 
+    this._player=player;
     this._game = game;
     this._GrupoTierra = grupoTierra;
     this._FireBullet;
@@ -339,39 +341,51 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                 else
                     onCollisionBulletTierra.call(this);
             }
+            
         }
+        
+        if(this._game.physics.arcade.collide(this._FireBullet, this._GrupoTierra))
+            onCollisionBulletTierra.call(this);
 
-        this._game.physics.arcade.collide(this._FireBullet, this._GrupoTierra, onCollisionBulletTierra);
-        this._game.physics.arcade.collide(this._player, this._Fire, onCollisionFirePlayer);
+        if(this._game.physics.arcade.collide(this._player, this._Fire))
+            onCollisionFirePlayer.call(this);
 
         Enemy.prototype.update.call(this);
     }
     function onCollisionFirePlayer(){
-        this._playerBurnt=true;
-        this._playerBurnt.Muerte();
-        this._game.StopEnemies.call(this._game);
+        if(!this._playerBurnt){
+            this._playerBurnt=true;
+            this._player.Muerte();
+        }
     }
 
     function onCollisionBulletTierra(){
+        
         this._ThrowingBullet=false;
         this._FireBullet.destroy();
+        
     }
 
     function StopToFire(){
+        
         if(this._MovementEnable && !this._Fantasma){
-            
+
+
             this._MovementEnable=false;
             this._animWalk.stop();
             this._animBreathFire.play(5,true);
             this._TimerFuego.add(1000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
             this._TimerFuego.start();
 
-            this._FireBullet = new Phaser.Sprite(this._game, 0, 0, 'Banderita');
+            this._FireBullet = new Phaser.Sprite(this._game, this.x, this.y, 'col');
             this._game.physics.enable(this._FireBullet, Phaser.Physics.ARCADE);
+            
+            this._FireBullet.height = this._FireBullet.height/2;
+            this._FireBullet.width = this._FireBullet.width/12;
+            this._FireBullet.visible=true;
             this._FireBullet.anchor.x = 0.5;
             this._FireBullet.anchor.y = 0.5;
-            this._FireBullet.width = this._FireBullet.width;
-            this._FireBullet.height = this._FireBullet.height;
+            this._game.world.add(this._FireBullet);
 
             this._ThrowingBullet=true;
         }
@@ -383,66 +397,121 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     }
 
     function ThrowFire(){
-        console.debug('Te escupofuego LK');
 
-        if(Math.abs(this._distanciaX)>100 || Math.abs(this._distanciaY)>100){
-            this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '1Fire');       //CAMBIAR EL 1 FIRE
-            // this._Fire.frame=0;
-            // this._Fire.animations.add('3FramesFire',[0,1,2],10,false);
-            
-            console.debug(this._Fire.x);
-            console.debug(this._Fire.y);
+        if(Math.abs(this._distanciaX)>110 || Math.abs(this._distanciaY)>110){
+            this._3FireSpritesheet='3';
+            this._Fire=new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0] );
 
-            if(this._Movingleft){
-                this._Fire.anchor.x=0.5;
-                this._Fire.anchor.y=0.5;
-                this._Fire.width=-this._Fire.width;
-                this._Fire.x-=20;
-                //this._3FiresAnim.play(10,false);
+            this._Fire.anchor.x=0.5;
+            this._Fire.anchor.y=0.5;
+            this._FireAnim = this._Fire.animations.add('3FramesFire',[0,1,2],10,false);
+            this._FireAnim.play(10,false);
+            this._game.world.add(this._Fire);
+
+            // if(this._distanciaX!=0)
+            //     this._Fire.width = Math.abs(this._distanciaX);
+            // else if(this._distanciaY!=0)
+            //     this._Fire.width = Math.abs(this._distanciaY);
+
+            if(this._Movingleft){               
+                this._Fire.x-=70;
+                this._Fire.width = -this._Fire.width;
             }
             else if (this._Movingright){
-                this._Fire.anchor.x=0.5;
-                this._Fire.anchor.y=0.5;
-                this._Fire.x+=20;
-                //this._3FiresAnim.play(10,false);
+                this._Fire.x+=70;
             }
             else if (this._Movingup){
-                
+                this._Fire.angle = -90;
+                this._Fire.y-=70;
             }
             else if(this._Movingdown){
-                
+                this._Fire.angle = 90;
+                this._Fire.y+=70;
+            }   
+
+        }
+        else if(Math.abs(this._distanciaX)>70 || Math.abs(this._distanciaX)>70){
+            this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '2');
+            this._Fire.anchor.x=0.5;
+            this._Fire.anchor.y=0.5;
+            this._FireAnim = this._Fire.animations.add('2FramesFire',[0,1],10,false);
+            this._FireAnim.play(10,false);
+            this._game.world.add(this._Fire);
+            
+            // if(this._distanciaX!=0)
+            //     this._Fire.width = Math.abs(this._distanciaX);
+            // else if(this._distanciaY!=0)
+            //     this._Fire.width = Math.abs(this._distanciaY);
+
+            if(this._Movingleft){                
+                this._Fire.x-=50;
+                this._Fire.width = -this._Fire.width;
             }
+            else if (this._Movingright){
+                this._Fire.x+=50;
+            }
+            else if (this._Movingup){
+                this._Fire.angle = -90;
+                this._Fire.y-=50;
+            }
+            else if(this._Movingdown){
+                this._Fire.angle = 90;
+                this._Fire.y+=50;
+            }
+        }
+        else if(Math.abs(this._distanciaX)>30 || Math.abs(this._distanciaX)>30){
+            this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
+            this._Fire.anchor.x=0.5;
+            this._Fire.anchor.y=0.5;
+            this._game.world.add(this._Fire);
+            
 
+            if(this._Movingleft){    
+                this._Fire.width = -this._Fire.width;            
+                this._Fire.x-=32;
+            }
+            else if (this._Movingright){
+                this._Fire.x+=32;
+            }
+            else if (this._Movingup){
+                this._Fire.angle = -90;
+                this._Fire.y-=32;
+            }
+            else if(this._Movingdown){
+                this._Fire.angle = 90;
+                this._Fire.y+=32;
+            }
         }
-        else if(Math.abs(this._distanciaX)>60 || Math.abs(this._distanciaX)>60){
-            this._Fire=this.game.add.sprite('2Fires');
-            this._2FiresAnim = this._Fire2.animations.add('2FramesFire',[0,1],10,false);
-        }
-        else{
-            this._Fire=this._game.add.sprite('1Fire');
-        }
-
         
-        //AQUI HACEMOS LA ANIMACION Y LA ELECCION DE CUAL DE TODAS
-        //EL THROWING FIRE SERIA MEJOR UN BOLEANO DE SI HAS PILLADO AL PLAYER POR LO QUE MIENTRAS THROWING FIRE ESTE A TRUE
-        //COMPROBAMOS COLISION ENTRE EL FUEGO Y EL PLAYER, SI ES TRUE, SE MUERE EL PLAYER Y SE PONE LA CONDICION
-        //DE CONTINUE A QUE NO HAYAS PILLADO AL PLAYER
-        //PONEMOS LAS VARIABLES NECESARIAS PARA CONTINUAR CON EL JUEGO
-
         this._animBreathFire.stop();
         this._ThrowingFire=true;
-        this._TimerFuego.add(500,Continue,this);
+        if(this._Fire!=undefined){
+            this._TimerFuego.add(150,ActiveFireCollider,this);
+            this._TimerFuego.start();
+        }
+        this._TimerFuego.add(400,Continue,this);
         this._TimerFuego.start();
+        
+    }
+
+    function ActiveFireCollider(){
+        this._game.physics.enable(this._Fire, Phaser.Physics.ARCADE);
     }
 
     function Continue(){
         if(!this._playerBurnt){
             this._MovementEnable=true;
             this._animWalk.play(6,true);
-            this._TimeToFire= Math.random() * (5000) + 10000;
-            this._TimerFuego.add(this._TimeToFire,StopToFire,this);
-            this._TimerFuego.start();
         }
+        if(this._Fire!=undefined)
+            this._Fire.destroy();
+        this._ThrowingFire=false;
+        this._TimeToFire= Math.random() * (5000) + 10000;
+        this._TimerFuego.add(this._TimeToFire,StopToFire,this);
+        this._TimerFuego.start();
+        this._distanciaX=0;
+        this._distanciaY=0;
+
     }
 
 module.exports = Fygar;
@@ -1013,6 +1082,7 @@ var Roca = function(game, position,id, spritesheet){
         function BreakRock(){
             if(this._PlayerAplastado && !this._PlayerMovido){
                 this._RefPlayer.y-=25;
+                this._RefPlayer.x = this.x + this.width/2;
                 this._PlayerMovido=true;
             }
             this.Destroy();
@@ -1115,8 +1185,8 @@ var PreloaderScene = {
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
-    this.game.load.spritesheet('2Fires', 'images/2FramesFire.png', 80, 40, 2);
-    this.game.load.spritesheet('3Fires', 'images/3FramesFire.png', 160, 40, 3);
+    this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
+    this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
 
     //this.game.load.image('Flor', 'images/flor.png');
 
@@ -1139,6 +1209,8 @@ var PreloaderScene = {
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');
+
+    this.game.load.image('col', 'images/RocaColl.png')
 
 
     //COSAS DEL MENU
@@ -1189,6 +1261,10 @@ var MenuScene = {
     },
 
     create: function() {
+
+    Eleccion=false;
+    parpadeando=false;
+    PosicionFlecha = true;
 
     timerControl = this.game.time.create(false);
 
@@ -1266,15 +1342,6 @@ var MenuScene = {
                 }
             }
         }
-
-
-        //PUNTUACION
-        // highScoreText.text = localStorage.getItem("highscore"); {
-        //     if (puntuacion > localStorage.getItem("highscore")) { 
-        //         localStorage.setItem("highscore", puntuacion);
-        //     }
-        // }
-
     },
     render: function(){
         
@@ -1388,6 +1455,9 @@ var PlayScene = {
     },
 
     create: function() {
+
+        if(nivel==1)
+            vidas=3;
 
         //TIMER PARA LA PAUSA
         var timerPause = this.game.time.create(false);
@@ -1526,6 +1596,8 @@ var PlayScene = {
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
         }
 
+        if(player._AnimMuerto)
+            StopEnemies();
 
         ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
@@ -1540,11 +1612,7 @@ var PlayScene = {
                 ComenzarJuego(this.game);
             }
 
-            if(key.keyCode === Phaser.KeyCode.ENTER){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
-                MuertePlayer();
-            }
-
-            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._animMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._AnimMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
                 if(!PAUSED){
                     player._MovementEnable=false;
                     player._animWalk.paused=true;
@@ -1568,11 +1636,6 @@ var PlayScene = {
             }
         }
 
-
-
-
-
-        
         //NIVEL COMPLETADO
         if(GrupoEnemigos.length==0 && !NextLevel){
             NextLevel=true;
@@ -1822,8 +1885,6 @@ function Par (x, y) {
 function sumaPuntos (x,g) {
     puntuacion += x;
     puntuacionControl += x;
-    // timerUP = g.time.create(false);
-    // timerUP.add(1500,OneUPOFF)
     if(puntuacionControl>=20000){
         puntuacionControl-=20000;
         if(vidas<6){
@@ -2090,6 +2151,8 @@ function StartEnemies(){
         GrupoEnemigos.children[t]._giros=0;
         GrupoEnemigos.children[t]._posicionInicial=0;
         GrupoEnemigos.children[t]._bufferBounce=1;
+        if(GrupoEnemigos.children[t]._playerBurnt!=undefined)
+            GrupoEnemigos.children[t]._playerBurnt=false;
     }
 }
 
@@ -2114,7 +2177,7 @@ function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
 }
 
 function LevelWin(g){    //Para el sonido de victoria
-    if(!player._Muerto || !player._animMuerto){
+    if(!player._Muerto || !player._AnimMuerto){
         playerMusic.stop();
         player._animDig.stop();
         player._animWalk.stop();
