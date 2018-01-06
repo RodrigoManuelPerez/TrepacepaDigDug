@@ -105,11 +105,11 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             this._TimerFuego.add(1000,ThrowFire,this);//tiempo hay que calcularlo segun la animacion y como quiera que quede
             this._TimerFuego.start();
 
-            this._FireBullet = new Phaser.Sprite(this._game, this.x, this.y, 'col');
+            this._FireBullet = new Phaser.Sprite(this._game, this.x, this.y, 'Banderita');
             this._game.physics.enable(this._FireBullet, Phaser.Physics.ARCADE);
             
-            this._FireBullet.height = this._FireBullet.height/2;
-            this._FireBullet.width = this._FireBullet.width/12;
+            this._FireBullet.height = this._FireBullet.height/4;
+            this._FireBullet.width = this._FireBullet.width/4;
             this._FireBullet.visible=true;
             this._FireBullet.anchor.x = 0.5;
             this._FireBullet.anchor.y = 0.5;

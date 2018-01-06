@@ -244,7 +244,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         }
     }
 
-    Enemy.prototype.kToNormal = function(Px,Py) {
+    Enemy.prototype.BackToNormal = function(Px,Py) {
         this._Fantasma=false;
         this._animFant.stop();
         this._giros=0;
