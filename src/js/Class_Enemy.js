@@ -247,6 +247,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     Enemy.prototype.BackToNormal = function(Px,Py) {
         this._Fantasma=false;
         this._animFant.stop();
+        this.body.enable=true;
         this._giros=0;
         this._posicionInicial=0;
         this._distanceX=0;

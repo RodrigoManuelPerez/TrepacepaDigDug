@@ -248,6 +248,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     Enemy.prototype.BackToNormal = function(Px,Py) {
         this._Fantasma=false;
         this._animFant.stop();
+        this.body.enable=true;
         this._giros=0;
         this._posicionInicial=0;
         this._distanceX=0;
@@ -1711,7 +1712,7 @@ var PlayScene = {
         }
 
         //MUSICA
-        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
+        if((player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)&&(player._MovementEnable || player._AutomaticMovement))
             playerMusic.resume();
         else
             playerMusic.pause();
@@ -2219,7 +2220,7 @@ function ComenzarJuego(g){
 
 function MuertePlayer(){
     if(!player._AnimMuerto){
-        playerMusic.stop();
+        //playerMusic.stop();
         player.Muerte();
         StopEnemies();
     }

@@ -338,7 +338,7 @@ var PlayScene = {
         }
 
         //MUSICA
-        if(player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)
+        if((player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)&&(player._MovementEnable || player._AutomaticMovement))
             playerMusic.resume();
         else
             playerMusic.pause();
@@ -846,7 +846,6 @@ function ComenzarJuego(g){
 
 function MuertePlayer(){
     if(!player._AnimMuerto){
-        playerMusic.stop();
         player.Muerte();
         StopEnemies();
     }
