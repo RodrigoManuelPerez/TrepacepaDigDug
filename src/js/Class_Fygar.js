@@ -126,7 +126,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     function ThrowFire(){
 
-        if(Math.abs(this._distanciaX)>110 || Math.abs(this._distanciaY)>110){
+        if(Math.abs(this._distanciaX)>115 || Math.abs(this._distanciaY)>115){
             this._3FireSpritesheet='3';
             this._Fire=new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0] );
 
@@ -158,7 +158,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             }   
 
         }
-        else if(Math.abs(this._distanciaX)>70 || Math.abs(this._distanciaX)>70){
+        else if(Math.abs(this._distanciaX)>75 || Math.abs(this._distanciaX)>75){
             this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '2');
             this._Fire.anchor.x=0.5;
             this._Fire.anchor.y=0.5;

@@ -31,6 +31,8 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     this._limiteSuperior=limiteSuperior;
 
     this._bufferBounce=1;
+    this._NumberOfGiros= Math.floor(Math.random() * (10) + 20);
+    console.debug(this._NumberOfGiros);
 
     this._MovementEnable=true;
     //this._animWalk =this.animations.add('Walking');
@@ -45,8 +47,10 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     {
         if(this._MovementEnable){
 
-            if(this._giros>300 && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
+            if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
+                this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
+                console.debug(this._NumberOfGiros);
                 this._animWalk.stop();
                 this._animFant.play(4,true);
                 this._Fantasma=true;
@@ -241,15 +245,15 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         }
     }
 
-    Enemy.prototype.BackToNormal = function(Px,Py) {
+    Enemy.prototype.kToNormal = function(Px,Py) {
+        this._Fantasma=false;
+        this._animFant.stop();
         this._giros=0;
         this._posicionInicial=0;
-        this._Fantasma=false;
         this._distanceX=0;
         this._distanceY=0;
         this.x=Px;
         this.y=Py;
-        this._animFant.stop();
         this._animWalk.play(6,true);
     }
 
@@ -398,7 +402,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     function ThrowFire(){
 
-        if(Math.abs(this._distanciaX)>110 || Math.abs(this._distanciaY)>110){
+        if(Math.abs(this._distanciaX)>115 || Math.abs(this._distanciaY)>115){
             this._3FireSpritesheet='3';
             this._Fire=new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0] );
 
@@ -430,7 +434,7 @@ var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
             }   
 
         }
-        else if(Math.abs(this._distanciaX)>70 || Math.abs(this._distanciaX)>70){
+        else if(Math.abs(this._distanciaX)>75 || Math.abs(this._distanciaX)>75){
             this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '2');
             this._Fire.anchor.x=0.5;
             this._Fire.anchor.y=0.5;
