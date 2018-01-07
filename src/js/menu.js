@@ -95,6 +95,16 @@ var MenuScene = {
                 }
             }
         }
+        if(ButtonCreated){
+            if (this.game.scale.isFullScreen)
+            {
+                FullScreenButton.loadTexture('NormalScreenButton');
+            }
+            else
+            {
+                FullScreenButton.loadTexture('FullScreenButton');
+            }
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////

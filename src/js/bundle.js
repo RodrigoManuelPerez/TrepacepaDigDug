@@ -1183,10 +1183,14 @@ var PreloaderScene = {
     //AUDIO
 
         //SAMPLES
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
 
 
         //MUSICA
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
     
     
     //IMAGENES Y SPRITESHEETS
@@ -1347,6 +1351,16 @@ var MenuScene = {
                     Flechita.y = PosicionInferior._y;
                     PosicionFlecha=false;
                 }
+            }
+        }
+        if(ButtonCreated){
+            if (this.game.scale.isFullScreen)
+            {
+                FullScreenButton.loadTexture('NormalScreenButton');
+            }
+            else
+            {
+                FullScreenButton.loadTexture('FullScreenButton');
             }
         }
 
@@ -1522,7 +1536,7 @@ var PlayScene = {
         NextLevel=false;
 
         //MUSICA PARA EL PLAYER AL MOVERSE
-        playerMusic=this.game.add.audio('running90s');
+        playerMusic=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
         playerMusic.play();
         playerMusic.pause();
         playerMusic.volume -= 0.8;
@@ -1560,7 +1574,7 @@ var PlayScene = {
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        levelText = this.game.add.text(513, 505, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    //ORIGINAL Y 517
+        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    
         score.text=puntuacion;
         
 
@@ -1611,9 +1625,9 @@ var PlayScene = {
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
         if (this.game.scale.isFullScreen)
-        FullScreenButton = this.game.add.button(740, 540, 'NormalScreenButton', FullScreen, this);
+            FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
         else
-        FullScreenButton = this.game.add.button(740, 540, 'FullScreenButton', FullScreen, this);
+            FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
         
 
         LoadMap(nivel,this.game);
@@ -1669,7 +1683,7 @@ var PlayScene = {
                 ComenzarJuego(this.game);
             }
 
-            if(key.keyCode === Phaser.KeyCode.ESC && !player._AutomaticMovement && !player._AnimMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
+            if(key.keyCode === Phaser.KeyCode.P && !player._AutomaticMovement && !player._AnimMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
                 if(!PAUSED){
                     player._MovementEnable=false;
                     player._animWalk.paused=true;
@@ -1691,6 +1705,16 @@ var PlayScene = {
                     GrupoEnemigos.children[gh].Destroy();
                 }
             }
+        }
+
+        //BOTON DE FULLSCREEN
+        if (this.game.scale.isFullScreen)
+        {
+            FullScreenButton.loadTexture('NormalScreenButton');
+        }
+        else
+        {
+            FullScreenButton.loadTexture('FullScreenButton');
         }
 
         //NIVEL COMPLETADO

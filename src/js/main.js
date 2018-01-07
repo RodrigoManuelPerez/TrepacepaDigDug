@@ -29,10 +29,14 @@ var PreloaderScene = {
     //AUDIO
 
         //SAMPLES
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
 
 
         //MUSICA
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
     
     
     //IMAGENES Y SPRITESHEETS
