@@ -1410,12 +1410,12 @@ function FullScreen(){
     if (this.game.scale.isFullScreen)
     {
         this.game.scale.stopFullScreen();
-        FullScreenButton.Sprite='NormalScreenButton';
+        FullScreenButton.loadTexture('FullScreenButton');
     }
     else
     {
         this.game.scale.startFullScreen(false);
-        FullScreenButton.Sprite='FullScreenButton';
+        FullScreenButton.loadTexture('NormalScreenButton');
     }
 }
 },{"./play_scene.js":13}],13:[function(require,module,exports){
@@ -2282,12 +2282,12 @@ function FullScreen(){
     if (this.game.scale.isFullScreen)
     {
         this.game.scale.stopFullScreen();
-        FullScreenButton.Sprite='NormalScreenButton';
+        FullScreenButton.loadTexture('FullScreenButton');
     }
     else
     {
         this.game.scale.startFullScreen(false);
-        FullScreenButton.Sprite='FullScreenButton';
+        FullScreenButton.loadTexture('NormalScreenButton');
     }
 }
 },{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Hook.js":5,"./Class_Movable.js":6,"./Class_Player.js":7,"./Class_Roca.js":8,"./Class_Tierra.js":9,"./Class_Vegetal.js":10}]},{},[11]);

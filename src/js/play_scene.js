@@ -861,11 +861,11 @@ function FullScreen(){
     if (this.game.scale.isFullScreen)
     {
         this.game.scale.stopFullScreen();
-        FullScreenButton.Sprite='NormalScreenButton';
+        FullScreenButton.loadTexture('FullScreenButton');
     }
     else
     {
         this.game.scale.startFullScreen(false);
-        FullScreenButton.Sprite='FullScreenButton';
+        FullScreenButton.loadTexture('NormalScreenButton');
     }
 }
