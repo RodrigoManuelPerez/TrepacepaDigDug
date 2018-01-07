@@ -1179,8 +1179,17 @@ var PreloaderScene = {
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
+
+    //AUDIO
+
+        //SAMPLES
+
+
+        //MUSICA
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
-    // TODO: load here the assets for the game
+    
+    
+    //IMAGENES Y SPRITESHEETS
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
@@ -1208,8 +1217,9 @@ var PreloaderScene = {
     this.game.load.image('tierraHInferior', 'images/LaminaTierraInferior.png');
     this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
-    this.game.load.image('Slime', 'images/Slime.png');
-    this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
+    //BOTONES FULLSCREEN
+    this.game.load.image('FullScreenButton', 'images/GoFullScreen.png');
+    this.game.load.image('NormalScreenButton', 'images/ExitFullScreen.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
 
@@ -1255,6 +1265,8 @@ var PosicionSuperior, PosicionInferior;    //Coordenadas
 var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
 var timerControl;
 var Eleccion=false;
+var FullScreenButton;
+var ButtonCreated=false;
 
 
 var scoreStringA,scoreTextA,highScoreText;
@@ -1300,6 +1312,7 @@ var MenuScene = {
     highScoreText.visible=false;
     highScoreText.text = localStorage.getItem("highscore");
     
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
 },
     update: function(){
@@ -1315,6 +1328,27 @@ var MenuScene = {
             timerFlecha.loop(250,switchFlechita,this);
             timerFlecha.start();
         }
+        
+        if(menu.y<=0 && !ButtonCreated){
+            ButtonCreated=true;
+            FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
+        }
+        
+
+        if(menu.y==0 && !Eleccion){
+            if(cursors.up.isDown){
+                if(Flechita.y == PosicionInferior._y){
+                    Flechita.y = PosicionSuperior._y;
+                    PosicionFlecha=true;
+                }
+            }
+            if(cursors.down.isDown){
+                if(Flechita.y == PosicionSuperior._y){
+                    Flechita.y = PosicionInferior._y;
+                    PosicionFlecha=false;
+                }
+            }
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -1322,13 +1356,13 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === Phaser.KeyCode.W || key.KeyCode === cursors.up){
+                if(key.keyCode === Phaser.KeyCode.W){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === cursors.down){
+                if (key.keyCode === Phaser.KeyCode.S){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -1370,6 +1404,19 @@ function switchFlechita(){
         Flechita.visible=!Flechita.visible;
     else
     Flechita.visible=true;
+}
+function FullScreen(){
+
+    if (this.game.scale.isFullScreen)
+    {
+        this.game.scale.stopFullScreen();
+        FullScreenButton.Sprite='NormalScreenButton';
+    }
+    else
+    {
+        this.game.scale.startFullScreen(false);
+        FullScreenButton.Sprite='FullScreenButton';
+    }
 }
 },{"./play_scene.js":13}],13:[function(require,module,exports){
 
@@ -1414,6 +1461,7 @@ var scoreStringB = '';
 var scoreStringC = '';
 var pauseString = '';
 var PAUSED=false;
+var FullScreenButton;
 
 var vidas=3;
 var spriteVidas;
@@ -1512,20 +1560,15 @@ var PlayScene = {
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+        levelText = this.game.add.text(513, 505, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    //ORIGINAL Y 517
         score.text=puntuacion;
-        //Niveles
-        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+        
 
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
         for (i = 0; i < nivel; i++)
         {
-            // spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
-            // spriteFlor.anchor.setTo(-0.1, -0.1);
-            // spriteFlor.scale.setTo(0.05, 0.05);
-
             spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
@@ -1564,6 +1607,10 @@ var PlayScene = {
         //Grupo de las balas de los Fygar
         GrupoFireBullets = this.game.add.physicsGroup();
         
+        //PARA UN CORRECTO FULLSCREEN
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+        FullScreenButton = this.game.add.button(720, 540, 'tierraSuperficie', FullScreen, this);
+
         LoadMap(nivel,this.game);
 
         StopEnemies();
@@ -2220,9 +2267,20 @@ function ComenzarJuego(g){
 
 function MuertePlayer(){
     if(!player._AnimMuerto){
-        //playerMusic.stop();
         player.Muerte();
         StopEnemies();
+    }
+}
+
+function FullScreen(){
+
+    if (this.game.scale.isFullScreen)
+    {
+        this.game.scale.stopFullScreen();
+    }
+    else
+    {
+        this.game.scale.startFullScreen(false);
     }
 }
 },{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Hook.js":5,"./Class_Movable.js":6,"./Class_Player.js":7,"./Class_Roca.js":8,"./Class_Tierra.js":9,"./Class_Vegetal.js":10}]},{},[11]);

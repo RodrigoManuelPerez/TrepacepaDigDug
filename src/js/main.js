@@ -25,8 +25,17 @@ var PreloaderScene = {
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
+
+    //AUDIO
+
+        //SAMPLES
+
+
+        //MUSICA
     this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.mp3', 'music/Initial_D_Running_in_The_90s.ogg']);
-    // TODO: load here the assets for the game
+    
+    
+    //IMAGENES Y SPRITESHEETS
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
@@ -54,8 +63,9 @@ var PreloaderScene = {
     this.game.load.image('tierraHInferior', 'images/LaminaTierraInferior.png');
     this.game.load.image('tierraVInferior', 'images/LaminaTierraVInferior.png');
 
-    this.game.load.image('Slime', 'images/Slime.png');
-    this.game.load.image('SlimeAplastado', 'images/SlimeAplastado.png');
+    //BOTONES FULLSCREEN
+    this.game.load.image('FullScreenButton', 'images/GoFullScreen.png');
+    this.game.load.image('NormalScreenButton', 'images/ExitFullScreen.png');
 
     this.game.load.image('Gancho', 'images/Gancho.png');
 

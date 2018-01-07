@@ -40,6 +40,7 @@ var scoreStringB = '';
 var scoreStringC = '';
 var pauseString = '';
 var PAUSED=false;
+var FullScreenButton;
 
 var vidas=3;
 var spriteVidas;
@@ -138,20 +139,15 @@ var PlayScene = {
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+        levelText = this.game.add.text(513, 505, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    //ORIGINAL Y 517
         score.text=puntuacion;
-        //Niveles
-        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });
+        
 
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
         for (i = 0; i < nivel; i++)
         {
-            // spriteFlor = thisFlor.create(470 - (43 * i), 44, 'Flor');
-            // spriteFlor.anchor.setTo(-0.1, -0.1);
-            // spriteFlor.scale.setTo(0.05, 0.05);
-
             spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
@@ -190,6 +186,10 @@ var PlayScene = {
         //Grupo de las balas de los Fygar
         GrupoFireBullets = this.game.add.physicsGroup();
         
+        //PARA UN CORRECTO FULLSCREEN
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+        FullScreenButton = this.game.add.button(720, 540, 'tierraSuperficie', FullScreen, this);
+
         LoadMap(nivel,this.game);
 
         StopEnemies();
@@ -848,5 +848,17 @@ function MuertePlayer(){
     if(!player._AnimMuerto){
         player.Muerte();
         StopEnemies();
+    }
+}
+
+function FullScreen(){
+
+    if (this.game.scale.isFullScreen)
+    {
+        this.game.scale.stopFullScreen();
+    }
+    else
+    {
+        this.game.scale.startFullScreen(false);
     }
 }

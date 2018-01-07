@@ -11,6 +11,8 @@ var PosicionSuperior, PosicionInferior;    //Coordenadas
 var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
 var timerControl;
 var Eleccion=false;
+var FullScreenButton;
+var ButtonCreated=false;
 
 
 var scoreStringA,scoreTextA,highScoreText;
@@ -56,6 +58,7 @@ var MenuScene = {
     highScoreText.visible=false;
     highScoreText.text = localStorage.getItem("highscore");
     
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
 },
     update: function(){
@@ -71,6 +74,27 @@ var MenuScene = {
             timerFlecha.loop(250,switchFlechita,this);
             timerFlecha.start();
         }
+        
+        if(menu.y<=0 && !ButtonCreated){
+            ButtonCreated=true;
+            FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
+        }
+        
+
+        if(menu.y==0 && !Eleccion){
+            if(cursors.up.isDown){
+                if(Flechita.y == PosicionInferior._y){
+                    Flechita.y = PosicionSuperior._y;
+                    PosicionFlecha=true;
+                }
+            }
+            if(cursors.down.isDown){
+                if(Flechita.y == PosicionSuperior._y){
+                    Flechita.y = PosicionInferior._y;
+                    PosicionFlecha=false;
+                }
+            }
+        }
 
 
         ///////////////////////HACKS//////////////////////////////////////
@@ -78,13 +102,13 @@ var MenuScene = {
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === Phaser.KeyCode.W || key.KeyCode === cursors.up){
+                if(key.keyCode === Phaser.KeyCode.W){
                     if(Flechita.y == PosicionInferior._y){
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === cursors.down){
+                if (key.keyCode === Phaser.KeyCode.S){
                     if(Flechita.y == PosicionSuperior._y){
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
@@ -126,4 +150,17 @@ function switchFlechita(){
         Flechita.visible=!Flechita.visible;
     else
     Flechita.visible=true;
+}
+function FullScreen(){
+
+    if (this.game.scale.isFullScreen)
+    {
+        this.game.scale.stopFullScreen();
+        FullScreenButton.Sprite='NormalScreenButton';
+    }
+    else
+    {
+        this.game.scale.startFullScreen(false);
+        FullScreenButton.Sprite='FullScreenButton';
+    }
 }
