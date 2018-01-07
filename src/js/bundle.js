@@ -1609,7 +1609,12 @@ var PlayScene = {
         
         //PARA UN CORRECTO FULLSCREEN
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
-        FullScreenButton = this.game.add.button(720, 540, 'tierraSuperficie', FullScreen, this);
+
+        if (this.game.scale.isFullScreen)
+        FullScreenButton = this.game.add.button(740, 540, 'NormalScreenButton', FullScreen, this);
+        else
+        FullScreenButton = this.game.add.button(740, 540, 'FullScreenButton', FullScreen, this);
+        
 
         LoadMap(nivel,this.game);
 
@@ -2277,10 +2282,12 @@ function FullScreen(){
     if (this.game.scale.isFullScreen)
     {
         this.game.scale.stopFullScreen();
+        FullScreenButton.Sprite='NormalScreenButton';
     }
     else
     {
         this.game.scale.startFullScreen(false);
+        FullScreenButton.Sprite='FullScreenButton';
     }
 }
 },{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Hook.js":5,"./Class_Movable.js":6,"./Class_Player.js":7,"./Class_Roca.js":8,"./Class_Tierra.js":9,"./Class_Vegetal.js":10}]},{},[11]);
