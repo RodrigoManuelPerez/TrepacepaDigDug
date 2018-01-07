@@ -991,6 +991,8 @@ module.exports = Player;
 var GameObject = require('./Class_GameObject.js');
 var PlayScene = require('./play_scene.js');
 
+var PointsSound;
+var FallSound;
 
 var Roca = function(game, position,id, spritesheet){
     
@@ -1017,6 +1019,9 @@ var Roca = function(game, position,id, spritesheet){
         this._HasFallen = false;
         this._FallEnable = false;
         this._timer = this.game.time.create(false);
+
+
+        PointsSound = game.add.audio('Points',1);
         }
     
         Roca.prototype = Object.create(GameObject.prototype);
@@ -1102,6 +1107,7 @@ var Roca = function(game, position,id, spritesheet){
                 this.frame=I;
             else
                 this.frame=13;
+            PointsSound.play();
         }
 
 
@@ -1189,7 +1195,7 @@ var PreloaderScene = {
     this.game.load.audio('Win', ['music/Sounds/Win.ogg']);
     this.game.load.audio('Acept', ['music/Sounds/Acept.ogg']);
     this.game.load.audio('Switch', ['music/Sounds/Switch.ogg']);
-
+    this.game.load.audio('Points', ['music/Sounds/Points.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
@@ -1298,7 +1304,7 @@ var MenuScene = {
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
 
-    musicaMenu=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+    musicaMenu=this.game.add.audio('MenuSong',1,true);    //key, volume, loop
     musicaMenu.play();
 
     //SOUNDS
@@ -1348,21 +1354,6 @@ var MenuScene = {
             FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
         }
         
-
-        if(menu.y==0 && !Eleccion){
-            if(cursors.up.isDown){
-                if(Flechita.y == PosicionInferior._y){
-                    Flechita.y = PosicionSuperior._y;
-                    PosicionFlecha=true;
-                }
-            }
-            if(cursors.down.isDown){
-                if(Flechita.y == PosicionSuperior._y){
-                    Flechita.y = PosicionInferior._y;
-                    PosicionFlecha=false;
-                }
-            }
-        }
         if(ButtonCreated){
             if (this.game.scale.isFullScreen)
             {
@@ -1374,20 +1365,25 @@ var MenuScene = {
             }
         }
 
+        if(Eleccion){
+            if(musicaMenu.volume>0)
+                musicaMenu.volume -= 0.012;
+        }
+
 
         ///////////////////////HACKS//////////////////////////////////////
-        this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
+        this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === Phaser.KeyCode.W){
+                if(key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
                     if(Flechita.y == PosicionInferior._y){
                         SwitchSound.play();
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S){
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
                     if(Flechita.y == PosicionSuperior._y){
                         SwitchSound.play();
                         Flechita.y = PosicionInferior._y;
@@ -1402,26 +1398,10 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
-                    musicaMenu.stop();
+                    //musicaMenu.stop();
                     AceptSound.play();  //The acept sound will sound
                     timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
-                }
-            }
-        }
-
-        if(menu.y==0 && !Eleccion){
-            if(cursors.up.isDown){
-                if(Flechita.y == PosicionInferior._y){
-                    Flechita.y = PosicionSuperior._y;
-                    PosicionFlecha=true;
-                    SwitchSound.play();
-                }
-            }
-            if(cursors.down.isDown){
-                if(Flechita.y == PosicionSuperior._y){
-                    Flechita.y = PosicionInferior._y;
-                    PosicionFlecha=false;
                 }
             }
         }
@@ -1440,8 +1420,15 @@ function Par (x, y) {
 }
 
 function Comienzo(g){
-    if(PosicionFlecha)
+    if(PosicionFlecha){
+        AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
+        musicaMenu.stop();
         g.state.start('play');
+        
+    }
+    else{       //Los creditos o controles
+
+    }
 }
 function switchFlechita(){
     if(!Eleccion)
@@ -1568,10 +1555,9 @@ var PlayScene = {
         NextLevel=false;
 
         //MUSICA PARA EL PLAYER AL MOVERSE
-        playerMusic=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+        playerMusic=this.game.add.audio('MusicGame',0.25,true);    //key, volume, loop
         playerMusic.play();
         playerMusic.pause();
-        playerMusic.volume -= 0.8;
 
         winSound = this.game.add.audio('Win',0.4);
         itemSound = this.game.add.audio('Item',1);
@@ -1795,13 +1781,7 @@ var PlayScene = {
         //PUNTOS QUE DAN LAS ROCAS
         for(var k =0; k<roca.length; k++){
 
-            
-            if(roca.children[k]._PlayerAplastado){  //SI SE HA PILLADO AL PLAYER Y ASI NO SUMAMOS PUNTOS POR MATAR A MAS ENEMIGOS SI LOS HUBIERA
-                
-                //player._muerte();     LLAMARIAMOS A LA FUNCION DE MUERTE DEL PLAYER QUE DEBERIA PARARLO Y HACER LA ANIMACION DE MUERTE Y PONDRIASMOS UN BOOLEANO DE MUERTO A TRUE
-            
-            }
-            else if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
+            if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
                 roca.children[k]._PuntosContabilizados=true;
                 sumaPuntos(roca.children[k]._PuntosConseguidos,this.game);
             }

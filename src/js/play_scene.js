@@ -103,10 +103,9 @@ var PlayScene = {
         NextLevel=false;
 
         //MUSICA PARA EL PLAYER AL MOVERSE
-        playerMusic=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+        playerMusic=this.game.add.audio('MusicGame',0.25,true);    //key, volume, loop
         playerMusic.play();
         playerMusic.pause();
-        playerMusic.volume -= 0.8;
 
         winSound = this.game.add.audio('Win',0.4);
         itemSound = this.game.add.audio('Item',1);
@@ -330,13 +329,7 @@ var PlayScene = {
         //PUNTOS QUE DAN LAS ROCAS
         for(var k =0; k<roca.length; k++){
 
-            
-            if(roca.children[k]._PlayerAplastado){  //SI SE HA PILLADO AL PLAYER Y ASI NO SUMAMOS PUNTOS POR MATAR A MAS ENEMIGOS SI LOS HUBIERA
-                
-                //player._muerte();     LLAMARIAMOS A LA FUNCION DE MUERTE DEL PLAYER QUE DEBERIA PARARLO Y HACER LA ANIMACION DE MUERTE Y PONDRIASMOS UN BOOLEANO DE MUERTO A TRUE
-            
-            }
-            else if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
+            if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
                 roca.children[k]._PuntosContabilizados=true;
                 sumaPuntos(roca.children[k]._PuntosConseguidos,this.game);
             }

@@ -34,7 +34,7 @@ var PreloaderScene = {
     this.game.load.audio('Win', ['music/Sounds/Win.ogg']);
     this.game.load.audio('Acept', ['music/Sounds/Acept.ogg']);
     this.game.load.audio('Switch', ['music/Sounds/Switch.ogg']);
-
+    this.game.load.audio('Points', ['music/Sounds/Points.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);

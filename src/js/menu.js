@@ -38,7 +38,7 @@ var MenuScene = {
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
 
-    musicaMenu=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+    musicaMenu=this.game.add.audio('MenuSong',1,true);    //key, volume, loop
     musicaMenu.play();
 
     //SOUNDS
@@ -88,21 +88,6 @@ var MenuScene = {
             FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
         }
         
-
-        if(menu.y==0 && !Eleccion){
-            if(cursors.up.isDown){
-                if(Flechita.y == PosicionInferior._y){
-                    Flechita.y = PosicionSuperior._y;
-                    PosicionFlecha=true;
-                }
-            }
-            if(cursors.down.isDown){
-                if(Flechita.y == PosicionSuperior._y){
-                    Flechita.y = PosicionInferior._y;
-                    PosicionFlecha=false;
-                }
-            }
-        }
         if(ButtonCreated){
             if (this.game.scale.isFullScreen)
             {
@@ -114,20 +99,25 @@ var MenuScene = {
             }
         }
 
+        if(Eleccion){
+            if(musicaMenu.volume>0)
+                musicaMenu.volume -= 0.012;
+        }
+
 
         ///////////////////////HACKS//////////////////////////////////////
-        this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
+        this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
             if(menu.y==0 && !Eleccion){
-                if(key.keyCode === Phaser.KeyCode.W){
+                if(key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
                     if(Flechita.y == PosicionInferior._y){
                         SwitchSound.play();
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
-                if (key.keyCode === Phaser.KeyCode.S){
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
                     if(Flechita.y == PosicionSuperior._y){
                         SwitchSound.play();
                         Flechita.y = PosicionInferior._y;
@@ -142,26 +132,10 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
-                    musicaMenu.stop();
+                    //musicaMenu.stop();
                     AceptSound.play();  //The acept sound will sound
                     timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
-                }
-            }
-        }
-
-        if(menu.y==0 && !Eleccion){
-            if(cursors.up.isDown){
-                if(Flechita.y == PosicionInferior._y){
-                    Flechita.y = PosicionSuperior._y;
-                    PosicionFlecha=true;
-                    SwitchSound.play();
-                }
-            }
-            if(cursors.down.isDown){
-                if(Flechita.y == PosicionSuperior._y){
-                    Flechita.y = PosicionInferior._y;
-                    PosicionFlecha=false;
                 }
             }
         }
@@ -180,8 +154,15 @@ function Par (x, y) {
 }
 
 function Comienzo(g){
-    if(PosicionFlecha)
+    if(PosicionFlecha){
+        AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
+        musicaMenu.stop();
         g.state.start('play');
+        
+    }
+    else{       //Los creditos o controles
+
+    }
 }
 function switchFlechita(){
     if(!Eleccion)
