@@ -31,6 +31,7 @@ var MenuScene = {
     Eleccion=false;
     parpadeando=false;
     PosicionFlecha = true;
+    ButtonCreated=false;
 
     timerControl = this.game.time.create(false);
 
@@ -142,7 +143,7 @@ var MenuScene = {
                 else{
                     Eleccion=true;
                     AceptSound.play();  //The acept sound will sound
-                    timerControl.add(1200,Comienzo,this,this.game);
+                    timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
                 }
             }
@@ -151,20 +152,18 @@ var MenuScene = {
         if(menu.y==0 && !Eleccion){
             if(cursors.up.isDown){
                 if(Flechita.y == PosicionInferior._y){
-                    SwitchSound.play();
                     Flechita.y = PosicionSuperior._y;
                     PosicionFlecha=true;
+                    SwitchSound.play();
                 }
             }
             if(cursors.down.isDown){
                 if(Flechita.y == PosicionSuperior._y){
-                    SwitchSound.play();
                     Flechita.y = PosicionInferior._y;
                     PosicionFlecha=false;
                 }
             }
         }
-
     },
     render: function(){
         

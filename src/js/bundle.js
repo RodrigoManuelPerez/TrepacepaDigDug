@@ -655,14 +655,14 @@ module.exports = Movable;
 var Movable = require('./Class_Movable.js');
 var GO = require('./Class_GameObject.js');
 
-var playerMusic;
+var DeathMusic;
 var MusicaCargada=false;
 
 var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginalX,posOriginalY, spriteSheet){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
-
+    DeathMusic=game.add.audio('Death',0.75);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
@@ -965,6 +965,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
         this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
+        DeathMusic.play();
         this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
     }
@@ -1290,6 +1291,7 @@ var MenuScene = {
     Eleccion=false;
     parpadeando=false;
     PosicionFlecha = true;
+    ButtonCreated=false;
 
     timerControl = this.game.time.create(false);
 
@@ -1401,7 +1403,7 @@ var MenuScene = {
                 else{
                     Eleccion=true;
                     AceptSound.play();  //The acept sound will sound
-                    timerControl.add(1200,Comienzo,this,this.game);
+                    timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
                 }
             }
@@ -1410,20 +1412,18 @@ var MenuScene = {
         if(menu.y==0 && !Eleccion){
             if(cursors.up.isDown){
                 if(Flechita.y == PosicionInferior._y){
-                    SwitchSound.play();
                     Flechita.y = PosicionSuperior._y;
                     PosicionFlecha=true;
+                    SwitchSound.play();
                 }
             }
             if(cursors.down.isDown){
                 if(Flechita.y == PosicionSuperior._y){
-                    SwitchSound.play();
                     Flechita.y = PosicionInferior._y;
                     PosicionFlecha=false;
                 }
             }
         }
-
     },
     render: function(){
         
