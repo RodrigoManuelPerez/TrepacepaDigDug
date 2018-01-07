@@ -662,7 +662,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
-    DeathMusic=game.add.audio('Death',0.75);
+    DeathMusic=game.add.audio('Death',0.4);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
@@ -1193,7 +1193,7 @@ var PreloaderScene = {
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
-    
+    this.game.load.audio('MenuSong', ['music/Music/MenuSong.ogg']);
     
     //IMAGENES Y SPRITESHEETS
 
@@ -1298,8 +1298,8 @@ var MenuScene = {
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
 
-    //musicaMenu=this.game.add.audio('running90s');
-    //musicaMenu.play();
+    musicaMenu=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+    musicaMenu.play();
 
     //SOUNDS
     SwitchSound = this.game.add.audio('Switch');
@@ -1402,6 +1402,7 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
+                    musicaMenu.stop();
                     AceptSound.play();  //The acept sound will sound
                     timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
@@ -1518,6 +1519,8 @@ var levelString = '';
 var spriteFlor, flor;
 
 var playerMusic;
+var winSound;
+var itemSound;
 
 var Vegetable;
 var PuntosVegetables = [400,600,800,1000,1000,2000,2000,3000,3000,4000,4000,5000,5000,6000,6000,7000,7000,8000];
@@ -1569,6 +1572,9 @@ var PlayScene = {
         playerMusic.play();
         playerMusic.pause();
         playerMusic.volume -= 0.8;
+
+        winSound = this.game.add.audio('Win',0.4);
+        itemSound = this.game.add.audio('Item',1);
 
         //Activar las físicas de Phaser.
         this.game.physics.startSystem(Phaser.ARCADE);
@@ -1983,6 +1989,7 @@ function onCollisionPara(obj1, obj2){
 }
 
 function onCollisionVegetable(obj1,obj2){
+    itemSound.play();
     sumaPuntos(obj2._puntos, this.g);
     obj2.Destroy();
 }
@@ -2289,11 +2296,12 @@ function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
 function LevelWin(g){    //Para el sonido de victoria
     if(!player._Muerto || !player._AnimMuerto){
         playerMusic.stop();
+        winSound.play();
         player._animDig.stop();
         player._animWalk.stop();
         player._MovementEnable=false;
         //Lanzar la musiquita de victoria (ajustar el timer a cuando se acabe el sonido)
-        timerControl.add(2500,LevelComplete,this,g);
+        timerControl.add(3500,LevelComplete,this,g);
         timerControl.start();
     }
     else{

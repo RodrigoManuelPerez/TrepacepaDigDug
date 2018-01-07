@@ -38,8 +38,8 @@ var MenuScene = {
     PosicionSuperior = new Par(300,330);
     PosicionInferior = new Par(300,400);
 
-    //musicaMenu=this.game.add.audio('running90s');
-    //musicaMenu.play();
+    musicaMenu=this.game.add.audio('MusicGame',1,true);    //key, volume, loop
+    musicaMenu.play();
 
     //SOUNDS
     SwitchSound = this.game.add.audio('Switch');
@@ -142,6 +142,7 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
+                    musicaMenu.stop();
                     AceptSound.play();  //The acept sound will sound
                     timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();

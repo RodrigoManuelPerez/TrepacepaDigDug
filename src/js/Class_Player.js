@@ -10,7 +10,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._cursors = cursors;
-    DeathMusic=game.add.audio('Death',0.75);
+    DeathMusic=game.add.audio('Death',0.4);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
