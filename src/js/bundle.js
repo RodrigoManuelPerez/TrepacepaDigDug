@@ -32,9 +32,11 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     this._bufferBounce=1;
     this._NumberOfGiros= Math.floor(Math.random() * (10) + 20);
-    console.debug(this._NumberOfGiros);
 
     this._MovementEnable=true;
+    
+
+
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
     //console.debug(spriteSheet);
@@ -45,12 +47,13 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     Enemy.prototype.update = function() 
     {
+
+
         if(this._MovementEnable){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
                 this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
-                console.debug(this._NumberOfGiros);
                 this._animWalk.stop();
                 this._animFant.play(4,true);
                 this._Fantasma=true;
@@ -1008,6 +1011,8 @@ var Roca = function(game, position,id, spritesheet){
         this._PuntosActualizados=false;
         this._PuntosContabilizados=false;
 
+        this._EnemigosDestruidos=false;
+
         this._RefPlayer;
         this._PlayerAplastado = false;
         this._i;
@@ -1017,7 +1022,7 @@ var Roca = function(game, position,id, spritesheet){
 
         this._Falling = false;
         this._HasFallen = false;
-        this._FallEnable = false;
+        this._FallEnable = true;
         this._timer = this.game.time.create(false);
 
 
@@ -1028,17 +1033,18 @@ var Roca = function(game, position,id, spritesheet){
         Roca.prototype.constructor = Roca;
     
         Roca.prototype.update=function(){
-            if(this._Falling){
+            if(this._Falling && this._FallEnable){
                 for(var i=0; i<6; i++){
                     if (this._Falling && this.y<558){
                         this.y ++;
                         if(this._PlayerAplastado)
                             this._RefPlayer.y++;
                     }
+                    else if (this._Falling && this.y > 556)
+                        this.Para();
                 }
             }
-            if (this.y > 556)
-                this.Para();
+            
         }
     
         Roca.prototype.Para=function() {
@@ -1069,8 +1075,10 @@ var Roca = function(game, position,id, spritesheet){
                         this._PuntosConseguidos=this._PuntosEnemigos[7];
                         this._PuntosActualizados=true;               
                     }
-
-                    this._timer.add(2000,DestroyEnemies,this,this._i);
+                    if(!this._EnemigosDestruidos){
+                        this._timer.add(2000,DestroyEnemies,this,this._i);
+                        this._EnemigosDestruidos=true;
+                    }
                 }
             }
             this._timer.start();
@@ -1085,7 +1093,7 @@ var Roca = function(game, position,id, spritesheet){
         }
     
         function Fall() {
-            if(!this._HasFallen){
+            if(!this._HasFallen && this._FallEnable){
                 this._Falling = true;
                 this._timer.stop();
             }
@@ -1471,7 +1479,7 @@ var cursors;
 var limiteDerecho;
 var limiteSuperior;
 var tierra, tierraH, tierraV;
-var roca, rocasCaidas, VegetalGenerado;
+var GrupoRocas, rocasCaidas, VegetalGenerado;
 var distanceX, distanceY;
 var paredDerecha, paredSuperior;
 
@@ -1634,7 +1642,7 @@ var PlayScene = {
         //Poner fisicas a la tierra vertical.
         tierraV = this.game.add.physicsGroup();
         //Grupo de las rocas
-        roca = this.game.add.physicsGroup();
+        GrupoRocas = this.game.add.physicsGroup();
         //Grupo de los enemigos
         GrupoEnemigos = this.game.add.physicsGroup();
         //Grupo de las banderas de control
@@ -1662,15 +1670,15 @@ var PlayScene = {
         this.game.physics.arcade.collide(player, tierra, onCollisionTierra,null, {this:this, g:this.game});
         this.game.physics.arcade.collide(player, tierraH, onCollisionTierra);
         this.game.physics.arcade.collide(player, tierraV, onCollisionTierra);
-        this.game.physics.arcade.collide(player, roca, onCollisionRoca);
+        this.game.physics.arcade.collide(player, GrupoRocas, onCollisionRoca);
 
         //ROCAS
-        this.game.physics.arcade.collide(tierra, roca, onCollisionPara);
-        this.game.physics.arcade.collide(roca, tierraH, onCollisionTierra);
+        this.game.physics.arcade.collide(tierra, GrupoRocas, onCollisionPara);
+        this.game.physics.arcade.collide(GrupoRocas, tierraH, onCollisionTierra);
 
             //COLISION ROCAS CON ENEMIGOS Y PLAYER
-            this.game.physics.arcade.collide(GrupoEnemigos, roca, onCollisionAplasta);
-            this.game.physics.arcade.collide(player, roca, onCollisionAplasta);
+            this.game.physics.arcade.collide(GrupoEnemigos, GrupoRocas, onCollisionAplasta);
+            this.game.physics.arcade.collide(player, GrupoRocas, onCollisionAplasta);
 
         //ENEMIGOS
         this.game.physics.arcade.collide(tierra, GrupoEnemigos, onCollisionEnemyTierra);
@@ -1688,8 +1696,10 @@ var PlayScene = {
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
         }
 
-        if(player._AnimMuerto)
+        if(player._AnimMuerto){
             StopEnemies();
+            StopRocks();
+        }
 
         ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
@@ -1709,6 +1719,7 @@ var PlayScene = {
                     player._MovementEnable=false;
                     player._animWalk.paused=true;
                     StopEnemies();
+                    StopRocks();
                     PAUSED=true;
                     pauseText.visible=true;
                 }
@@ -1716,6 +1727,7 @@ var PlayScene = {
                     player._MovementEnable=true;
                     player._animWalk.paused=false;
                     StartEnemies();
+                    StartRocks();
                     PAUSED=false;
                     pauseText.visible=false;
                 }
@@ -1748,9 +1760,9 @@ var PlayScene = {
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
         if(cargado){
-            if(roca.length<tamañoGrupoRocas){       //////////////////////////////////////////////////////////
+            if(GrupoRocas.length<tamañoGrupoRocas){       //////////////////////////////////////////////////////////
                 rocasCaidas++;                      //CUANDO CARGAMOS LA ESCENA DE OTRO NIVEL ESTO SE LLAMA UNA PRIMERA VEZ Y AUMENTA 1
-                tamañoGrupoRocas=roca.length;
+                tamañoGrupoRocas=GrupoRocas.length;
             }
         }
 
@@ -1779,16 +1791,17 @@ var PlayScene = {
         }
 
         //PUNTOS QUE DAN LAS ROCAS
-        for(var k =0; k<roca.length; k++){
+        for(var k =0; k<GrupoRocas.length; k++){
 
-            if (roca.children[k]._PuntosActualizados && !roca.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
-                roca.children[k]._PuntosContabilizados=true;
-                sumaPuntos(roca.children[k]._PuntosConseguidos,this.game);
+            if (GrupoRocas.children[k]._PuntosActualizados && !GrupoRocas.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
+                GrupoRocas.children[k]._PuntosContabilizados=true;
+                sumaPuntos(GrupoRocas.children[k]._PuntosConseguidos,this.game);
             }
         }
 
         if(player._EnPosicion){
             StartEnemies();
+            StartRocks();
             player._EnPosicion=false;
         }
 
@@ -1984,7 +1997,7 @@ function sumaPuntos (x,g) {
     puntuacionControl += x;
     if(puntuacionControl>=20000){
         puntuacionControl-=20000;
-        if(vidas<6){
+        if(vidas<8){
             vidas++;
             ActualizaHUD(g);
         }
@@ -2146,7 +2159,7 @@ function LoadMap (lvl,g) {
                         var PosRock = new Par(posX-40, posY-44);
                         var Rock = new Roca(g, PosRock, 'Roca', 'RocaCompletaSpriteSheet');
                         g.physics.arcade.enable(Rock); 
-                        roca.add(Rock);     //AÑADIMOS AL GRUPO
+                        GrupoRocas.add(Rock);     //AÑADIMOS AL GRUPO
 
                         
                         
@@ -2202,7 +2215,7 @@ function LoadMap (lvl,g) {
         if (j%2==0)
             posY+=43;
     }
-    tamañoGrupoRocas=roca.length;
+    tamañoGrupoRocas=GrupoRocas.length;
     cargado=true;
 } 
 
@@ -2213,6 +2226,7 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
         GrupoEnemigos.children[i].y = GrupoEnemigos.children[i]._posOriginalY;
         GrupoEnemigos.children[i]._distanceX=0;
         GrupoEnemigos.children[i]._distanceY=0;
+        GrupoEnemigos.children[i]._Fantasma=false;
     }
     player.x=player._posOriginalX;
     player.y=player._posOriginalY;
@@ -2240,6 +2254,12 @@ function StopEnemies(){
     }
 }
 
+function StopRocks(){
+    for (var t=0; t<GrupoRocas.length; t++){
+        GrupoRocas.children[t]._FallEnable=false;
+    }
+}
+
 function StartEnemies(){
     for (var t=0; t<GrupoEnemigos.length; t++){
         GrupoEnemigos.children[t]._animWalk.play(6,true);
@@ -2250,6 +2270,11 @@ function StartEnemies(){
         GrupoEnemigos.children[t]._bufferBounce=1;
         if(GrupoEnemigos.children[t]._playerBurnt!=undefined)
             GrupoEnemigos.children[t]._playerBurnt=false;
+    }
+}
+function StartRocks(){
+    for (var t=0; t<GrupoRocas.length; t++){
+        GrupoRocas.children[t]._FallEnable=true;
     }
 }
 
@@ -2264,12 +2289,20 @@ function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
     {
         thisLifes.removeChildren();
     }
-
+    var j=0;
     for (i = 0; i < vidas; i++) 
     {
-        spriteVidas = thisLifes.create(556 + (43 * i), 388, 'DigDugWalking');
-        spriteVidas.frame=0;
-        spriteVidas.alpha = 0.7;
+        if(i<4){
+            spriteVidas = thisLifes.create(562 + (43 * i), 390, 'DigDugWalking');
+            spriteVidas.frame=0;
+            spriteVidas.alpha = 0.7;
+        }
+        else{
+            spriteVidas = thisLifes.create(562 + (43 * j), 445, 'DigDugWalking');
+            spriteVidas.frame=0;
+            spriteVidas.alpha = 0.7;
+            j++;
+        }
     }
 }
 
@@ -2280,7 +2313,6 @@ function LevelWin(g){    //Para el sonido de victoria
         player._animDig.stop();
         player._animWalk.stop();
         player._MovementEnable=false;
-        //Lanzar la musiquita de victoria (ajustar el timer a cuando se acabe el sonido)
         timerControl.add(3500,LevelComplete,this,g);
         timerControl.start();
     }
@@ -2299,6 +2331,7 @@ function ContinuarLevel(g,lfs){
     PAUSED=false;
     ResetPosition();
     StartEnemies();
+    StartRocks();
     ActualizaHUD(g,lfs);
 }
 
@@ -2315,6 +2348,7 @@ function MuertePlayer(){
     if(!player._AnimMuerto){
         player.Muerte();
         StopEnemies();
+        StopRocks();
     }
 }
 

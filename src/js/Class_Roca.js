@@ -20,6 +20,8 @@ var Roca = function(game, position,id, spritesheet){
         this._PuntosActualizados=false;
         this._PuntosContabilizados=false;
 
+        this._EnemigosDestruidos=false;
+
         this._RefPlayer;
         this._PlayerAplastado = false;
         this._i;
@@ -29,7 +31,7 @@ var Roca = function(game, position,id, spritesheet){
 
         this._Falling = false;
         this._HasFallen = false;
-        this._FallEnable = false;
+        this._FallEnable = true;
         this._timer = this.game.time.create(false);
 
 
@@ -40,17 +42,18 @@ var Roca = function(game, position,id, spritesheet){
         Roca.prototype.constructor = Roca;
     
         Roca.prototype.update=function(){
-            if(this._Falling){
+            if(this._Falling && this._FallEnable){
                 for(var i=0; i<6; i++){
                     if (this._Falling && this.y<558){
                         this.y ++;
                         if(this._PlayerAplastado)
                             this._RefPlayer.y++;
                     }
+                    else if (this._Falling && this.y > 556)
+                        this.Para();
                 }
             }
-            if (this.y > 556)
-                this.Para();
+            
         }
     
         Roca.prototype.Para=function() {
@@ -81,8 +84,10 @@ var Roca = function(game, position,id, spritesheet){
                         this._PuntosConseguidos=this._PuntosEnemigos[7];
                         this._PuntosActualizados=true;               
                     }
-
-                    this._timer.add(2000,DestroyEnemies,this,this._i);
+                    if(!this._EnemigosDestruidos){
+                        this._timer.add(2000,DestroyEnemies,this,this._i);
+                        this._EnemigosDestruidos=true;
+                    }
                 }
             }
             this._timer.start();
@@ -97,7 +102,7 @@ var Roca = function(game, position,id, spritesheet){
         }
     
         function Fall() {
-            if(!this._HasFallen){
+            if(!this._HasFallen && this._FallEnable){
                 this._Falling = true;
                 this._timer.stop();
             }

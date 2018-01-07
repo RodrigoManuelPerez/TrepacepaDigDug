@@ -31,9 +31,11 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     this._bufferBounce=1;
     this._NumberOfGiros= Math.floor(Math.random() * (10) + 20);
-    console.debug(this._NumberOfGiros);
 
     this._MovementEnable=true;
+    
+
+
     //this._animWalk =this.animations.add('Walking');
     //this._animWalk.play(6,true);
     //console.debug(spriteSheet);
@@ -44,12 +46,13 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     Enemy.prototype.update = function() 
     {
+
+
         if(this._MovementEnable){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
                 this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
-                console.debug(this._NumberOfGiros);
                 this._animWalk.stop();
                 this._animFant.play(4,true);
                 this._Fantasma=true;
