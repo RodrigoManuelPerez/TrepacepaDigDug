@@ -29,10 +29,11 @@ var PreloaderScene = {
     //AUDIO
 
         //SAMPLES
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
-    this.game.load.audio('running90s', ['music/Initial_D_Running_in_The_90s.ogg']);
+    this.game.load.audio('Death', ['music/Sounds/Death.ogg']);
+    this.game.load.audio('Item', ['music/Sounds/Item.ogg']);
+    this.game.load.audio('Win', ['music/Sounds/Win.ogg']);
+    this.game.load.audio('Acept', ['music/Sounds/Acept.ogg']);
+    this.game.load.audio('Switch', ['music/Sounds/Switch.ogg']);
 
 
         //MUSICA

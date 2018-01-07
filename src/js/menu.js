@@ -14,6 +14,9 @@ var Eleccion=false;
 var FullScreenButton;
 var ButtonCreated=false;
 
+var SwitchSound;
+var AceptSound;
+
 
 var scoreStringA,scoreTextA,highScoreText;
 
@@ -36,6 +39,10 @@ var MenuScene = {
 
     //musicaMenu=this.game.add.audio('running90s');
     //musicaMenu.play();
+
+    //SOUNDS
+    SwitchSound = this.game.add.audio('Switch');
+    AceptSound = this.game.add.audio('Acept');
 
     //Inicializar los cursores.
     cursors = this.game.input.keyboard.createCursorKeys();
@@ -114,12 +121,14 @@ var MenuScene = {
             if(menu.y==0 && !Eleccion){
                 if(key.keyCode === Phaser.KeyCode.W){
                     if(Flechita.y == PosicionInferior._y){
+                        SwitchSound.play();
                         Flechita.y = PosicionSuperior._y;
                         PosicionFlecha=true;
                     }
                 }
                 if (key.keyCode === Phaser.KeyCode.S){
                     if(Flechita.y == PosicionSuperior._y){
+                        SwitchSound.play();
                         Flechita.y = PosicionInferior._y;
                         PosicionFlecha=false;
                     }
@@ -132,11 +141,30 @@ var MenuScene = {
                     menu.y=0;
                 else{
                     Eleccion=true;
+                    AceptSound.play();  //The acept sound will sound
                     timerControl.add(1200,Comienzo,this,this.game);
                     timerControl.start();
                 }
             }
         }
+
+        if(menu.y==0 && !Eleccion){
+            if(cursors.up.isDown){
+                if(Flechita.y == PosicionInferior._y){
+                    SwitchSound.play();
+                    Flechita.y = PosicionSuperior._y;
+                    PosicionFlecha=true;
+                }
+            }
+            if(cursors.down.isDown){
+                if(Flechita.y == PosicionSuperior._y){
+                    SwitchSound.play();
+                    Flechita.y = PosicionInferior._y;
+                    PosicionFlecha=false;
+                }
+            }
+        }
+
     },
     render: function(){
         
