@@ -159,6 +159,7 @@ var PlayScene = {
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
+        CuboHuida.visible = false;
         CuboHuida.body.enable=true;
         this.game.world.addChild(CuboHuida);
 
@@ -204,8 +205,7 @@ var PlayScene = {
             FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
-        
-        
+
 
         LoadMap(nivel,this.game);
 
@@ -252,6 +252,7 @@ var PlayScene = {
             if(!GrupoEnemigos.children[0]._Huyendo){
                 //sonido del ultimo enemigo
                 GrupoEnemigos.children[0]._Huyendo=true;
+                playerMusic.stop();
                 playerMusic=this.game.add.audio('MusicGameSpeedUp',0.25,true);    //key, Incluyendo la musica pero a mas velocidad
                 playerMusic.play();
                 playerMusic.pause();

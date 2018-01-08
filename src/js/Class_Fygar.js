@@ -31,7 +31,7 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._2FiresAnim;
     this._3FiresAnim;
 
-    FireSound=game.add.audio('Dragon',5);
+    FireSound=game.add.audio('Dragon',7);
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -100,7 +100,7 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     function StopToFire(){
         
-        if(this._MovementEnable && !this._Fantasma){
+        if(this._MovementEnable && !this._Fantasma && this!=undefined){
 
             this._MovementEnable=false;
             this._animWalk.stop();

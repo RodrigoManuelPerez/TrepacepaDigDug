@@ -168,7 +168,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Movingup=false;
                 this._Movingdown=false;
             }
-            else if (this._player.x < this.x){
+            else if(this._player.x < this.x){
                 this._Movingright=false;
                 this._Movingleft=true;
                 this._Movingup=false;
@@ -182,7 +182,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Movingup=false;
                 this._Movingdown=false;
             }
-            else if (this._cubohuida.x < this.x){
+            else if(this._cubohuida.x < this.x){
                 this._Movingright=false;
                 this._Movingleft=true;
                 this._Movingup=false;

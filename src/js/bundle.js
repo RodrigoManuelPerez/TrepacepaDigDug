@@ -169,7 +169,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Movingup=false;
                 this._Movingdown=false;
             }
-            else if (this._player.x < this.x){
+            else if(this._player.x < this.x){
                 this._Movingright=false;
                 this._Movingleft=true;
                 this._Movingup=false;
@@ -183,7 +183,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Movingup=false;
                 this._Movingdown=false;
             }
-            else if (this._cubohuida.x < this.x){
+            else if(this._cubohuida.x < this.x){
                 this._Movingright=false;
                 this._Movingleft=true;
                 this._Movingup=false;
@@ -357,7 +357,7 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._2FiresAnim;
     this._3FiresAnim;
 
-    FireSound=game.add.audio('Dragon',5);
+    FireSound=game.add.audio('Dragon',7);
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -426,7 +426,7 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     function StopToFire(){
         
-        if(this._MovementEnable && !this._Fantasma){
+        if(this._MovementEnable && !this._Fantasma && this!=undefined){
 
             this._MovementEnable=false;
             this._animWalk.stop();
@@ -1671,6 +1671,7 @@ var PlayScene = {
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
+        CuboHuida.visible = false;
         CuboHuida.body.enable=true;
         this.game.world.addChild(CuboHuida);
 
@@ -1716,8 +1717,7 @@ var PlayScene = {
             FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
-        
-        
+
 
         LoadMap(nivel,this.game);
 

@@ -40,6 +40,7 @@ var PreloaderScene = {
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
+    this.game.load.audio('MusicGameSpeedUp', ['music/Music/GameSongSpeedUp.ogg']);
     this.game.load.audio('MenuSong', ['music/Music/MenuSong.ogg']);
     
     //IMAGENES Y SPRITESHEETS
