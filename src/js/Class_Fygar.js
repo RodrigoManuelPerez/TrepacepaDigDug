@@ -2,8 +2,8 @@
 
 var Enemy = require('./Class_Enemy.js');
 
-var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
-    Enemy.apply(this, [spritesheet, game, position, id, limiteDerecho, limiteSuperior, player]);
+var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
+    Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
     this._animBreathFire = this.animations.add('Breathing',[1,9],5,true);   //animacion de coger fuego con 2 frames y 3 loops
 

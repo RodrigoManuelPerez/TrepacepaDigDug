@@ -20,13 +20,12 @@ var limiteDerecho;
 var limiteSuperior;
 var tierra, tierraH, tierraV;
 var GrupoRocas, rocasCaidas, VegetalGenerado;
-var distanceX, distanceY;
-var paredDerecha, paredSuperior;
 
 var tamañoGrupoRocas=0;
 var GrupoBanderas;
 
 var mapaNivel;
+var CuboHuida;
 
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
@@ -130,13 +129,11 @@ var PlayScene = {
         }
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
-        //scoreStringC = ' SCORE';
         pauseString = 'PAUSED';
 
         levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
-        //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
         pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
         pauseText.visible=false;
         
@@ -147,6 +144,7 @@ var PlayScene = {
         score.text=puntuacion;
         
 
+        //FLORES
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
@@ -155,6 +153,14 @@ var PlayScene = {
             spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
+
+        //CUBO DE HUIDA
+        CuboHuida = new Phaser.Sprite(this.game,20,60,'tierraSuperficie');
+        this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
+        CuboHuida.anchor.x = 0.5;
+        CuboHuida.anchor.y = 0.5;
+        CuboHuida.body.enable=true;
+        this.game.world.addChild(CuboHuida);
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -193,10 +199,12 @@ var PlayScene = {
         //PARA UN CORRECTO FULLSCREEN
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
+        //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
             FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
+        
         
 
         LoadMap(nivel,this.game);
@@ -234,6 +242,20 @@ var PlayScene = {
         //PLAYER CON VEGETAL
         if(VegetalGenerado){
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
+        }
+
+        //ENEMIGOS CON EL CUBO DE HUIDA
+        this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionEliminacionEnemigo);
+
+
+        if(GrupoEnemigos.length==1){
+            if(!GrupoEnemigos.children[0]._Huyendo){
+                //sonido del ultimo enemigo
+                GrupoEnemigos.children[0]._Huyendo=true;
+                playerMusic=this.game.add.audio('MusicGameSpeedUp',0.25,true);    //key, Incluyendo la musica pero a mas velocidad
+                playerMusic.play();
+                playerMusic.pause();
+            }
         }
 
         if(player._AnimMuerto){
@@ -707,7 +729,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo Pooka
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
+                        var enemigo = new Enemy('P', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
@@ -729,7 +751,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='6'){    //Enemigo Fygar
 
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
+                        var enemigo = new Fygar('FygarSpriteSheet', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
@@ -890,6 +912,17 @@ function MuertePlayer(){
         StopEnemies();
         StopRocks();
     }
+}
+
+function onCollisionEliminacionEnemigo(obj1,obj2){
+
+    console.debug(obj2._id);
+    console.debug(obj2._Huyendo);
+    if(obj2._Huyendo){
+        obj2.Destroy(); //Podriamos cambiarlo
+        //AL DESTRUIRSE EL TAMAÑO DEL GRUPO DE ENEMIGOS ES 0 Y POR TANTO SE LLAMARIA AUTOMATICAMENTE AL LEVEL WIN Y TAL
+    }
+
 }
 
 function FullScreen(){

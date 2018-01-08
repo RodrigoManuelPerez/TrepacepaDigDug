@@ -2,12 +2,11 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player){
+var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limiteSuperior, player){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spritesheet]);
     
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animFant =this.animations.add('Digging', [2,3], 6, true);
-    //console.debug(player._id);
 
     this._animWalk.play(6,true);
 
@@ -25,6 +24,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     this._posicionInicial=0;
 
     this._player=player;
+    this._cubohuida = cube;
 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
@@ -34,11 +34,9 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     this._MovementEnable=true;
     
+    /////////////////////////////CHANGE THIS TO FALSE
+    this._Huyendo=false;
 
-
-    //this._animWalk =this.animations.add('Walking');
-    //this._animWalk.play(6,true);
-    //console.debug(spriteSheet);
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -52,7 +50,10 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
-                this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
+                if(!this._Huyendo)
+                    this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
+                else
+                    this._NumberOfGiros= Math.floor(Math.random() * (10) + 5);
                 this._animWalk.stop();
                 this._animFant.play(4,true);
                 this._Fantasma=true;
@@ -150,12 +151,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                         this._bufferBounce--;
                     }
                 }
-            }
-            // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
-            //     this._animWalk.paused=false;
-            //     }
-
-            
+            }            
         }
     }
 
@@ -165,18 +161,33 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         this.y-=this._distanceY;
         this._distanceY=0;
         this._bufferBounce=1;
-        
-        if(this._player.x > this.x){
-            this._Movingright=true;
-            this._Movingleft=false;
-            this._Movingup=false;
-            this._Movingdown=false;
+        if(!this._Huyendo){
+            if(this._player.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
+            else if (this._player.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
         }
-        else if (this._player.x < this.x){
-            this._Movingright=false;
-            this._Movingleft=true;
-            this._Movingup=false;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
+            else if (this._cubohuida.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
         }
     }
 
@@ -185,18 +196,33 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         this.x-=this._distanceX;
         this._distanceX=0;
         this._bufferBounce=1;
-
-        if(this._player.y > this.y){
-            this._Movingright=false;
-            this._Movingleft=false;
-            this._Movingup=false;
-            this._Movingdown=true;
+        if(!this._Huyendo){
+            if(this._player.y > this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._player.y < this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
-        else if(this._player.y < this.y){
-            this._Movingright=false;
-            this._Movingleft=false;
-            this._Movingup=true;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.y > this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._cubohuida.y < this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
 
     }
@@ -229,21 +255,41 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     }
 
     Enemy.prototype.ChangeDirPhantom = function() {
-        if(this._player.x > this.x){
-            this._Movingright=true;
-            this._Movingleft=false;
+        if(!this._Huyendo){
+            if(this._player.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+            }
+            else if (this._player.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+            }
+            if(this._player.y > this.y){
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._player.y < this.y){
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
-        else if (this._player.x < this.x){
-            this._Movingright=false;
-            this._Movingleft=true;
-        }
-        if(this._player.y > this.y){
-            this._Movingup=false;
-            this._Movingdown=true;
-        }
-        else if(this._player.y < this.y){
-            this._Movingup=true;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+            }
+            else if (this._cubohuida.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+            }
+            if(this._cubohuida.y > this.y){
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._cubohuida.y < this.y){
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
     }
 

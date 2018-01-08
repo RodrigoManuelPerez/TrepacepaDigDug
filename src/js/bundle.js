@@ -3,12 +3,11 @@
 
 var Movable = require('./Class_Movable.js');
 
-var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player){
+var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limiteSuperior, player){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spritesheet]);
     
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animFant =this.animations.add('Digging', [2,3], 6, true);
-    //console.debug(player._id);
 
     this._animWalk.play(6,true);
 
@@ -26,6 +25,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     this._posicionInicial=0;
 
     this._player=player;
+    this._cubohuida = cube;
 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
@@ -35,11 +35,9 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
     this._MovementEnable=true;
     
+    /////////////////////////////CHANGE THIS TO FALSE
+    this._Huyendo=false;
 
-
-    //this._animWalk =this.animations.add('Walking');
-    //this._animWalk.play(6,true);
-    //console.debug(spriteSheet);
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -53,7 +51,10 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
-                this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
+                if(!this._Huyendo)
+                    this._NumberOfGiros= Math.floor(Math.random() * (15) + 15);
+                else
+                    this._NumberOfGiros= Math.floor(Math.random() * (10) + 5);
                 this._animWalk.stop();
                 this._animFant.play(4,true);
                 this._Fantasma=true;
@@ -151,12 +152,7 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
                         this._bufferBounce--;
                     }
                 }
-            }
-            // if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
-            //     this._animWalk.paused=false;
-            //     }
-
-            
+            }            
         }
     }
 
@@ -166,18 +162,33 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         this.y-=this._distanceY;
         this._distanceY=0;
         this._bufferBounce=1;
-        
-        if(this._player.x > this.x){
-            this._Movingright=true;
-            this._Movingleft=false;
-            this._Movingup=false;
-            this._Movingdown=false;
+        if(!this._Huyendo){
+            if(this._player.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
+            else if (this._player.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
         }
-        else if (this._player.x < this.x){
-            this._Movingright=false;
-            this._Movingleft=true;
-            this._Movingup=false;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
+            else if (this._cubohuida.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+                this._Movingup=false;
+                this._Movingdown=false;
+            }
         }
     }
 
@@ -186,18 +197,33 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
         this.x-=this._distanceX;
         this._distanceX=0;
         this._bufferBounce=1;
-
-        if(this._player.y > this.y){
-            this._Movingright=false;
-            this._Movingleft=false;
-            this._Movingup=false;
-            this._Movingdown=true;
+        if(!this._Huyendo){
+            if(this._player.y > this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._player.y < this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
-        else if(this._player.y < this.y){
-            this._Movingright=false;
-            this._Movingleft=false;
-            this._Movingup=true;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.y > this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._cubohuida.y < this.y){
+                this._Movingright=false;
+                this._Movingleft=false;
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
 
     }
@@ -230,21 +256,41 @@ var Enemy = function(spritesheet, game, position, id, limiteDerecho, limiteSuper
     }
 
     Enemy.prototype.ChangeDirPhantom = function() {
-        if(this._player.x > this.x){
-            this._Movingright=true;
-            this._Movingleft=false;
+        if(!this._Huyendo){
+            if(this._player.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+            }
+            else if (this._player.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+            }
+            if(this._player.y > this.y){
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._player.y < this.y){
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
-        else if (this._player.x < this.x){
-            this._Movingright=false;
-            this._Movingleft=true;
-        }
-        if(this._player.y > this.y){
-            this._Movingup=false;
-            this._Movingdown=true;
-        }
-        else if(this._player.y < this.y){
-            this._Movingup=true;
-            this._Movingdown=false;
+        else{
+            if(this._cubohuida.x > this.x){
+                this._Movingright=true;
+                this._Movingleft=false;
+            }
+            else if (this._cubohuida.x < this.x){
+                this._Movingright=false;
+                this._Movingleft=true;
+            }
+            if(this._cubohuida.y > this.y){
+                this._Movingup=false;
+                this._Movingdown=true;
+            }
+            else if(this._cubohuida.y < this.y){
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
     }
 
@@ -282,8 +328,8 @@ module.exports = Flower;
 
 var Enemy = require('./Class_Enemy.js');
 
-var Fygar = function(spritesheet, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
-    Enemy.apply(this, [spritesheet, game, position, id, limiteDerecho, limiteSuperior, player]);
+var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
+    Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
     this._animBreathFire = this.animations.add('Breathing',[1,9],5,true);   //animacion de coger fuego con 2 frames y 3 loops
 
@@ -1213,7 +1259,7 @@ var PreloaderScene = {
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
-    this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 10);
+    this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 11);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
@@ -1480,13 +1526,12 @@ var limiteDerecho;
 var limiteSuperior;
 var tierra, tierraH, tierraV;
 var GrupoRocas, rocasCaidas, VegetalGenerado;
-var distanceX, distanceY;
-var paredDerecha, paredSuperior;
 
 var tamañoGrupoRocas=0;
 var GrupoBanderas;
 
 var mapaNivel;
+var CuboHuida;
 
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
@@ -1590,13 +1635,11 @@ var PlayScene = {
         }
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
-        //scoreStringC = ' SCORE';
         pauseString = 'PAUSED';
 
         levelString = ' ROUND ';
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
-        //scoreTextC = this.game.add.text(599, 216, scoreStringC, { font: '34px Arial', fill: '#fff' });
         pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
         pauseText.visible=false;
         
@@ -1607,6 +1650,7 @@ var PlayScene = {
         score.text=puntuacion;
         
 
+        //FLORES
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
@@ -1615,6 +1659,14 @@ var PlayScene = {
             spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
             thisFlor.addChild(spriteFlor);
         }
+
+        //CUBO DE HUIDA
+        CuboHuida = new Phaser.Sprite(this.game,20,60,'tierraSuperficie');
+        this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
+        CuboHuida.anchor.x = 0.5;
+        CuboHuida.anchor.y = 0.5;
+        CuboHuida.body.enable=true;
+        this.game.world.addChild(CuboHuida);
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -1653,10 +1705,12 @@ var PlayScene = {
         //PARA UN CORRECTO FULLSCREEN
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 
+        //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
             FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
+        
         
 
         LoadMap(nivel,this.game);
@@ -1694,6 +1748,20 @@ var PlayScene = {
         //PLAYER CON VEGETAL
         if(VegetalGenerado){
             this.game.physics.arcade.collide(player, Vegetable, onCollisionVegetable,null, {this:this, g:this.game});
+        }
+
+        //ENEMIGOS CON EL CUBO DE HUIDA
+        this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionEliminacionEnemigo);
+
+
+        if(GrupoEnemigos.length==1){
+            if(!GrupoEnemigos.children[0]._Huyendo){
+                //sonido del ultimo enemigo
+                GrupoEnemigos.children[0]._Huyendo=true;
+                playerMusic=this.game.add.audio('MusicGameSpeedUp',0.25,true);    //key, Incluyendo la musica pero a mas velocidad
+                playerMusic.play();
+                playerMusic.pause();
+            }
         }
 
         if(player._AnimMuerto){
@@ -2167,7 +2235,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='5'){    //Enemigo Pooka
                         
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Enemy('P', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
+                        var enemigo = new Enemy('P', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
@@ -2189,7 +2257,7 @@ function LoadMap (lvl,g) {
                     else if(fila[i]=='6'){    //Enemigo Fygar
 
                         var PosEne = new Par(posX-20,posY-23);
-                        var enemigo = new Fygar('FygarSpriteSheet', g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
+                        var enemigo = new Fygar('FygarSpriteSheet', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
                         enemigo.anchor.y = 0.5;
@@ -2350,6 +2418,17 @@ function MuertePlayer(){
         StopEnemies();
         StopRocks();
     }
+}
+
+function onCollisionEliminacionEnemigo(obj1,obj2){
+
+    console.debug(obj2._id);
+    console.debug(obj2._Huyendo);
+    if(obj2._Huyendo){
+        obj2.Destroy(); //Podriamos cambiarlo
+        //AL DESTRUIRSE EL TAMAÑO DEL GRUPO DE ENEMIGOS ES 0 Y POR TANTO SE LLAMARIA AUTOMATICAMENTE AL LEVEL WIN Y TAL
+    }
+
 }
 
 function FullScreen(){
