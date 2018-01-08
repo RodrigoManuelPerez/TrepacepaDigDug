@@ -35,8 +35,8 @@ var PreloaderScene = {
     this.game.load.audio('Acept', ['music/Sounds/Acept.ogg']);
     this.game.load.audio('Switch', ['music/Sounds/Switch.ogg']);
     this.game.load.audio('Points', ['music/Sounds/Points.ogg']);
-    this.game.load.audio('Dragon', ['music/Sounds/Switch.ogg']);
-    this.game.load.audio('Rock', ['music/Sounds/Points.ogg']);
+    this.game.load.audio('Dragon', ['music/Sounds/Dragon.ogg']);
+    this.game.load.audio('Rock', ['music/Sounds/Rock.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);

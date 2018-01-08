@@ -2,6 +2,8 @@
 
 var Enemy = require('./Class_Enemy.js');
 
+var FireSound;
+
 var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra){
     Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
@@ -28,6 +30,8 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     this._2FiresAnim;
     this._3FiresAnim;
+
+    FireSound=game.add.audio('Dragon',5);
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -98,7 +102,6 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         
         if(this._MovementEnable && !this._Fantasma){
 
-
             this._MovementEnable=false;
             this._animWalk.stop();
             this._animBreathFire.play(5,true);
@@ -136,11 +139,6 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             this._FireAnim.play(10,false);
             this._game.world.add(this._Fire);
 
-            // if(this._distanciaX!=0)
-            //     this._Fire.width = Math.abs(this._distanciaX);
-            // else if(this._distanciaY!=0)
-            //     this._Fire.width = Math.abs(this._distanciaY);
-
             if(this._Movingleft){               
                 this._Fire.x-=70;
                 this._Fire.width = -this._Fire.width;
@@ -155,7 +153,9 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             else if(this._Movingdown){
                 this._Fire.angle = 90;
                 this._Fire.y+=70;
-            }   
+            }
+
+            FireSound.play();
 
         }
         else if(Math.abs(this._distanciaX)>75 || Math.abs(this._distanciaX)>75){
@@ -166,11 +166,6 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             this._FireAnim.play(10,false);
             this._game.world.add(this._Fire);
             
-            // if(this._distanciaX!=0)
-            //     this._Fire.width = Math.abs(this._distanciaX);
-            // else if(this._distanciaY!=0)
-            //     this._Fire.width = Math.abs(this._distanciaY);
-
             if(this._Movingleft){                
                 this._Fire.x-=50;
                 this._Fire.width = -this._Fire.width;
@@ -186,6 +181,9 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Fire.angle = 90;
                 this._Fire.y+=50;
             }
+
+            FireSound.play();
+
         }
         else if(Math.abs(this._distanciaX)>30 || Math.abs(this._distanciaX)>30){
             this._Fire=new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
@@ -209,6 +207,9 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 this._Fire.angle = 90;
                 this._Fire.y+=32;
             }
+
+            FireSound.play();
+
         }
         
         this._animBreathFire.stop();

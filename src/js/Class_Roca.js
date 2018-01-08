@@ -4,7 +4,7 @@ var GameObject = require('./Class_GameObject.js');
 var PlayScene = require('./play_scene.js');
 
 var PointsSound;
-var FallSound;
+var StopSound;
 
 var Roca = function(game, position,id, spritesheet){
     
@@ -36,6 +36,7 @@ var Roca = function(game, position,id, spritesheet){
 
 
         PointsSound = game.add.audio('Points',1);
+        StopSound = game.add.audio('Rock',1);
         }
     
         Roca.prototype = Object.create(GameObject.prototype);
@@ -58,6 +59,7 @@ var Roca = function(game, position,id, spritesheet){
     
         Roca.prototype.Para=function() {
             
+            StopSound.play();
             this.animations.stop('Shaking');
             this._Falling = false;
             this._HasFallen = true;
@@ -124,6 +126,7 @@ var Roca = function(game, position,id, spritesheet){
                 this.frame=I;
             else
                 this.frame=13;
+
             PointsSound.play();
         }
 

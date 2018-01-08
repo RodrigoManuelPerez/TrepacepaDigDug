@@ -131,9 +131,9 @@ var MenuScene = {
                 if(menu.y>0)
                     menu.y=0;
                 else{
+                    if(!Eleccion)
+                        AceptSound.play();  //The acept sound will sound
                     Eleccion=true;
-                    //musicaMenu.stop();
-                    AceptSound.play();  //The acept sound will sound
                     timerControl.add(1500,Comienzo,this,this.game);
                     timerControl.start();
                 }
