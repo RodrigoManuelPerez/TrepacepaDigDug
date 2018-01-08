@@ -357,7 +357,7 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._2FiresAnim;
     this._3FiresAnim;
 
-    FireSound=game.add.audio('Dragon',3);
+    FireSound=game.add.audio('Dragon',5);
     }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -1457,7 +1457,6 @@ var MenuScene = {
                 if(menu.y>0)
                     menu.y=0;
                 else{
-                    
                     if(!Eleccion)
                         AceptSound.play();  //The acept sound will sound
                     Eleccion=true;
