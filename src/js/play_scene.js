@@ -159,6 +159,8 @@ var PlayScene = {
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
+        CuboHuida.width=2;
+        CuboHuida.height=2;
         CuboHuida.visible = false;
         CuboHuida.body.enable=true;
         this.game.world.addChild(CuboHuida);
@@ -298,6 +300,7 @@ var PlayScene = {
 
             if(key.keyCode === Phaser.KeyCode.SPACEBAR){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
+                    GrupoEnemigos.children[gh]._MovementEnable=false;
                     GrupoEnemigos.children[gh].Destroy();
                 }
             }
@@ -825,9 +828,11 @@ function StopRocks(){
 
 function StartEnemies(){
     for (var t=0; t<GrupoEnemigos.length; t++){
-        GrupoEnemigos.children[t]._animWalk.play(6,true);
+        if(!GrupoEnemigos.children[t]._Fantasma)
+            GrupoEnemigos.children[t]._animWalk.play(6,true);
+        else
+            GrupoEnemigos.children[t]._animFant.play(4,true);
         GrupoEnemigos.children[t]._MovementEnable=true;
-        GrupoEnemigos.children[t]._Fantasma=false;
         GrupoEnemigos.children[t]._giros=0;
         GrupoEnemigos.children[t]._posicionInicial=0;
         GrupoEnemigos.children[t]._bufferBounce=1;

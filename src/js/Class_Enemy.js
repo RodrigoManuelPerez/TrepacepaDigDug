@@ -249,10 +249,10 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         }
     }
 
-    Enemy.prototype.resetPos = function() {
-        this.x=this._posOriginal.x;
-        this.y=this._posOriginal.y;
-    }
+    // Enemy.prototype.resetPos = function() {
+    //     this.x=this._posOriginal.x;
+    //     this.y=this._posOriginal.y;
+    // }
 
     Enemy.prototype.ChangeDirPhantom = function() {
         if(!this._Huyendo){
