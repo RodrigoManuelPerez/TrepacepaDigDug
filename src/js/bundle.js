@@ -37,6 +37,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     
     /////////////////////////////CHANGE THIS TO FALSE
     this._Huyendo=false;
+    this._ultimoGiro=false;
 
     }
 
@@ -65,7 +66,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             }
 
             if((this._Fantasma && this._SemiVelocidad==0) || !this._Fantasma){
-                if(this._Movingleft && this.x>15){
+
+                if(this._Movingleft && (this.x>15 || this._ultimoGiro)){
                     this.x--;
                     this._distanceX--;
                     if(!this._Fantasma){
@@ -118,7 +120,14 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
 
             if (this._distanceX > 42 || this._distanceX < -42){
-                if(this._Fantasma){
+
+                if(this._ultimoGiro){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
+                else if(this._Fantasma){
                     if(this._posicionInicial<2)
                         this._posicionInicial++;
                     this.ChangeDirPhantom();
@@ -136,7 +145,14 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 }
             }
             if (this._distanceY > 42 || this._distanceY < -42){
-                if(this._Fantasma){
+                
+                if(this._ultimoGiro){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
+                else if(this._Fantasma){
                     if(this._posicionInicial<2)
                         this._posicionInicial++;
                     this.ChangeDirPhantom();
@@ -162,32 +178,34 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         this.y-=this._distanceY;
         this._distanceY=0;
         this._bufferBounce=1;
-        if(!this._Huyendo){
-            if(this._player.x > this.x){
-                this._Movingright=true;
-                this._Movingleft=false;
-                this._Movingup=false;
-                this._Movingdown=false;
+        if(!this._ultimoGiro){
+            if(!this._Huyendo){
+                if(this._player.x > this.x){
+                    this._Movingright=true;
+                    this._Movingleft=false;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
+                else if(this._player.x < this.x){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
             }
-            else if(this._player.x < this.x){
-                this._Movingright=false;
-                this._Movingleft=true;
-                this._Movingup=false;
-                this._Movingdown=false;
-            }
-        }
-        else{
-            if(this._cubohuida.x > this.x){
-                this._Movingright=true;
-                this._Movingleft=false;
-                this._Movingup=false;
-                this._Movingdown=false;
-            }
-            else if(this._cubohuida.x < this.x){
-                this._Movingright=false;
-                this._Movingleft=true;
-                this._Movingup=false;
-                this._Movingdown=false;
+            else{
+                if(this._cubohuida.x > this.x){
+                    this._Movingright=true;
+                    this._Movingleft=false;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
+                else if(this._cubohuida.x < this.x){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                    this._Movingup=false;
+                    this._Movingdown=false;
+                }
             }
         }
     }
@@ -197,99 +215,99 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         this.x-=this._distanceX;
         this._distanceX=0;
         this._bufferBounce=1;
-        if(!this._Huyendo){
-            if(this._player.y > this.y){
-                this._Movingright=false;
-                this._Movingleft=false;
-                this._Movingup=false;
-                this._Movingdown=true;
+        if(!this._ultimoGiro){
+            if(!this._Huyendo){
+                if(this._player.y > this.y){
+                    this._Movingright=false;
+                    this._Movingleft=false;
+                    this._Movingup=false;
+                    this._Movingdown=true;
+                }
+                else if(this._player.y < this.y){
+                    this._Movingright=false;
+                    this._Movingleft=false;
+                    this._Movingup=true;
+                    this._Movingdown=false;
+                }
             }
-            else if(this._player.y < this.y){
-                this._Movingright=false;
-                this._Movingleft=false;
-                this._Movingup=true;
-                this._Movingdown=false;
+            else{
+                if(this._cubohuida.y > this.y){
+                    this._Movingright=false;
+                    this._Movingleft=false;
+                    this._Movingup=false;
+                    this._Movingdown=true;
+                }
+                else if(this._cubohuida.y < this.y){
+                    this._Movingright=false;
+                    this._Movingleft=false;
+                    this._Movingup=true;
+                    this._Movingdown=false;
+                }
             }
         }
-        else{
-            if(this._cubohuida.y > this.y){
-                this._Movingright=false;
-                this._Movingleft=false;
-                this._Movingup=false;
-                this._Movingdown=true;
-            }
-            else if(this._cubohuida.y < this.y){
-                this._Movingright=false;
-                this._Movingleft=false;
-                this._Movingup=true;
-                this._Movingdown=false;
-            }
-        }
-
     }
 
     Enemy.prototype.ChangeDirTierra = function() {
 
         this._giros++;
-
-        if (this._Movingleft){
-            this._Movingleft=false;
-            this._Movingright=true;
-        }
-        else if(this._Movingright){
-            this._Movingleft=true;
-            this._Movingright=false;
-        }
-        else if(this._Movingup){
-            this._Movingdown=true;
-            this._Movingup=false;
-        }
-        else if(this._Movingdown){
-            this._Movingup=true;
-            this._Movingdown=false;
+        if(!this._ultimoGiro){
+            if (this._Movingleft){
+                this._Movingleft=false;
+                this._Movingright=true;
+            }
+            else if(this._Movingright){
+                this._Movingleft=true;
+                this._Movingright=false;
+            }
+            else if(this._Movingup){
+                this._Movingdown=true;
+                this._Movingup=false;
+            }
+            else if(this._Movingdown){
+                this._Movingup=true;
+                this._Movingdown=false;
+            }
         }
     }
 
-    // Enemy.prototype.resetPos = function() {
-    //     this.x=this._posOriginal.x;
-    //     this.y=this._posOriginal.y;
-    // }
 
     Enemy.prototype.ChangeDirPhantom = function() {
-        if(!this._Huyendo){
-            if(this._player.x > this.x){
-                this._Movingright=true;
-                this._Movingleft=false;
+        if(!this._ultimoGiro){
+            if(!this._Huyendo){
+                if(this._player.x > this.x){
+                    this._Movingright=true;
+                    this._Movingleft=false;
+                }
+                else if (this._player.x < this.x){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                }
+                if(this._player.y > this.y){
+                    this._Movingup=false;
+                    this._Movingdown=true;
+                }
+                else if(this._player.y < this.y){
+                    this._Movingup=true;
+                    this._Movingdown=false;
+                }
             }
-            else if (this._player.x < this.x){
-                this._Movingright=false;
-                this._Movingleft=true;
-            }
-            if(this._player.y > this.y){
-                this._Movingup=false;
-                this._Movingdown=true;
-            }
-            else if(this._player.y < this.y){
-                this._Movingup=true;
-                this._Movingdown=false;
-            }
-        }
-        else{
-            if(this._cubohuida.x > this.x){
-                this._Movingright=true;
-                this._Movingleft=false;
-            }
-            else if (this._cubohuida.x < this.x){
-                this._Movingright=false;
-                this._Movingleft=true;
-            }
-            if(this._cubohuida.y > this.y){
-                this._Movingup=false;
-                this._Movingdown=true;
-            }
-            else if(this._cubohuida.y < this.y){
-                this._Movingup=true;
-                this._Movingdown=false;
+            else{
+                if(this._cubohuida.x > this.x){
+                    this._Movingright=true;
+                    this._Movingleft=false;
+                }
+                else if (this._cubohuida.x < this.x){
+                    this._Movingright=false;
+                    this._Movingleft=true;
+                }
+                if(this._cubohuida.y > this.y){
+                    this._Movingup=false;
+                    this._Movingdown=true;
+                }
+                else if(this._cubohuida.y < this.y){
+                    this._Movingup=true;
+                    this._Movingdown=false;
+                }
             }
         }
     }
@@ -1539,6 +1557,8 @@ var GrupoBanderas;
 
 var mapaNivel;
 var CuboHuida;
+var CuboDestruccion;
+var BloqTierraleft;
 
 var GrupoEnemigos;
 var PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
@@ -1672,11 +1692,18 @@ var PlayScene = {
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
-        CuboHuida.width=2;
-        CuboHuida.height=2;
         CuboHuida.visible = false;
         CuboHuida.body.enable=true;
         this.game.world.addChild(CuboHuida);
+
+        //CUBO DE MUERTE
+        CuboDestruccion = new Phaser.Sprite(this.game,-60,60,'tierraSuperficie');
+        this.game.physics.enable(CuboDestruccion, Phaser.Physics.ARCADE);
+        CuboDestruccion.anchor.x = 0.5;
+        CuboDestruccion.anchor.y = 0.5;
+        CuboDestruccion.visible = false;
+        CuboDestruccion.body.enable=true;
+        this.game.world.addChild(CuboDestruccion);
 
         //Inicializar los cursores.
         cursors = this.game.input.keyboard.createCursorKeys();
@@ -1760,7 +1787,8 @@ var PlayScene = {
         }
 
         //ENEMIGOS CON EL CUBO DE HUIDA
-        this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionEliminacionEnemigo);
+        this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
+        this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
 
         if(GrupoEnemigos.length==1){
@@ -2092,7 +2120,7 @@ function LoadMap (lvl,g) {
     var V1 = new Par(-3, posY-43);
     var V2 = new Par(513, posY-43);
 
-    var BloqTierraleft = new GO(g, V1, 'tierraVInferior', 'tierraV');  
+    BloqTierraleft = new GO(g, V1, 'tierraVInferior', 'tierraV');  
     g.physics.arcade.enable(BloqTierraleft);
     BloqTierraleft.body.immovable = true;
     BloqTierraleft.visible=false;
@@ -2306,6 +2334,9 @@ function ResetPosition(){       //Coloca al todos los personajes en el lugar ori
         GrupoEnemigos.children[i]._distanceX=0;
         GrupoEnemigos.children[i]._distanceY=0;
         GrupoEnemigos.children[i]._Fantasma=false;
+        GrupoEnemigos.children[i]._giros=0;
+        GrupoEnemigos.children[i]._posicionInicial=0;
+        GrupoEnemigos.children[i]._bufferBounce=1;
     }
     player.x=player._posOriginalX;
     player.y=player._posOriginalY;
@@ -2425,23 +2456,26 @@ function ComenzarJuego(g){
     g.state.restart('play', false, false);
 }
 
-function MuertePlayer(){
-    if(!player._AnimMuerto){
-        player.Muerte();
-        StopEnemies();
-        StopRocks();
+function MuertePlayer(obj1,obj2){
+    if(!obj2._Fantasma){
+        if(!player._AnimMuerto){
+            player.Muerte();
+            StopEnemies();
+            StopRocks();
+        }
+    }
+}
+
+function onCollisionHuidaEnemigo(obj1,obj2){
+    if(obj2._Huyendo){
+        obj2._ultimoGiro=true;
+        BloqTierraleft.Destroy();
     }
 }
 
 function onCollisionEliminacionEnemigo(obj1,obj2){
-
-    console.debug(obj2._id);
-    console.debug(obj2._Huyendo);
-    if(obj2._Huyendo){
-        obj2.Destroy(); //Podriamos cambiarlo
-        //AL DESTRUIRSE EL TAMAÑO DEL GRUPO DE ENEMIGOS ES 0 Y POR TANTO SE LLAMARIA AUTOMATICAMENTE AL LEVEL WIN Y TAL
-    }
-
+    obj2._MovementEnable=false;
+    obj2.Destroy();
 }
 
 function FullScreen(){
