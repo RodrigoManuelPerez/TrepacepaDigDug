@@ -937,12 +937,16 @@ function MuertePlayer(obj1,obj2){
 
 function onCollisionHuidaEnemigo(obj1,obj2){
     if(obj2._Huyendo){
+        // if(obj2._Fantasma){
+        //     obj2.BackToNormal(obj1.x,obj1.y);
+        // }
         obj2._ultimoGiro=true;
         BloqTierraleft.Destroy();
     }
 }
 
 function onCollisionEliminacionEnemigo(obj1,obj2){
+    
     obj2._MovementEnable=false;
     obj2.Destroy();
 }

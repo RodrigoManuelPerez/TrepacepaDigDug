@@ -125,6 +125,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                     this._Movingleft=true;
                     this._Movingup=false;
                     this._Movingdown=false;
+                    this._distanceX = 0;
+                    this._giros++;
                 }
                 else if(this._Fantasma){
                     if(this._posicionInicial<2)
@@ -150,6 +152,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                     this._Movingleft=true;
                     this._Movingup=false;
                     this._Movingdown=false;
+                    this._distanceY = 0;
+                    this._giros++;
                 }
                 else if(this._Fantasma){
                     if(this._posicionInicial<2)
