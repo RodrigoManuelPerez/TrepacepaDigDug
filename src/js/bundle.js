@@ -1371,6 +1371,7 @@ var RockSprite, RockAnim;
 var PlayerSprite, PlayerWalking;
 var VegetableSprite, VegetablePop;
 var EnemySprite, EnemyWalking;
+var FygarSprite, FygarWalking;
 
 
 var scoreStringA,scoreTextA,highScoreText;
@@ -1497,6 +1498,11 @@ var MenuScene = {
                     }
                 }
             }
+            else{
+                if(key.keyCode === Phaser.KeyCode.ESC){
+                    this.game.state.start('menu');
+                }
+            }
         }
     },
     render: function(){
@@ -1521,6 +1527,7 @@ function Comienzo(g){
     }
     else{       //Los creditos o controles
         Controles(g);
+        console.debug("hello");
     }
 }
 
@@ -1528,42 +1535,50 @@ function Controles(g){
 
     var exit =false;
 
-    Controls = new Phaser.Sprite(g, 500, 100, 'Controles');
+    Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
     Controls.anchor.x = 0;
     Controls.anchor.y = 0;
     g.world.addChild(Controls);
 
-    RockSprite = new Phaser.Sprite(g, 500, 100, 'RocaCompletaSpriteSheet');
+    RockSprite = new Phaser.Sprite(g, 665, 130, 'RocaCompletaSpriteSheet');
     RockSprite.frame=1;
-    RockSprite.width=2*RockSprite.width;
-    RockSprite.height=2*RockSprite.height;
+    RockSprite.width=2.2*RockSprite.width;
+    RockSprite.height=2.2*RockSprite.height;
     RockSprite.anchor.x = 0.5;
     RockSprite.anchor.y = 0.5;
     g.world.addChild(RockSprite);
 
-    PlayerSprite = new Phaser.Sprite(g, 175, 150, 'DigDugWalking');
+    PlayerSprite = new Phaser.Sprite(g, 160, 205, 'DigDugWalking');
     PlayerSprite.frame=1;
-    PlayerSprite.width=2*PlayerSprite.width;
-    PlayerSprite.height=2*PlayerSprite.height;
+    PlayerSprite.width=1.8*PlayerSprite.width;
+    PlayerSprite.height=1.8*PlayerSprite.height;
     PlayerSprite.anchor.x = 0.5;
     PlayerSprite.anchor.y = 0.5;
     g.world.addChild(PlayerSprite);
 
-    VegetableSprite = new Phaser.Sprite(g, 150, 400, 'Bufos');
+    VegetableSprite = new Phaser.Sprite(g, 125, 430, 'Bufos');
     VegetableSprite.frame=1;
-    VegetableSprite.width=2.5*VegetableSprite.width;
-    VegetableSprite.height=2.5*VegetableSprite.height;
+    VegetableSprite.width=3*VegetableSprite.width;
+    VegetableSprite.height=3*VegetableSprite.height;
     VegetableSprite.anchor.x = 0.5;
     VegetableSprite.anchor.y = 0.5;
     g.world.addChild(VegetableSprite);
 
-    EnemySprite = new Phaser.Sprite(g, 400, 400, 'P');
+    EnemySprite = new Phaser.Sprite(g, 550, 390, 'P');
     EnemySprite.frame=1;
-    EnemySprite.width=-2*EnemySprite.width;
-    EnemySprite.height=2*EnemySprite.height;
+    EnemySprite.width=-3*EnemySprite.width;
+    EnemySprite.height=3*EnemySprite.height;
     EnemySprite.anchor.x = 0.5;
     EnemySprite.anchor.y = 0.5;
     g.world.addChild(EnemySprite);
+
+    FygarSprite = new Phaser.Sprite(g, 675, 390, 'F');
+    FygarSprite.frame=1;
+    FygarSprite.width=-3*FygarSprite.width;
+    FygarSprite.height=3*FygarSprite.height;
+    FygarSprite.anchor.x = 0.5;
+    FygarSprite.anchor.y = 0.5;
+    g.world.addChild(FygarSprite);
 
     RockAnim = RockSprite.animations.add('Shaking', [0, 1], 5, true);
     RockAnim.play();
@@ -1573,19 +1588,9 @@ function Controles(g){
     VegetablePop.play();
     EnemyWalking = EnemySprite.animations.add('Walking', [0,1], 6, true);
     EnemyWalking.play();
+    FygarWalking = FygarSprite.animations.add('Walking', [0,1], 6, true);
+    FygarWalking.play();
 
-    while(!exit){
-        g.input.keyboard.game.input.keyboard.onDownCallback = function(key){
-            if(key.keyCode === Phaser.KeyCode.ESC){
-                exit=true;
-                Controls.Destroy();
-                RockSprite.Destroy();
-                PlayerSprite.Destroy();
-                VegetableSprite.Destroy();
-                EnemySprite.Destroy();
-            }
-        }
-    }
 }
 
 function switchFlechita(){
