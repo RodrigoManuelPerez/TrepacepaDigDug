@@ -1292,6 +1292,7 @@ var PreloaderScene = {
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
+    this.game.load.spritesheet('FlorBlancaSpriteSheet', 'images/florAnimBlanca.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
@@ -1526,15 +1527,13 @@ function Comienzo(g){
         
     }
     else{       //Los creditos o controles
+        AtControls=true;
         Controles(g);
         console.debug("hello");
     }
 }
 
 function Controles(g){
-
-    var exit =false;
-
     Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
     Controls.anchor.x = 0;
     Controls.anchor.y = 0;
@@ -1765,10 +1764,18 @@ var PlayScene = {
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
-        for (i = 0; i < nivel; i++)
+        var cont = nivel;
+        for (i = 0; i < cont; i++)
         {
-            spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
-            thisFlor.addChild(spriteFlor);
+            if(cont>10){
+                cont-=9;
+                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorBlancaSpriteSheet')        //FlorBlancaSpriteSheet
+                thisFlor.addChild(spriteFlor);
+            }
+            else{
+                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')        //FlorBlancaSpriteSheet
+                thisFlor.addChild(spriteFlor);
+            }
         }
 
         //CUBO DE HUIDA

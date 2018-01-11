@@ -51,6 +51,7 @@ var PreloaderScene = {
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
     this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
+    this.game.load.spritesheet('FlorBlancaSpriteSheet', 'images/florAnimBlanca.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);

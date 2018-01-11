@@ -177,15 +177,13 @@ function Comienzo(g){
         
     }
     else{       //Los creditos o controles
+        AtControls=true;
         Controles(g);
         console.debug("hello");
     }
 }
 
 function Controles(g){
-
-    var exit =false;
-
     Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
     Controls.anchor.x = 0;
     Controls.anchor.y = 0;

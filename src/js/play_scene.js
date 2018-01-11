@@ -150,10 +150,18 @@ var PlayScene = {
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
-        for (i = 0; i < nivel; i++)
+        var cont = nivel;
+        for (i = 0; i < cont; i++)
         {
-            spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')
-            thisFlor.addChild(spriteFlor);
+            if(cont>10){
+                cont-=9;
+                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorBlancaSpriteSheet')        //FlorBlancaSpriteSheet
+                thisFlor.addChild(spriteFlor);
+            }
+            else{
+                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')        //FlorBlancaSpriteSheet
+                thisFlor.addChild(spriteFlor);
+            }
         }
 
         //CUBO DE HUIDA
