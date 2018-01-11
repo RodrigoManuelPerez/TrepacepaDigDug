@@ -79,7 +79,7 @@ var PreloaderScene = {
 
     this.game.load.image('Banderita', 'images/Bandera.png');
 
-    //this.game.load.image('col', 'images/RocaColl.png')
+    this.game.load.image('Controles', 'images/Controles.png')
 
 
     //COSAS DEL MENU

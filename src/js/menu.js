@@ -17,6 +17,12 @@ var ButtonCreated=false;
 var SwitchSound;
 var AceptSound;
 
+var Controls, AtControls=false;
+var RockSprite, RockAnim;
+var PlayerSprite, PlayerWalking;
+var VegetableSprite, VegetablePop;
+var EnemySprite, EnemyWalking;
+
 
 var scoreStringA,scoreTextA,highScoreText;
 
@@ -32,6 +38,8 @@ var MenuScene = {
     parpadeando=false;
     PosicionFlecha = true;
     ButtonCreated=false;
+    AtControls=false;
+    
 
     timerControl = this.game.time.create(false);
 
@@ -109,7 +117,7 @@ var MenuScene = {
         this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
-            if(menu.y==0 && !Eleccion){
+            if(menu.y==0 && !Eleccion &&!AtControls){
                 if(key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
                     if(Flechita.y == PosicionInferior._y){
                         SwitchSound.play();
@@ -127,15 +135,17 @@ var MenuScene = {
             }
 
             //////////////////ELECCION//////////////
-            if(key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
-                if(menu.y>0)
-                    menu.y=0;
-                else{
-                    if(!Eleccion)
-                        AceptSound.play();  //The acept sound will sound
-                    Eleccion=true;
-                    timerControl.add(1500,Comienzo,this,this.game);
-                    timerControl.start();
+            if(!AtControls){
+                if(key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
+                    if(menu.y>0)
+                        menu.y=0;
+                    else{
+                        if(!Eleccion)
+                            AceptSound.play();  //The acept sound will sound
+                        Eleccion=true;
+                        timerControl.add(1500,Comienzo,this,this.game);
+                        timerControl.start();
+                    }
                 }
             }
         }
@@ -161,9 +171,74 @@ function Comienzo(g){
         
     }
     else{       //Los creditos o controles
-
+        Controles(g);
     }
 }
+
+function Controles(g){
+
+    var exit =false;
+
+    Controls = new Phaser.Sprite(g, 500, 100, 'Controles');
+    Controls.anchor.x = 0;
+    Controls.anchor.y = 0;
+    g.world.addChild(Controls);
+
+    RockSprite = new Phaser.Sprite(g, 500, 100, 'RocaCompletaSpriteSheet');
+    RockSprite.frame=1;
+    RockSprite.width=2*RockSprite.width;
+    RockSprite.height=2*RockSprite.height;
+    RockSprite.anchor.x = 0.5;
+    RockSprite.anchor.y = 0.5;
+    g.world.addChild(RockSprite);
+
+    PlayerSprite = new Phaser.Sprite(g, 175, 150, 'DigDugWalking');
+    PlayerSprite.frame=1;
+    PlayerSprite.width=2*PlayerSprite.width;
+    PlayerSprite.height=2*PlayerSprite.height;
+    PlayerSprite.anchor.x = 0.5;
+    PlayerSprite.anchor.y = 0.5;
+    g.world.addChild(PlayerSprite);
+
+    VegetableSprite = new Phaser.Sprite(g, 150, 400, 'Bufos');
+    VegetableSprite.frame=1;
+    VegetableSprite.width=2.5*VegetableSprite.width;
+    VegetableSprite.height=2.5*VegetableSprite.height;
+    VegetableSprite.anchor.x = 0.5;
+    VegetableSprite.anchor.y = 0.5;
+    g.world.addChild(VegetableSprite);
+
+    EnemySprite = new Phaser.Sprite(g, 400, 400, 'P');
+    EnemySprite.frame=1;
+    EnemySprite.width=-2*EnemySprite.width;
+    EnemySprite.height=2*EnemySprite.height;
+    EnemySprite.anchor.x = 0.5;
+    EnemySprite.anchor.y = 0.5;
+    g.world.addChild(EnemySprite);
+
+    RockAnim = RockSprite.animations.add('Shaking', [0, 1], 5, true);
+    RockAnim.play();
+    PlayerWalking = PlayerSprite.animations.add('Walking', [0,1], 6, true);
+    PlayerWalking.play();
+    VegetablePop = VegetableSprite.animations.add('ShowVegetables', [0,1,2,3,4,5,6,7,8,9,10,11], 10, true);
+    VegetablePop.play();
+    EnemyWalking = EnemySprite.animations.add('Walking', [0,1], 6, true);
+    EnemyWalking.play();
+
+    while(!exit){
+        g.input.keyboard.game.input.keyboard.onDownCallback = function(key){
+            if(key.keyCode === Phaser.KeyCode.ESC){
+                exit=true;
+                Controls.Destroy();
+                RockSprite.Destroy();
+                PlayerSprite.Destroy();
+                VegetableSprite.Destroy();
+                EnemySprite.Destroy();
+            }
+        }
+    }
+}
+
 function switchFlechita(){
     if(!Eleccion)
         Flechita.visible=!Flechita.visible;
