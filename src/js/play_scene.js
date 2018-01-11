@@ -150,15 +150,19 @@ var PlayScene = {
         var thisFlor = this.flor;
         thisFlor = this.game.add.group();
 
-        var cont = nivel;
+        var contFB = Math.floor(nivel/10);
+        console.debug(contFB);
+        var contFN = nivel%10;
+        var cont = contFB + contFN;
         for (i = 0; i < cont; i++)
         {
-            if(cont>10){
-                cont-=9;
+            if(contFB>0){
+                contFB--;
                 spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorBlancaSpriteSheet')        //FlorBlancaSpriteSheet
                 thisFlor.addChild(spriteFlor);
             }
-            else{
+            else if(contFN>0){
+                contFN--;
                 spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorSpriteSheet')        //FlorBlancaSpriteSheet
                 thisFlor.addChild(spriteFlor);
             }
