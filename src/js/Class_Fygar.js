@@ -227,7 +227,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
             this._TimerFuego.add(150, ActiveFireCollider, this);
             this._TimerFuego.start();
         }
-        ///////////////////////////////////////---------------------------------------------------------
+        
         this._TimerFuego.add(400, Continue, this);
         this._TimerFuego.start();
     }

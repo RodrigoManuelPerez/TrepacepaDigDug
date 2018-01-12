@@ -575,7 +575,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
             this._TimerFuego.add(150, ActiveFireCollider, this);
             this._TimerFuego.start();
         }
-        ///////////////////////////////////////---------------------------------------------------------
+        
         this._TimerFuego.add(400, Continue, this);
         this._TimerFuego.start();
     }
@@ -1310,10 +1310,11 @@ module.exports = Tierra;
 var GameObject = require('./Class_GameObject.js');
 
 var Vegetal = function(game, position, sprite, id, puntos) {
+    
     GameObject.apply(this, [game, position, sprite, id]);
     this._puntos = puntos;
     this._timer = this.game.time.create(false);
-    }
+}
 
     Vegetal.prototype = Object.create(GameObject.prototype);
     Vegetal.prototype.constructor = Vegetal;
