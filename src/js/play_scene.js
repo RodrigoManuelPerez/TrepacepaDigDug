@@ -231,6 +231,9 @@ var PlayScene = {
 
         LoadMap(nivel,this.game);
 
+        player._GrupoTierra=tierra;
+        player._GrupoEnemigos=GrupoEnemigos;
+
         StopEnemies();
 
 },
@@ -270,8 +273,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
-        //COLISIONES GANCHO
-        this.game.physics.arcade.collide(tierra, player._Hook, onCollisionHookTierra);
+        
         
 
         if(GrupoEnemigos.length==1){
@@ -423,10 +425,6 @@ function switchPause(){
     if(PAUSED){
         pauseText.visible=!pauseText.visible;
     }
-}
-
-function onCollisionHookTierra(obj1,obj2){
-    
 }
 
 function onCollisionBandera(obj1,obj2){

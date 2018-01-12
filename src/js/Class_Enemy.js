@@ -38,6 +38,12 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._Huyendo=false;
     this._ultimoGiro=false;
 
+    //ENGANCHADO
+    this._Hooked=false;
+    this._State=0;
+    this._TimerState = game.time.create(false);
+    this._TimerState.add(1000,ReduceState,this);
+
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -172,6 +178,9 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                     }
                 }
             }            
+        }
+        else if(this._Hooked){
+            this._TimerState.start();
         }
     }
 
@@ -326,6 +335,16 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         this.x=Px;
         this.y=Py;
         this._animWalk.play(6,true);
+    }
+
+    function ReduceState(){
+        if(this._State>0){
+            this._State--;
+            this._TimerState.stop()
+        }
+        if(this._State>0)
+            this._TimerState.start();
+        else
     }
 
 module.exports = Enemy;

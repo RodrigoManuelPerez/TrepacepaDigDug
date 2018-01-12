@@ -10,6 +10,8 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
     
     this._game=game;
+    this._GrupoTierra;
+    this._GrupoEnemigos;
     this._cursors = cursors;
     DeathMusic=game.add.audio('Death',0.4);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
@@ -275,9 +277,9 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this._HookDistanceX=0;
             this._HookDistanceY=0;
 
-            this._Hook.body.checkCollision.up = false;
-            this._Hook.body.checkCollision.down = false;
-            this._Hook.body.checkCollision.right = false;
+            // this._Hook.body.checkCollision.up = false;
+            // this._Hook.body.checkCollision.down = false;
+            // this._Hook.body.checkCollision.right = false;
 
             this.frame=2;
             this._Hook.visible=true;
@@ -350,6 +352,19 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
+        else if(this._Hooked){
+
+            if(this._HookThrow.isDown){
+                
+            }
+
+        }
+
+        if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
+            this.DestroyHook();
+        this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+            
+
 
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
             this._animWalk.paused=false;
@@ -398,10 +413,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._timer.start();
     }
 
-    Player.prototype.DestruyeHook = function() {
-        
+    Player.prototype.DestroyHook = function() {
+        this._Hook.destroy();
     }
-
+    
     function PlayerMuerto(){
         this._Muerto=true;
     }
@@ -412,6 +427,15 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._EnPosicion=true;
         this._animWalk.paused=false;
         this._EsperandoComenzar=false;
+    }
+
+    function EnemyHooked(obj1,obj2){
+        if(!this._Hooked){
+            this._EnemyHooked = obj2;
+            this._Hooked = true;
+            obj2._Hooked = true;
+            obj2._State=1;
+        }
     }
 
     
