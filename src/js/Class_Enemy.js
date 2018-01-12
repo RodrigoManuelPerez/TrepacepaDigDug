@@ -34,7 +34,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     this._MovementEnable=true;
     
-    /////////////////////////////CHANGE THIS TO FALSE
+    //HUIDA
     this._Huyendo=false;
     this._ultimoGiro=false;
 

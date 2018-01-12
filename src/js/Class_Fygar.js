@@ -73,7 +73,6 @@ var Fygar = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 else
                     onCollisionBulletTierra.call(this);
             }
-            
         }
         
         if(this._game.physics.arcade.collide(this._FireBullet, this._GrupoTierra))

@@ -14,7 +14,6 @@ var Flower = require('./Class_Flor.js');
 
 
 var player;
-var Hook;
 var cursors;
 var limiteDerecho;
 var limiteSuperior;
@@ -271,6 +270,9 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
+        //COLISIONES GANCHO
+        this.game.physics.arcade.collide(tierra, player._Hook, onCollisionHookTierra);
+        
 
         if(GrupoEnemigos.length==1){
             if(!GrupoEnemigos.children[0]._Huyendo){
@@ -320,7 +322,7 @@ var PlayScene = {
                 }
             }
 
-            if(key.keyCode === Phaser.KeyCode.SPACEBAR){
+            if(key.keyCode === Phaser.KeyCode.U){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
                     GrupoEnemigos.children[gh]._MovementEnable=false;
                     GrupoEnemigos.children[gh].Destroy();
@@ -421,6 +423,10 @@ function switchPause(){
     if(PAUSED){
         pauseText.visible=!pauseText.visible;
     }
+}
+
+function onCollisionHookTierra(obj1,obj2){
+    
 }
 
 function onCollisionBandera(obj1,obj2){
