@@ -43,6 +43,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._State=0;
     this._TimerState = game.time.create(false);
     this._TimerState.add(1000,ReduceState,this);
+    this._timerStarted=false;
 
     }
 
@@ -51,9 +52,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     Enemy.prototype.update = function() 
     {
-
-
-        if(this._MovementEnable){
+        if(this._MovementEnable && !this._Hooked){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
@@ -179,7 +178,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 }
             }            
         }
-        else if(this._Hooked){
+        else if(this._Hooked && !this._timerStarted){
+            this._timerStarted=true;
             this._TimerState.start();
         }
     }
@@ -337,14 +337,22 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         this._animWalk.play(6,true);
     }
 
+
+
     function ReduceState(){
         if(this._State>0){
             this._State--;
-            this._TimerState.stop()
+            //this._TimerState.stop();
         }
-        if(this._State>0)
+        if(this._State>0){
+            this._TimerState.add(1000,ReduceState,this);
             this._TimerState.start();
-        else
+        }
+        else{
+            this._MovementEnable=true;
+            this._Hooked=false;
+        }
+        this.frame=(5+this._State);
     }
 
 module.exports = Enemy;

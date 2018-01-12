@@ -233,6 +233,7 @@ var PlayScene = {
 
         player._GrupoTierra=tierra;
         player._GrupoEnemigos=GrupoEnemigos;
+        console.debug(3+true);
 
         StopEnemies();
 
@@ -335,11 +336,13 @@ var PlayScene = {
         //BOTON DE FULLSCREEN
         if (this.game.scale.isFullScreen)
         {
-            FullScreenButton.loadTexture('NormalScreenButton');
+            if(FullScreenButton.texture!='NormalScreenButton')
+                FullScreenButton.loadTexture('NormalScreenButton');
         }
         else
         {
-            FullScreenButton.loadTexture('FullScreenButton');
+            if(FullScreenButton.texture!='FullScreenButton')
+                FullScreenButton.loadTexture('FullScreenButton');
         }
 
         //NIVEL COMPLETADO
@@ -953,9 +956,7 @@ function MuertePlayer(obj1,obj2){
 
 function onCollisionHuidaEnemigo(obj1,obj2){
     if(obj2._Huyendo){
-        // if(obj2._Fantasma){
-        //     obj2.BackToNormal(obj1.x,obj1.y);
-        // }
+        obj2.BackToNormal(obj1.x,obj1.y);
         obj2._ultimoGiro=true;
         BloqTierraleft.Destroy();
     }

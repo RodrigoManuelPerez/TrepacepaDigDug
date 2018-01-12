@@ -42,7 +42,7 @@ var PreloaderScene = {
     
     //IMAGENES Y SPRITESHEETS
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
     this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 11);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);

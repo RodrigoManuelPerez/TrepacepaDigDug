@@ -39,6 +39,13 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._Huyendo=false;
     this._ultimoGiro=false;
 
+    //ENGANCHADO
+    this._Hooked=false;
+    this._State=0;
+    this._TimerState = game.time.create(false);
+    this._TimerState.add(1000,ReduceState,this);
+    this._timerStarted=false;
+
     }
 
     Enemy.prototype = Object.create(Movable.prototype);
@@ -46,9 +53,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     Enemy.prototype.update = function() 
     {
-
-
-        if(this._MovementEnable){
+        if(this._MovementEnable && !this._Hooked){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
@@ -173,6 +178,10 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                     }
                 }
             }            
+        }
+        else if(this._Hooked && !this._timerStarted){
+            this._timerStarted=true;
+            this._TimerState.start();
         }
     }
 
@@ -327,6 +336,24 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         this.x=Px;
         this.y=Py;
         this._animWalk.play(6,true);
+    }
+
+
+
+    function ReduceState(){
+        if(this._State>0){
+            this._State--;
+            //this._TimerState.stop();
+        }
+        if(this._State>0){
+            this._TimerState.add(1000,ReduceState,this);
+            this._TimerState.start();
+        }
+        else{
+            this._MovementEnable=true;
+            this._Hooked=false;
+        }
+        this.frame=(5+this._State);
     }
 
 module.exports = Enemy;
@@ -781,6 +808,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    this._Inflando = false;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -1000,25 +1028,23 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
 
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking){
-        if(this._MovementEnable){
-            this._MovementEnable=false;
-            this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
-            this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
-            this._Hooking=true;
-            this._HookDistanceX=0;
-            this._HookDistanceY=0;
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable){
+        this._MovementEnable=false;
+        this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
+        this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
+        this._Hooking=true;
+        this._HookDistanceX=0;
+        this._HookDistanceY=0;
 
-            // this._Hook.body.checkCollision.up = false;
-            // this._Hook.body.checkCollision.down = false;
-            // this._Hook.body.checkCollision.right = false;
+        this._Hook.body.checkCollision.up = false;
+        this._Hook.body.checkCollision.down = false;
+        this._Hook.body.checkCollision.right = false;
 
-            this.frame=2;
-            this._Hook.visible=true;
-            this._Hook.anchor.x = 0.5;
-            this._Hook.anchor.y = 0.5;
-            this._game.world.add(this._Hook);
-        }
+        this.frame=10;
+        this._Hook.visible=true;
+        this._Hook.anchor.x = 0.5;
+        this._Hook.anchor.y = 0.5;
+        this._game.world.add(this._Hook);
     }    
 }
     Player.prototype.update = function() {
@@ -1084,19 +1110,34 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
+        else if(this._Hooked){
+            if(this.frame!=3+this._Inflando)
+                this.frame=3+this._Inflando;
+
+            if(this._HookThrow.isDown){
+                if(this._Inflando){
+                this._EnemyHooked._State++;
+                }
+                else
+                    this._Inflando=!this._Inflando;
+            }
+
+            if(this._cursors.up.isDown || this._cursors.down.isDown || this._cursors.left.isDown || this._cursors.down.isDown){
+                this._MovementEnable=true;
+                this._Hooked=false;
+            }
+
+
+        }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
             this.DestroyHook();
+
         this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
             
-
-
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
             this._animWalk.paused=false;
         }
-        if(this._Hooking)
-            if(this.frame!=2)
-                this.frame=2;
     }
     Player.prototype.AutomaticMovement = function() {
         
@@ -1142,7 +1183,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Hook.destroy();
     }
     
-
     function PlayerMuerto(){
         this._Muerto=true;
     }
@@ -1156,7 +1196,15 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     function EnemyHooked(obj1,obj2){
-        console.debug(obj2._id);
+        if(!this._Hooked){
+            this._EnemyHooked = obj2;
+            this._Hooked = true;
+            this._Hooking = false;
+            obj2._Hooked = true;
+            obj2.frame=5;       //Primer frame de inflado
+            if(obj2._State<=0)
+                obj2._State=1;
+        }
     }
 
     
@@ -1387,7 +1435,7 @@ var PreloaderScene = {
     
     //IMAGENES Y SPRITESHEETS
 
-    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 10);
+    this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
     this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
     this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 11);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
@@ -1964,6 +2012,7 @@ var PlayScene = {
 
         player._GrupoTierra=tierra;
         player._GrupoEnemigos=GrupoEnemigos;
+        console.debug(3+true);
 
         StopEnemies();
 
@@ -2066,11 +2115,13 @@ var PlayScene = {
         //BOTON DE FULLSCREEN
         if (this.game.scale.isFullScreen)
         {
-            FullScreenButton.loadTexture('NormalScreenButton');
+            if(FullScreenButton.texture!='NormalScreenButton')
+                FullScreenButton.loadTexture('NormalScreenButton');
         }
         else
         {
-            FullScreenButton.loadTexture('FullScreenButton');
+            if(FullScreenButton.texture!='FullScreenButton')
+                FullScreenButton.loadTexture('FullScreenButton');
         }
 
         //NIVEL COMPLETADO
@@ -2684,9 +2735,7 @@ function MuertePlayer(obj1,obj2){
 
 function onCollisionHuidaEnemigo(obj1,obj2){
     if(obj2._Huyendo){
-        // if(obj2._Fantasma){
-        //     obj2.BackToNormal(obj1.x,obj1.y);
-        // }
+        obj2.BackToNormal(obj1.x,obj1.y);
         obj2._ultimoGiro=true;
         BloqTierraleft.Destroy();
     }

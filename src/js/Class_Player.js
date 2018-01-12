@@ -49,6 +49,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    this._Inflando = false;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -268,25 +269,23 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
 
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking){
-        if(this._MovementEnable){
-            this._MovementEnable=false;
-            this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
-            this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
-            this._Hooking=true;
-            this._HookDistanceX=0;
-            this._HookDistanceY=0;
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable){
+        this._MovementEnable=false;
+        this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
+        this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
+        this._Hooking=true;
+        this._HookDistanceX=0;
+        this._HookDistanceY=0;
 
-            // this._Hook.body.checkCollision.up = false;
-            // this._Hook.body.checkCollision.down = false;
-            // this._Hook.body.checkCollision.right = false;
+        this._Hook.body.checkCollision.up = false;
+        this._Hook.body.checkCollision.down = false;
+        this._Hook.body.checkCollision.right = false;
 
-            this.frame=2;
-            this._Hook.visible=true;
-            this._Hook.anchor.x = 0.5;
-            this._Hook.anchor.y = 0.5;
-            this._game.world.add(this._Hook);
-        }
+        this.frame=10;
+        this._Hook.visible=true;
+        this._Hook.anchor.x = 0.5;
+        this._Hook.anchor.y = 0.5;
+        this._game.world.add(this._Hook);
     }    
 }
     Player.prototype.update = function() {
@@ -353,25 +352,33 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
         else if(this._Hooked){
+            if(this.frame!=3+this._Inflando)
+                this.frame=3+this._Inflando;
 
             if(this._HookThrow.isDown){
-                
+                if(this._Inflando){
+                this._EnemyHooked._State++;
+                }
+                else
+                    this._Inflando=!this._Inflando;
             }
+
+            if(this._cursors.up.isDown || this._cursors.down.isDown || this._cursors.left.isDown || this._cursors.down.isDown){
+                this._MovementEnable=true;
+                this._Hooked=false;
+            }
+
 
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
             this.DestroyHook();
+
         this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
             
-
-
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
             this._animWalk.paused=false;
         }
-        if(this._Hooking)
-            if(this.frame!=2)
-                this.frame=2;
     }
     Player.prototype.AutomaticMovement = function() {
         
@@ -433,8 +440,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         if(!this._Hooked){
             this._EnemyHooked = obj2;
             this._Hooked = true;
+            this._Hooking = false;
             obj2._Hooked = true;
-            obj2._State=1;
+            obj2.frame=5;       //Primer frame de inflado
+            if(obj2._State<=0)
+                obj2._State=1;
         }
     }
 
