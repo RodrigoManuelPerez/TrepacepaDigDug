@@ -20,14 +20,11 @@ var PreloaderScene = {
     // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
     // this.loadingBar.anchor.setTo(0, 0.5);
     // this.load.setPreloadSprite(this.loadingBar);
-    
 
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
-
     //AUDIO
-
         //SAMPLES
     this.game.load.audio('Death', ['music/Sounds/Death.ogg']);
     this.game.load.audio('Item', ['music/Sounds/Item.ogg']);
@@ -94,7 +91,7 @@ var PreloaderScene = {
   }
 };
 
-window.localStorage.setItem( 'highscore', '0' );
+window.localStorage.setItem('highscore', '0');
 
 window.onload = function () {
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
