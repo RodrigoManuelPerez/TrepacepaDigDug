@@ -10,6 +10,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._animFant =this.animations.add('Digging', [2,3], 6, true);
 
     this._animWalk.play(6,true);
+    this._game=game;
 
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
@@ -26,6 +27,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     this._player=player;
     this._cubohuida = cube;
+    this._Aplastado=false;
 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
@@ -34,16 +36,22 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._NumberOfGiros= Math.floor(Math.random() * (10) + 20);
 
     this._MovementEnable=true;
+
+    //MUERTE
+    this._Puntos = 300;
+    this._PuntosContabilizados = false;
+    this._Muerto = false;
+    this._Sound = game.add.audio('Points',1);
+    this._timerMuerte;
     
     //HUIDA
     this._Huyendo=false;
     this._ultimoGiro=false;
 
     //ENGANCHADO
-    this._Hooked=false;
     this._State=0;
     this._TimerState = game.time.create(false);
-    this._TimerState.add(1000,ReduceState,this);
+    this._TimerState.add(1500,ReduceState,this);
     this._timerStarted=false;
 
     }
@@ -53,7 +61,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     Enemy.prototype.update = function() 
     {
-        if(this._MovementEnable && !this._Hooked){
+        if(this._MovementEnable && this._State==0){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
@@ -179,10 +187,20 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 }
             }            
         }
-        else if(this._Hooked && !this._timerStarted){
+        else if(this._State>0 && !this._timerStarted){
+            console.debug(this._State);
             this._timerStarted=true;
+            this._TimerState = this._game.time.create(false);
+            this._TimerState.add(1500,ReduceState,this);
             this._TimerState.start();
         }
+
+        if(this._State>0 && this._State<5){
+            if(this.frame!=(4+this._State))
+                this.frame=(4+this._State);
+            
+        }
+
     }
 
 
@@ -341,20 +359,54 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
 
     function ReduceState(){
-        if(this._State>0){
+
+        if(this._State>0 && this._State<4){
+            console.debug(this._State);
             this._State--;
-            //this._TimerState.stop();
-        }
-        if(this._State>0){
-            this._TimerState.add(1000,ReduceState,this);
+            this._TimerState.stop();
+            console.debug(this._State);
+        } 
+
+        if(this._State>0 && this._State<4){
+            this._TimerState = this._game.time.create(false);
+            this._TimerState.add(1500,ReduceState,this);
             this._TimerState.start();
         }
-        else{
+        else if(this._State==0){
+            this._TimerState.stop();
+            this._animWalk.play(6,true);
+            this._timerStarted=false;
             this._MovementEnable=true;
-            this._Hooked=false;
         }
-        this.frame=(5+this._State);
+        else if(this._State==4){
+            this._TimerState.stop();
+            this._Muerto=true;
+            this._timerMuerte = this._game.time.create(false);
+            this._timerMuerte.add(1000,Sonido,this);
+            this._timerMuerte.start();
+        }
+        
     }
+    function Sonido(){
+        this._State++;
+        this.angle=0;
+        if(this.width<0)
+            this.width=-this.width;
+        if(this._Puntos==400)   //A ESTAS ALTURAS NO ME DA TIEMPO A PENSAR EN POLIMORFISMO
+            this.frame=10;
+        else
+            this.frame=9;
+        this._Sound.play();
+        this._timerMuerte = this._game.time.create(false);
+        this._timerMuerte.add(1000,Muerte,this);
+        this._timerMuerte.start();
+
+    }
+
+    function Muerte(){
+        this.destroy();
+    }
+
 
 module.exports = Enemy;
 },{"./Class_Movable.js":6}],2:[function(require,module,exports){
@@ -394,6 +446,7 @@ var FuegoCentroCorto = 32;
 var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player, grupoTierra) {
     Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
+    this._Puntos=400;
     //Animacion de coger fuego con 2 frames y 3 loops
     this._animBreathFire = this.animations.add('Breathing', [1, 9], 5, true);   
 
@@ -474,7 +527,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     }
 
     function onCollisionFirePlayer() {
-        if (!this._playerBurnt) {
+        if (!this._playerBurnt && !this._player._animMuerto && !this._player._Muerto) {
             this._playerBurnt = true;
             this._player.Muerte();
         }
@@ -486,12 +539,12 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     }
 
     function StopToFire() {
-        if (this._MovementEnable && !this._Fantasma && this != undefined) {
+        if (this._MovementEnable && !this._Fantasma && this != undefined && this._State==0 && !this._Aplastado) {
 
             this._MovementEnable = false;
             this._animWalk.stop();
             this._animBreathFire.play(5, true);
-            //Tiempo hay que calcularlo segun la animacion y como quiera que quede
+
             this._TimerFuego.add(1000, ThrowFire, this);
             this._TimerFuego.start();
 
@@ -516,95 +569,97 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
 
     function ThrowFire() {
         // Comprobar cual es la distancia que se ha recibido de la bala auxiliar
-        if (Math.abs(this._distanciaX) > FuegoDistanciaMax || Math.abs(this._distanciaY) > FuegoDistanciaMax) {
-            this._3FireSpritesheet = '3';
-            this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+        if(!this._Aplastado && this._State==0){
+            if (Math.abs(this._distanciaX) > FuegoDistanciaMax || Math.abs(this._distanciaY) > FuegoDistanciaMax) {
+                this._3FireSpritesheet = '3';
+                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
 
-            this._Fire.anchor.x = 0.5;
-            this._Fire.anchor.y = 0.5;
-            this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
-            this._FireAnim.play(10, false);
-            this._game.world.add(this._Fire);
+                this._Fire.anchor.x = 0.5;
+                this._Fire.anchor.y = 0.5;
+                this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                this._FireAnim.play(10, false);
+                this._game.world.add(this._Fire);
 
-            // Colocar la posicion del fuego en la mitad de lo que ocupa el fuego
-            //+ 10 para que parezca que lo lanza el Fygar
-            if (this._Movingleft) {               
-                this._Fire.x -= FuegoCentroLargo;
-                this._Fire.width = -this._Fire.width;
-            }
-            else if (this._Movingright) {
-                this._Fire.x += FuegoCentroLargo;
-            }
-            else if (this._Movingup) {
-                this._Fire.angle = -90;
-                this._Fire.y -= FuegoCentroLargo;
-            }
-            else if (this._Movingdown) {
-                this._Fire.angle = 90;
-                this._Fire.y += FuegoCentroLargo;
-            }
+                // Colocar la posicion del fuego en la mitad de lo que ocupa el fuego
+                //+ 10 para que parezca que lo lanza el Fygar
+                if (this._Movingleft) {               
+                    this._Fire.x -= FuegoCentroLargo;
+                    this._Fire.width = -this._Fire.width;
+                }
+                else if (this._Movingright) {
+                    this._Fire.x += FuegoCentroLargo;
+                }
+                else if (this._Movingup) {
+                    this._Fire.angle = -90;
+                    this._Fire.y -= FuegoCentroLargo;
+                }
+                else if (this._Movingdown) {
+                    this._Fire.angle = 90;
+                    this._Fire.y += FuegoCentroLargo;
+                }
 
-            FireSound.play();
-        }
-        else if (Math.abs(this._distanciaX) > FuegoDistanciaMedia || Math.abs(this._distanciaX) > FuegoDistanciaMedia) {
-            this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
-            this._Fire.anchor.x = 0.5;
-            this._Fire.anchor.y = 0.5;
-            this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
-            this._FireAnim.play(10, false);
-            this._game.world.add(this._Fire);
+                FireSound.play();
+            }
+            else if (Math.abs(this._distanciaX) > FuegoDistanciaMedia || Math.abs(this._distanciaX) > FuegoDistanciaMedia) {
+                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
+                this._Fire.anchor.x = 0.5;
+                this._Fire.anchor.y = 0.5;
+                this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
+                this._FireAnim.play(10, false);
+                this._game.world.add(this._Fire);
 
-            if (this._Movingleft) {                
-                this._Fire.x -= FuegoCentroMedio;
-                this._Fire.width = -this._Fire.width;
+                if (this._Movingleft) {                
+                    this._Fire.x -= FuegoCentroMedio;
+                    this._Fire.width = -this._Fire.width;
+                }
+                else if (this._Movingright) {
+                    this._Fire.x += FuegoCentroMedio;
+                }
+                else if (this._Movingup) {
+                    this._Fire.angle = -90;
+                    this._Fire.y -= FuegoCentroMedio;
+                }
+                else if (this._Movingdown) {
+                    this._Fire.angle = 90;
+                    this._Fire.y += FuegoCentroMedio;
+                }
+                FireSound.play();
             }
-            else if (this._Movingright) {
-                this._Fire.x += FuegoCentroMedio;
-            }
-            else if (this._Movingup) {
-                this._Fire.angle = -90;
-                this._Fire.y -= FuegoCentroMedio;
-            }
-            else if (this._Movingdown) {
-                this._Fire.angle = 90;
-                this._Fire.y += FuegoCentroMedio;
-            }
-            FireSound.play();
-        }
-        else if (Math.abs(this._distanciaX) > FuegoDistanciaMin || Math.abs(this._distanciaX) > FuegoDistanciaMin) {
-            this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
-            this._Fire.anchor.x = 0.5;
-            this._Fire.anchor.y = 0.5;
-            this._game.world.add(this._Fire);
+            else if (Math.abs(this._distanciaX) > FuegoDistanciaMin || Math.abs(this._distanciaX) > FuegoDistanciaMin) {
+                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
+                this._Fire.anchor.x = 0.5;
+                this._Fire.anchor.y = 0.5;
+                this._game.world.add(this._Fire);
 
-            if (this._Movingleft) {    
-                this._Fire.width = -this._Fire.width;            
-                this._Fire.x -= 32;
+                if (this._Movingleft) {    
+                    this._Fire.width = -this._Fire.width;            
+                    this._Fire.x -= 32;
+                }
+                else if (this._Movingright) {
+                    this._Fire.x += FuegoCentroCorto;
+                }
+                else if (this._Movingup) {
+                    this._Fire.angle = -90;
+                    this._Fire.y -= FuegoCentroCorto;
+                }
+                else if(this._Movingdown) {
+                    this._Fire.angle = 90;
+                    this._Fire.y += FuegoCentroCorto;
+                }
+                FireSound.play();
             }
-            else if (this._Movingright) {
-                this._Fire.x += FuegoCentroCorto;
-            }
-            else if (this._Movingup) {
-                this._Fire.angle = -90;
-                this._Fire.y -= FuegoCentroCorto;
-            }
-            else if(this._Movingdown) {
-                this._Fire.angle = 90;
-                this._Fire.y += FuegoCentroCorto;
-            }
-            FireSound.play();
-        }
-        
-        this._animBreathFire.stop();
-        this._ThrowingFire = true;
+            
+            this._animBreathFire.stop();
+            this._ThrowingFire = true;
 
-        if (this._Fire  != undefined) {
-            this._TimerFuego.add(150, ActiveFireCollider, this);
+            if (this._Fire  != undefined) {
+                this._TimerFuego.add(150, ActiveFireCollider, this);
+                this._TimerFuego.start();
+            }
+            
+            this._TimerFuego.add(400, Continue, this);
             this._TimerFuego.start();
         }
-        
-        this._TimerFuego.add(400, Continue, this);
-        this._TimerFuego.start();
     }
 
     function ActiveFireCollider() {
@@ -612,18 +667,20 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     }
 
     function Continue() {
-        if (!this._playerBurnt) {
+        if (!this._playerBurnt && !this._Aplastado) {
             this._MovementEnable = true;
             this._animWalk.play(6, true);
         }
         if (this._Fire != undefined)
             this._Fire.destroy();
         this._ThrowingFire = false;
-        this._TimeToFire = Math.random() * (5000) + 10000;
-        this._TimerFuego.add(this._TimeToFire, StopToFire, this);
-        this._TimerFuego.start();
-        this._distanciaX = 0;
-        this._distanciaY = 0;
+        if(!this._Aplastado){
+            this._TimeToFire = Math.random() * (5000) + 10000;
+            this._TimerFuego.add(this._TimeToFire, StopToFire, this);
+            this._TimerFuego.start();
+            this._distanciaX = 0;
+            this._distanciaY = 0;
+        }
     }
 
 module.exports = Fygar;
@@ -772,7 +829,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._GrupoTierra;
     this._GrupoEnemigos;
     this._cursors = cursors;
-    DeathMusic=game.add.audio('Death',0.4);
+    DeathMusic=this._game.add.audio('Death',0.4);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
@@ -781,7 +838,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     //this._animDig.play(6,true);
 
     this._core = new Phaser.Sprite(game, 0, 0, 'Banderita');
-    game.physics.enable(this._core, Phaser.Physics.ARCADE);
+    this._game.physics.enable(this._core, Phaser.Physics.ARCADE);
     this._core.anchor.x = 0.5;
     this._core.anchor.y = 0.5;
     this._core.width = this._core.width/4;
@@ -804,11 +861,9 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._timer = this.game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
 
     this._Hook;
-    this._EnemyHooked;
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-    this._Inflando = false;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -1035,12 +1090,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Hooking=true;
         this._HookDistanceX=0;
         this._HookDistanceY=0;
-
-        this._Hook.body.checkCollision.up = false;
-        this._Hook.body.checkCollision.down = false;
-        this._Hook.body.checkCollision.right = false;
-
-        this.frame=10;
+        this.frame=10;  //Frame de lanzando
         this._Hook.visible=true;
         this._Hook.anchor.x = 0.5;
         this._Hook.anchor.y = 0.5;
@@ -1058,7 +1108,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 if(this._HookDistanceX<50){
                     this._HookDistanceX+=2;
                     this._Hook.x-=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -1072,7 +1122,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._Hook.width=-this._Hook.width;
                     this._HookDistanceX+=2;
                     this._Hook.x+=2;
-                    this._Hook.width-=2;
+                    //this._Hook.width-=2;
                     
                 }
                 else{
@@ -1083,11 +1133,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
             else if(this.angle==90){
                 if(this._HookDistanceY<50){
-                    if(this._Hook.angle!=90)
-                        this._Hook.angle=90;
+                    // if(this._Hook.angle!=90)
+                    //     this._Hook.angle=90;
                     this._HookDistanceY+=2;
                     this._Hook.y-=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -1097,11 +1147,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
             else if(this.angle==-90){
                 if(this._HookDistanceY<50){
-                    if(this._Hook.angle!=-90)
-                        this._Hook.angle=-90;
+                    // if(this._Hook.angle!=-90)
+                    //     this._Hook.angle=-90;
                     this._HookDistanceY+=2;
                     this._Hook.y+=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -1110,30 +1160,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if(this._Hooked){
-            if(this.frame!=3+this._Inflando)
-                this.frame=3+this._Inflando;
-
-            if(this._HookThrow.isDown){
-                if(this._Inflando){
-                this._EnemyHooked._State++;
-                }
-                else
-                    this._Inflando=!this._Inflando;
-            }
-
-            if(this._cursors.up.isDown || this._cursors.down.isDown || this._cursors.left.isDown || this._cursors.down.isDown){
-                this._MovementEnable=true;
-                this._Hooked=false;
-            }
-
-
-        }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
             this.DestroyHook();
 
-        this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+        if(this._Hooking && this._Hook!=null){
+            this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+        }
             
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
             this._animWalk.paused=false;
@@ -1166,8 +1199,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    Player.prototype.PlayerRock = function() {
-        this._MovementEnable=false;
+    Player.prototype.DestroyHook = function() {
+        this._Hook.destroy();
     }
 
     Player.prototype.Muerte = function() {
@@ -1177,10 +1210,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         DeathMusic.play();
         this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
-    }
-
-    Player.prototype.DestroyHook = function() {
-        this._Hook.destroy();
     }
     
     function PlayerMuerto(){
@@ -1196,15 +1225,15 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     function EnemyHooked(obj1,obj2){
-        if(!this._Hooked){
-            this._EnemyHooked = obj2;
-            this._Hooked = true;
-            this._Hooking = false;
-            obj2._Hooked = true;
-            obj2.frame=5;       //Primer frame de inflado
-            if(obj2._State<=0)
-                obj2._State=1;
+        if(obj2._State<4){
+            obj2._animWalk.stop();
+            obj2._State++;
         }
+        obj1.destroy();
+        this._Hooking = false;
+        if(!this._AnimMuerto || !this._Muerto)
+            this._MovementEnable=true;
+        
     }
 
     
@@ -1216,8 +1245,8 @@ module.exports = Player;
 var GameObject = require('./Class_GameObject.js');
 var PlayScene = require('./play_scene.js');
 
-var PointsSound;
-var StopSound;
+//var PointsSound;
+//var StopSound;
 
 var Roca = function(game, position,id, spritesheet){
     
@@ -1248,8 +1277,8 @@ var Roca = function(game, position,id, spritesheet){
         this._timer = this.game.time.create(false);
 
 
-        PointsSound = game.add.audio('Points',1);
-        StopSound = game.add.audio('Rock',1);
+        this._PointsSound = game.add.audio('Points',1);
+        this._StopSound = game.add.audio('Rock',1);
         }
     
         Roca.prototype = Object.create(GameObject.prototype);
@@ -1272,7 +1301,7 @@ var Roca = function(game, position,id, spritesheet){
     
         Roca.prototype.Para=function() {
             
-            StopSound.play();
+            this._StopSound.play();
             this.animations.stop('Shaking');
             this._Falling = false;
             this._HasFallen = true;
@@ -1340,7 +1369,7 @@ var Roca = function(game, position,id, spritesheet){
             else
                 this.frame=13;
 
-            PointsSound.play();
+            this._PointsSound.play();
         }
 
 
@@ -2053,6 +2082,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
+        //VO
         
         
 
@@ -2173,6 +2203,16 @@ var PlayScene = {
             }
         }
 
+        //PUNTOS QUE DAN LOS ENEMIGOS
+        for(var k =0; k<GrupoEnemigos.length; k++){
+
+            if (GrupoEnemigos.children[k]._State==5 && !GrupoEnemigos.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
+                GrupoEnemigos.children[k]._PuntosContabilizados=true;
+                sumaPuntos(GrupoEnemigos.children[k]._Puntos,this.game);
+            }
+        }
+
+
         if(player._EnPosicion){
             StartEnemies();
             StartRocks();
@@ -2197,7 +2237,14 @@ var PlayScene = {
 
     },
     render: function(){
-        
+        if(player._Hook!=null)
+            this.game.debug.body(player._Hook);
+        for (var qq =0; qq<GrupoEnemigos.length; qq++){
+            this.game.debug.body(GrupoEnemigos.children[qq]);
+            //if(GrupoEnemigos.children[qq]._Fire!=undefined)
+              //  this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
+        }
+        this.game.debug.body(player);
     }
 }
 
@@ -2260,6 +2307,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._animFant.stop();
             if(obj1._animBreathFire!=undefined)
                 obj1._animBreathFire.stop();
+            obj1._Aplastado=true;
             obj1.Aplastado(4);
             obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
             obj1.x=20;              //En la posicion correcta
@@ -2734,10 +2782,13 @@ function MuertePlayer(obj1,obj2){
 }
 
 function onCollisionHuidaEnemigo(obj1,obj2){
-    if(obj2._Huyendo){
-        obj2.BackToNormal(obj1.x,obj1.y);
+    if(obj2._Huyendo && !obj2._ultimoGiro){
+        obj2.angle=0;
+        if(obj2.width>0)
+            obj2.width=-obj2.width;
         obj2._ultimoGiro=true;
-        BloqTierraleft.Destroy();
+        BloqTierraleft.destroy();
+        CuboHuida.destroy();
     }
 }
 

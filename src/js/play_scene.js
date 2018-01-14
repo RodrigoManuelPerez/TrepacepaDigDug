@@ -274,6 +274,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
+        //VO
         
         
 
@@ -394,6 +395,16 @@ var PlayScene = {
             }
         }
 
+        //PUNTOS QUE DAN LOS ENEMIGOS
+        for(var k =0; k<GrupoEnemigos.length; k++){
+
+            if (GrupoEnemigos.children[k]._State==5 && !GrupoEnemigos.children[k]._PuntosContabilizados){  //SI NO SE HA LLAMADO AL PLAYER, YA SE HAN AÑADIDO LOS PUNTOS DE MATAR A X ENEMIGOS Y NO SE HAN AÑADIDO A LA PUNTUACION GLOBAL
+                GrupoEnemigos.children[k]._PuntosContabilizados=true;
+                sumaPuntos(GrupoEnemigos.children[k]._Puntos,this.game);
+            }
+        }
+
+
         if(player._EnPosicion){
             StartEnemies();
             StartRocks();
@@ -418,7 +429,14 @@ var PlayScene = {
 
     },
     render: function(){
-        
+        if(player._Hook!=null)
+            this.game.debug.body(player._Hook);
+        for (var qq =0; qq<GrupoEnemigos.length; qq++){
+            this.game.debug.body(GrupoEnemigos.children[qq]);
+            //if(GrupoEnemigos.children[qq]._Fire!=undefined)
+              //  this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
+        }
+        this.game.debug.body(player);
     }
 }
 
@@ -481,6 +499,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1._animFant.stop();
             if(obj1._animBreathFire!=undefined)
                 obj1._animBreathFire.stop();
+            obj1._Aplastado=true;
             obj1.Aplastado(4);
             obj2.addChild(obj1);    //Ponemos el objeto que choca hijo de la roca
             obj1.x=20;              //En la posicion correcta
@@ -955,10 +974,13 @@ function MuertePlayer(obj1,obj2){
 }
 
 function onCollisionHuidaEnemigo(obj1,obj2){
-    if(obj2._Huyendo){
-        obj2.BackToNormal(obj1.x,obj1.y);
+    if(obj2._Huyendo && !obj2._ultimoGiro){
+        obj2.angle=0;
+        if(obj2.width>0)
+            obj2.width=-obj2.width;
         obj2._ultimoGiro=true;
-        BloqTierraleft.Destroy();
+        BloqTierraleft.destroy();
+        CuboHuida.destroy();
     }
 }
 

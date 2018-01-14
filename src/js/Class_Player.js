@@ -13,7 +13,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._GrupoTierra;
     this._GrupoEnemigos;
     this._cursors = cursors;
-    DeathMusic=game.add.audio('Death',0.4);
+    DeathMusic=this._game.add.audio('Death',0.4);
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
@@ -22,7 +22,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     //this._animDig.play(6,true);
 
     this._core = new Phaser.Sprite(game, 0, 0, 'Banderita');
-    game.physics.enable(this._core, Phaser.Physics.ARCADE);
+    this._game.physics.enable(this._core, Phaser.Physics.ARCADE);
     this._core.anchor.x = 0.5;
     this._core.anchor.y = 0.5;
     this._core.width = this._core.width/4;
@@ -45,11 +45,9 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._timer = this.game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
 
     this._Hook;
-    this._EnemyHooked;
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-    this._Inflando = false;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -276,12 +274,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._Hooking=true;
         this._HookDistanceX=0;
         this._HookDistanceY=0;
-
-        this._Hook.body.checkCollision.up = false;
-        this._Hook.body.checkCollision.down = false;
-        this._Hook.body.checkCollision.right = false;
-
-        this.frame=10;
+        this.frame=10;  //Frame de lanzando
         this._Hook.visible=true;
         this._Hook.anchor.x = 0.5;
         this._Hook.anchor.y = 0.5;
@@ -299,7 +292,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 if(this._HookDistanceX<50){
                     this._HookDistanceX+=2;
                     this._Hook.x-=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -313,7 +306,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._Hook.width=-this._Hook.width;
                     this._HookDistanceX+=2;
                     this._Hook.x+=2;
-                    this._Hook.width-=2;
+                    //this._Hook.width-=2;
                     
                 }
                 else{
@@ -324,11 +317,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
             else if(this.angle==90){
                 if(this._HookDistanceY<50){
-                    if(this._Hook.angle!=90)
-                        this._Hook.angle=90;
+                    // if(this._Hook.angle!=90)
+                    //     this._Hook.angle=90;
                     this._HookDistanceY+=2;
                     this._Hook.y-=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -338,11 +331,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
             else if(this.angle==-90){
                 if(this._HookDistanceY<50){
-                    if(this._Hook.angle!=-90)
-                        this._Hook.angle=-90;
+                    // if(this._Hook.angle!=-90)
+                    //     this._Hook.angle=-90;
                     this._HookDistanceY+=2;
                     this._Hook.y+=2;
-                    this._Hook.width+=2;
+                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -351,30 +344,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if(this._Hooked){
-            if(this.frame!=3+this._Inflando)
-                this.frame=3+this._Inflando;
-
-            if(this._HookThrow.isDown){
-                if(this._Inflando){
-                this._EnemyHooked._State++;
-                }
-                else
-                    this._Inflando=!this._Inflando;
-            }
-
-            if(this._cursors.up.isDown || this._cursors.down.isDown || this._cursors.left.isDown || this._cursors.down.isDown){
-                this._MovementEnable=true;
-                this._Hooked=false;
-            }
-
-
-        }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
             this.DestroyHook();
 
-        this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+        if(this._Hooking && this._Hook!=null){
+            this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+        }
             
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
             this._animWalk.paused=false;
@@ -407,8 +383,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             }
         }
     }
-    Player.prototype.PlayerRock = function() {
-        this._MovementEnable=false;
+    Player.prototype.DestroyHook = function() {
+        this._Hook.destroy();
     }
 
     Player.prototype.Muerte = function() {
@@ -418,10 +394,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         DeathMusic.play();
         this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
-    }
-
-    Player.prototype.DestroyHook = function() {
-        this._Hook.destroy();
     }
     
     function PlayerMuerto(){
@@ -437,15 +409,15 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     }
 
     function EnemyHooked(obj1,obj2){
-        if(!this._Hooked){
-            this._EnemyHooked = obj2;
-            this._Hooked = true;
-            this._Hooking = false;
-            obj2._Hooked = true;
-            obj2.frame=5;       //Primer frame de inflado
-            if(obj2._State<=0)
-                obj2._State=1;
+        if(obj2._State<4){
+            obj2._animWalk.stop();
+            obj2._State++;
         }
+        obj1.destroy();
+        this._Hooking = false;
+        if(!this._AnimMuerto || !this._Muerto)
+            this._MovementEnable=true;
+        
     }
 
     

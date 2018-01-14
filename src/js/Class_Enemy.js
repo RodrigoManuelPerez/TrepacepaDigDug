@@ -9,6 +9,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._animFant =this.animations.add('Digging', [2,3], 6, true);
 
     this._animWalk.play(6,true);
+    this._game=game;
 
     this._distanceXtoPlayer;
     this._distanceYtoPlayer;
@@ -25,6 +26,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     this._player=player;
     this._cubohuida = cube;
+    this._Aplastado=false;
 
     this._limiteDerecho=limiteDerecho;
     this._limiteSuperior=limiteSuperior;
@@ -33,16 +35,22 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._NumberOfGiros= Math.floor(Math.random() * (10) + 20);
 
     this._MovementEnable=true;
+
+    //MUERTE
+    this._Puntos = 300;
+    this._PuntosContabilizados = false;
+    this._Muerto = false;
+    this._Sound = game.add.audio('Points',1);
+    this._timerMuerte;
     
     //HUIDA
     this._Huyendo=false;
     this._ultimoGiro=false;
 
     //ENGANCHADO
-    this._Hooked=false;
     this._State=0;
     this._TimerState = game.time.create(false);
-    this._TimerState.add(1000,ReduceState,this);
+    this._TimerState.add(1500,ReduceState,this);
     this._timerStarted=false;
 
     }
@@ -52,7 +60,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
     Enemy.prototype.update = function() 
     {
-        if(this._MovementEnable && !this._Hooked){
+        if(this._MovementEnable && this._State==0){
 
             if(this._giros>this._NumberOfGiros && !this._Fantasma){         //HACER QUE EL NUMERO DE GIROS SEA RANDOM CON UN MINIMO
                 this._giros=0;
@@ -178,10 +186,20 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
                 }
             }            
         }
-        else if(this._Hooked && !this._timerStarted){
+        else if(this._State>0 && !this._timerStarted){
+            console.debug(this._State);
             this._timerStarted=true;
+            this._TimerState = this._game.time.create(false);
+            this._TimerState.add(1500,ReduceState,this);
             this._TimerState.start();
         }
+
+        if(this._State>0 && this._State<5){
+            if(this.frame!=(4+this._State))
+                this.frame=(4+this._State);
+            
+        }
+
     }
 
 
@@ -340,19 +358,53 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
 
     function ReduceState(){
-        if(this._State>0){
+
+        if(this._State>0 && this._State<4){
+            console.debug(this._State);
             this._State--;
-            //this._TimerState.stop();
-        }
-        if(this._State>0){
-            this._TimerState.add(1000,ReduceState,this);
+            this._TimerState.stop();
+            console.debug(this._State);
+        } 
+
+        if(this._State>0 && this._State<4){
+            this._TimerState = this._game.time.create(false);
+            this._TimerState.add(1500,ReduceState,this);
             this._TimerState.start();
         }
-        else{
+        else if(this._State==0){
+            this._TimerState.stop();
+            this._animWalk.play(6,true);
+            this._timerStarted=false;
             this._MovementEnable=true;
-            this._Hooked=false;
         }
-        this.frame=(5+this._State);
+        else if(this._State==4){
+            this._TimerState.stop();
+            this._Muerto=true;
+            this._timerMuerte = this._game.time.create(false);
+            this._timerMuerte.add(1000,Sonido,this);
+            this._timerMuerte.start();
+        }
+        
     }
+    function Sonido(){
+        this._State++;
+        this.angle=0;
+        if(this.width<0)
+            this.width=-this.width;
+        if(this._Puntos==400)   //A ESTAS ALTURAS NO ME DA TIEMPO A PENSAR EN POLIMORFISMO
+            this.frame=10;
+        else
+            this.frame=9;
+        this._Sound.play();
+        this._timerMuerte = this._game.time.create(false);
+        this._timerMuerte.add(1000,Muerte,this);
+        this._timerMuerte.start();
+
+    }
+
+    function Muerte(){
+        this.destroy();
+    }
+
 
 module.exports = Enemy;
