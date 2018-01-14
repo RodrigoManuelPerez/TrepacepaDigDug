@@ -1102,13 +1102,17 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this.Input();
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
+
+        if(this._AnimMuerto || this._Muerto){
+            if(this._MovementEnable)
+                this._MovementEnable=false;
+        }            
         
         if(this._Hooking && !this._Hooked){
             if(this.width>0 && this.angle==0){
                 if(this._HookDistanceX<50){
                     this._HookDistanceX+=2;
                     this._Hook.x-=2;
-                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -1122,7 +1126,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._Hook.width=-this._Hook.width;
                     this._HookDistanceX+=2;
                     this._Hook.x+=2;
-                    //this._Hook.width-=2;
                     
                 }
                 else{
@@ -1132,12 +1135,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
             else if(this.angle==90){
-                if(this._HookDistanceY<50){
-                    // if(this._Hook.angle!=90)
-                    //     this._Hook.angle=90;
+                if(this._HookDistanceY<60){
+                    if(this._Hook.angle!=90)
+                        this._Hook.angle=90;
                     this._HookDistanceY+=2;
                     this._Hook.y-=2;
-                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -1146,12 +1148,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
             else if(this.angle==-90){
-                if(this._HookDistanceY<50){
-                    // if(this._Hook.angle!=-90)
-                    //     this._Hook.angle=-90;
+                if(this._HookDistanceY<60){
+                    if(this._Hook.angle!=-90)
+                        this._Hook.angle=-90;
                     this._HookDistanceY+=2;
                     this._Hook.y+=2;
-                    //this._Hook.width+=2;
                 }
                 else{
                     this._Hook.destroy();
@@ -2742,11 +2743,7 @@ function LevelWin(g){    //Para el sonido de victoria
         player._MovementEnable=false;
         timerControl.add(3500,LevelComplete,this,g);
         timerControl.start();
-    }
-    else{
-        MuertePlayer();
-    }
-    
+    }    
 }
 
 function ContinuarLevel(g,lfs){
@@ -2772,7 +2769,7 @@ function ComenzarJuego(g){
 }
 
 function MuertePlayer(obj1,obj2){
-    if(!obj2._Fantasma){
+    if(!obj2._Fantasma && obj2._State==0){
         if(!player._AnimMuerto){
             player.Muerte();
             StopEnemies();

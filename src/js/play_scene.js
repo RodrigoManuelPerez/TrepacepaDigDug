@@ -934,11 +934,7 @@ function LevelWin(g){    //Para el sonido de victoria
         player._MovementEnable=false;
         timerControl.add(3500,LevelComplete,this,g);
         timerControl.start();
-    }
-    else{
-        MuertePlayer();
-    }
-    
+    }    
 }
 
 function ContinuarLevel(g,lfs){
@@ -964,7 +960,7 @@ function ComenzarJuego(g){
 }
 
 function MuertePlayer(obj1,obj2){
-    if(!obj2._Fantasma){
+    if(!obj2._Fantasma && obj2._State==0){
         if(!player._AnimMuerto){
             player.Muerte();
             StopEnemies();
