@@ -600,7 +600,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                 }
                 else if (this._Movingup) {
 
-                    this._3FireSpritesheet = '3V';
+                    this._3FireSpritesheet = 'B';
                     this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
                     this._Fire.anchor.x = 0.5;
                     this._Fire.anchor.y = 0.5;
@@ -608,12 +608,12 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._FireAnim.play(10, false);
                     this._game.world.add(this._Fire);
 
-                    //this._Fire.angle = -90;
+                    this._Fire.angle = 180;
                     this._Fire.y -= FuegoCentroLargo;
                 }
                 else if (this._Movingdown) {
 
-                    this._3FireSpritesheet = '3';
+                    this._3FireSpritesheet = 'B';
                     this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
                     this._Fire.anchor.x = 0.5;
                     this._Fire.anchor.y = 0.5;
@@ -621,33 +621,53 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._FireAnim.play(10, false);
                     this._game.world.add(this._Fire);
 
-                    //this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroLargo;
                 }
 
                 this._FireSound.play();
             }
             else if (Math.abs(this._distanciaX) > FuegoDistanciaMedia || Math.abs(this._distanciaX) > FuegoDistanciaMedia) {
-                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
-                this._Fire.anchor.x = 0.5;
-                this._Fire.anchor.y = 0.5;
-                this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
-                this._FireAnim.play(10, false);
-                this._game.world.add(this._Fire);
-
-                if (this._Movingleft) {                
+                
+                if (this._Movingleft) {
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+                    
                     this._Fire.x -= FuegoCentroMedio;
                     this._Fire.width = -this._Fire.width;
                 }
                 else if (this._Movingright) {
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
                     this._Fire.x += FuegoCentroMedio;
                 }
                 else if (this._Movingup) {
-                    this._Fire.angle = -90;
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, 'V');
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
+                    this._Fire.angle = 180;
                     this._Fire.y -= FuegoCentroMedio;
                 }
                 else if (this._Movingdown) {
-                    this._Fire.angle = 90;
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, 'V');
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('2FramesFire', [0, 1], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
                     this._Fire.y += FuegoCentroMedio;
                 }
                 this._FireSound.play();
@@ -846,8 +866,6 @@ module.exports = Movable;
 var Movable = require('./Class_Movable.js');
 var GO = require('./Class_GameObject.js');
 
-var DeathMusic;
-var MusicaCargada=false;
 
 var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior,posOriginalX,posOriginalY, spriteSheet){
     Movable.apply(this, [game, position, id, limiteDerecho, limiteSuperior, spriteSheet]);
@@ -856,7 +874,10 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._GrupoTierra;
     this._GrupoEnemigos;
     this._cursors = cursors;
-    DeathMusic=this._game.add.audio('Death',0.4);
+
+    this._DeathMusic=this._game.add.audio('Death',0.4);
+    this._TaserSound=this._game.add.audio('Taser',0.4);
+
     this._animWalk =this.animations.add('Walking', [0,1], 6, true);
     this._animDig =this.animations.add('Digging', [2,3], 6, true);
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
@@ -864,7 +885,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._animWalk.play(6,true);
     //this._animDig.play(6,true);
 
-    this._core = new Phaser.Sprite(game, 0, 0, 'Banderita');
+    this._core = new Phaser.Sprite(this._game, 0, 0, 'Banderita');
     this._game.physics.enable(this._core, Phaser.Physics.ARCADE);
     this._core.anchor.x = 0.5;
     this._core.anchor.y = 0.5;
@@ -885,12 +906,12 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._posInicial =position;
 
-    this._timer = this.game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
+    this._timer = this._game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
 
     this._Hook;
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
-    this._HookThrow = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    this._HookThrow = this._game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -1111,6 +1132,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     //PARTE DEL GANCHO 
 
     if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable){
+        this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
         this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
@@ -1235,7 +1257,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         this._MovementEnable=false;
         this._AnimMuerto=true;      //Se está realizando la animacion de morir
         this._animDie.play(2,false);
-        DeathMusic.play();
+        this._DeathMusic.play();
         this._timer.add(2750,PlayerMuerto,this);
         this._timer.start();
     }
@@ -1478,6 +1500,7 @@ var PreloaderScene = {
     this.game.load.audio('Points', ['music/Sounds/Points.ogg']);
     this.game.load.audio('Dragon', ['music/Sounds/Dragon.ogg']);
     this.game.load.audio('Rock', ['music/Sounds/Rock.ogg']);
+    this.game.load.audio('Taser', ['music/Sounds/Taser.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
@@ -1497,8 +1520,8 @@ var PreloaderScene = {
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
     this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
-    this.game.load.spritesheet('2V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
-    this.game.load.spritesheet('3V', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
+    this.game.load.spritesheet('V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
+    this.game.load.spritesheet('B', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
   
 
     //DIFERENTES TIPOS DE TIERRA

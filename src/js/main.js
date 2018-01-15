@@ -28,6 +28,7 @@ var PreloaderScene = {
     this.game.load.audio('Points', ['music/Sounds/Points.ogg']);
     this.game.load.audio('Dragon', ['music/Sounds/Dragon.ogg']);
     this.game.load.audio('Rock', ['music/Sounds/Rock.ogg']);
+    this.game.load.audio('Taser', ['music/Sounds/Taser.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
@@ -47,8 +48,8 @@ var PreloaderScene = {
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
     this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
-    this.game.load.spritesheet('2V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
-    this.game.load.spritesheet('3V', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
+    this.game.load.spritesheet('V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
+    this.game.load.spritesheet('B', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
   
 
     //DIFERENTES TIPOS DE TIERRA
