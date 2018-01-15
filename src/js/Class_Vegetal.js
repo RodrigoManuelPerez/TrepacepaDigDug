@@ -18,7 +18,7 @@ var Vegetal = function(game, position, sprite, id, puntos) {
     }
 
     function Destruirse(){
-        this.Destroy();
+        this.destroy();
     }
 
 module.exports = Vegetal;

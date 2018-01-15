@@ -418,7 +418,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         }
         obj1.destroy();
         this._Hooking = false;
-        if(!this._AnimMuerto || !this._Muerto)
+        if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0)
             this._MovementEnable=true;
         
     }

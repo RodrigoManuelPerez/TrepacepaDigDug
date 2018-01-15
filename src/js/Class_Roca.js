@@ -3,8 +3,6 @@
 var GameObject = require('./Class_GameObject.js');
 var PlayScene = require('./play_scene.js');
 
-//var PointsSound;
-//var StopSound;
 
 var Roca = function(game, position,id, spritesheet){
     
@@ -115,12 +113,12 @@ var Roca = function(game, position,id, spritesheet){
                 this._RefPlayer.x = this.x + this.width/2;
                 this._PlayerMovido=true;
             }
-            this.Destroy();
+            this.destroy();
         }
 
         function DestroyEnemies(I){
             for (var j=this.children.length-1; j>=0; j--){
-                this.children[j].Destroy();
+                this.children[j].destroy();
             }
             if(I<14)
                 this.frame=I;

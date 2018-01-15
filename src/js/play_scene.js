@@ -329,7 +329,7 @@ var PlayScene = {
             if(key.keyCode === Phaser.KeyCode.U){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
                     GrupoEnemigos.children[gh]._MovementEnable=false;
-                    GrupoEnemigos.children[gh].Destroy();
+                    GrupoEnemigos.children[gh].destroy();
                 }
             }
         }
@@ -433,8 +433,6 @@ var PlayScene = {
             this.game.debug.body(player._Hook);
         for (var qq =0; qq<GrupoEnemigos.length; qq++){
             this.game.debug.body(GrupoEnemigos.children[qq]);
-            if(GrupoEnemigos.children[qq]._Fire!=undefined)
-               this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
         }
         this.game.debug.body(player);
     }
@@ -547,7 +545,7 @@ function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
 
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
-            obj2.Destroy(); //Llamamos la la destructora de la tierra
+            obj2.destroy(); //Llamamos la la destructora de la tierra
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-1;
@@ -568,7 +566,7 @@ function onCollisionTierra (obj1, obj2){
                 sumaPuntos(1,this.g);
             }
             if (obj2.width<4 || obj2.height<4){
-                obj2.Destroy();
+                obj2.destroy();
                 var PosCentralTierra = new Par (obj2._posCentralX, obj2._posCentralY);
                 var BanderaControl = new GO(this.g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
@@ -583,7 +581,7 @@ function onCollisionTierra (obj1, obj2){
         }
     }
     if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
-        obj2.Destroy();
+        obj2.destroy();
 }
 
 function onCollisionPara(obj1, obj2){
@@ -598,7 +596,7 @@ function onCollisionPara(obj1, obj2){
 function onCollisionVegetable(obj1,obj2){
     itemSound.play();
     sumaPuntos(obj2._puntos, this.g);
-    obj2.Destroy();
+    obj2.destroy();
 }
 
 function Par (x, y) {
@@ -983,7 +981,7 @@ function onCollisionHuidaEnemigo(obj1,obj2){
 function onCollisionEliminacionEnemigo(obj1,obj2){
     
     obj2._MovementEnable=false;
-    obj2.Destroy();
+    obj2.destroy();
 }
 
 function FullScreen(){

@@ -15,9 +15,9 @@ var GameObject = function(game, position, sprite,id,spriteSheet){
 GameObject.prototype = Object.create(Phaser.Sprite.prototype);
 GameObject.prototype.constructor = GameObject;
 
-GameObject.prototype.Destroy = function()
-{
-    this.destroy();
-}
+// GameObject.prototype.Destroy = function()
+// {
+//     this.destroy();
+// }
 
 module.exports = GameObject;
