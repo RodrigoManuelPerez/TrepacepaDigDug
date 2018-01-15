@@ -8,7 +8,6 @@ var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
-var Hook = require('./Class_Hook.js');
 var BloqueTierra = require('./Class_Tierra.js');
 var Flower = require('./Class_Flor.js');
 

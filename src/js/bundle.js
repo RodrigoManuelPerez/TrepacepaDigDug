@@ -409,7 +409,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
 
 module.exports = Enemy;
-},{"./Class_Movable.js":6}],2:[function(require,module,exports){
+},{"./Class_Movable.js":5}],2:[function(require,module,exports){
 'use strict';
 
 var Flower = function(game, posx, posy, spriteSheet) {
@@ -749,83 +749,13 @@ var GameObject = function(game, position, sprite,id,spriteSheet){
 GameObject.prototype = Object.create(Phaser.Sprite.prototype);
 GameObject.prototype.constructor = GameObject;
 
-GameObject.prototype.Destroy = function()
-{
-    this.destroy();
-}
+// GameObject.prototype.Destroy = function()
+// {
+//     this.destroy();
+// }
 
 module.exports = GameObject;
 },{}],5:[function(require,module,exports){
-'use strict';
-
-var GameObject = require('./Class_GameObject.js');
-
-var Hook = function(game, position, sprite,id, player){
-    
-    GameObject.apply(this, [game ,position, sprite, id]);
-    
-        //this.animations.add('Shaking', [0, 1], 5, true);
-        //this.animations.add('Breaking', [2, 3, 4, 5], 1, false);
-        //this._animShake.play(5,true);
-
-        this._Thrown = false;       //Denota el estado de si está lanzado o recogido por DigDug
-        this._Hooked = false;       //Denota cuando el gancho ha codigo a un enemigo
-        this._Distance=0;           //Distancia recorrida por el gancho
-        this._MaxDistance=43*1.5;     //Distancia máxima que puede recorrer
-        
-        this._posOriginal=position;
-        /*this._HasFallen = false;
-        this._FallEnable = false;
-        this._timer = this.game.time.create(false);*/
-        }
-    
-        Hook.prototype = Object.create(GameObject.prototype);
-        Hook.prototype.constructor = Hook;
-    
-        Hook.prototype.update=function(){
-
-            if(this._Hooked)        //Coloco primero el estado de enganchado porque es el que tiene prioridad
-            {
-
-            }
-            else if(this._Thrown)    //Cuando el gancho está volando
-            {
-                this.width+=2;
-                this.x--;
-            }
-            else                //Cuando el gancho está quiero en dig dug
-            {
-                if(this.x!=this._posOriginal.x)
-                    this.x=this._posOriginal.x;
-                if(this.y!=this._posOriginal.y)
-                    this.y=this._posOriginal.y;
-                //En verdad se queda en la posicion sin mas, posicion hija del player en el 0 0 aprox
-            }
-            if(this.x>this._MaxDistance){
-                this._Thrown=false;
-            }
-
-        }
-    
-        Hook.prototype.Para=function() {
-            
-          
-            
-        }
-    
-        Hook.prototype.EnableFall=function() {
-
-        }
-    
-        function Fall() {
-        
-        }
-        function BreakRock(){
-
-        }
-
-module.exports = Hook;
-},{"./Class_GameObject.js":4}],6:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -860,7 +790,7 @@ var Movable = function(game, position, id, limiteDerecho, limiteSuperior, sprite
         this.frame=f;
     }
 module.exports = Movable;
-},{"./Class_GameObject.js":4}],7:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],6:[function(require,module,exports){
 'use strict';
 
 var Movable = require('./Class_Movable.js');
@@ -1281,7 +1211,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         }
         obj1.destroy();
         this._Hooking = false;
-        if(!this._AnimMuerto || !this._Muerto)
+        if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0)
             this._MovementEnable=true;
         
     }
@@ -1289,16 +1219,13 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     
 
 module.exports = Player;
-},{"./Class_GameObject.js":4,"./Class_Movable.js":6}],8:[function(require,module,exports){
+},{"./Class_GameObject.js":4,"./Class_Movable.js":5}],7:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
 var PlayScene = require('./play_scene.js');
 
-//var PointsSound;
-//var StopSound;
-
-var Roca = function(game, position,id, spritesheet){
+var Roca = function(game, position, id, spritesheet) {
     
     GameObject.apply(this, [game ,position, spritesheet[0], id, spritesheet]);
     
@@ -1307,19 +1234,19 @@ var Roca = function(game, position,id, spritesheet){
         
         this._PuntosEnemigos = [1000, 2500, 4000, 6000, 80000, 10000, 12000, 15000];
 
-        this._Broken=false;
-        this._PuntosConseguidos=0;
-        this._PuntosActualizados=false;
-        this._PuntosContabilizados=false;
+        this._Broken = false;
+        this._PuntosConseguidos = 0;
+        this._PuntosActualizados = false;
+        this._PuntosContabilizados = false;
 
-        this._EnemigosDestruidos=false;
+        this._EnemigosDestruidos = false;
 
         this._RefPlayer;
         this._PlayerAplastado = false;
         this._i;
-        this._indicePlayer=0;
-        this._PlayerMovido=false;
-        this._PlayerMuerto=false;
+        this._indicePlayer = 0;
+        this._PlayerMovido = false;
+        this._PlayerMuerto = false;
 
         this._Falling = false;
         this._HasFallen = false;
@@ -1327,104 +1254,103 @@ var Roca = function(game, position,id, spritesheet){
         this._timer = this.game.time.create(false);
 
 
-        this._PointsSound = game.add.audio('Points',1);
-        this._StopSound = game.add.audio('Rock',1);
+        this._PointsSound = game.add.audio('Points', 1);
+        this._StopSound = game.add.audio('Rock', 1);
         }
     
         Roca.prototype = Object.create(GameObject.prototype);
         Roca.prototype.constructor = Roca;
     
-        Roca.prototype.update=function(){
-            if(this._Falling && this._FallEnable){
-                for(var i=0; i<6; i++){
-                    if (this._Falling && this.y<558){
+        Roca.prototype.update = function() {
+            if (this._Falling && this._FallEnable) {
+                for (var i = 0; i < 6; i++) {
+                    if (this._Falling && this.y < 558) {
                         this.y ++;
-                        if(this._PlayerAplastado)
+                        if (this._PlayerAplastado)
                             this._RefPlayer.y++;
                     }
                     else if (this._Falling && this.y > 556)
                         this.Para();
                 }
             }
-            
         }
     
-        Roca.prototype.Para=function() {
+        Roca.prototype.Para = function() {
             
             this._StopSound.play();
             this.animations.stop('Shaking');
             this._Falling = false;
             this._HasFallen = true;
 
-            this._timer.add(4000,BreakRock,this);
+            this._timer.add(4000, BreakRock, this);
 
-            if(this.children.length==0 && !this._PlayerAplastado){ //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
+            //Si la roca no ha cogido ningun monstruo se llama a la cinemática normal de romperse
+            if (this.children.length == 0 && !this._PlayerAplastado) { 
                 this.animations.play('Breaking');
             }
             else
             {
-                if(this._PlayerAplastado && !this._PlayerMuerto){
-                    this._PlayerMuerto=true;
+                if (this._PlayerAplastado && !this._PlayerMuerto) {
+                    this._PlayerMuerto = true;
                     this._RefPlayer.Muerte();
-                    this._timer.add(100,BreakRock,this);
+                    this._timer.add(100, BreakRock, this);
                 }
                 else
                 {
                     this._i = this.children.length + 5;
-                    if(this._i<14){
-                        this._PuntosConseguidos=this._PuntosEnemigos[this.children.length-1];
-                        this._PuntosActualizados=true;
-                    }else{
-                        this._PuntosConseguidos=this._PuntosEnemigos[7];
-                        this._PuntosActualizados=true;               
+                    if (this._i < 14) {
+                        this._PuntosConseguidos = this._PuntosEnemigos[this.children.length - 1];
+                        this._PuntosActualizados = true;
                     }
-                    if(!this._EnemigosDestruidos){
-                        this._timer.add(2000,DestroyEnemies,this,this._i);
-                        this._EnemigosDestruidos=true;
+                    else
+                    {
+                        this._PuntosConseguidos = this._PuntosEnemigos[7];
+                        this._PuntosActualizados = true;               
+                    }
+                    if (!this._EnemigosDestruidos) {
+                        this._timer.add (2000, DestroyEnemies, this, this._i);
+                        this._EnemigosDestruidos = true;
                     }
                 }
             }
             this._timer.start();
-            this.body.enable=false;
-            
+            this.body.enable = false;
         }
     
-        Roca.prototype.EnableFall=function() {
+        Roca.prototype.EnableFall = function() {
             this.animations.play('Shaking');
-            this._timer.add(2000,Fall,this);
+            this._timer.add(2000, Fall, this);
             this._timer.start();
         }
     
         function Fall() {
-            if(!this._HasFallen && this._FallEnable){
+            if (!this._HasFallen && this._FallEnable) {
                 this._Falling = true;
                 this._timer.stop();
             }
         }
-        function BreakRock(){
-            if(this._PlayerAplastado && !this._PlayerMovido){
-                this._RefPlayer.y-=25;
-                this._RefPlayer.x = this.x + this.width/2;
-                this._PlayerMovido=true;
+        function BreakRock() {
+            if (this._PlayerAplastado && !this._PlayerMovido) {
+                this._RefPlayer.y -= 25;
+                this._RefPlayer.x = this.x + this.width / 2;
+                this._PlayerMovido = true;
             }
-            this.Destroy();
+            this.destroy();
         }
 
-        function DestroyEnemies(I){
-            for (var j=this.children.length-1; j>=0; j--){
-                this.children[j].Destroy();
+        function DestroyEnemies(I) {
+            for (var j = this.children.length - 1; j >= 0; j--) {
+                this.children[j].destroy();
             }
-            if(I<14)
-                this.frame=I;
+            if (I < 14)
+                this.frame = I;
             else
-                this.frame=13;
+                this.frame = 13;
 
             this._PointsSound.play();
         }
-
-
 module.exports = Roca;
-},{"./Class_GameObject.js":4,"./play_scene.js":13}],9:[function(require,module,exports){
+},{"./Class_GameObject.js":4,"./play_scene.js":12}],8:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -1444,7 +1370,7 @@ var Tierra = function(game, position,sprite, id, posCentral){
 
 
 module.exports = Tierra;
-},{"./Class_GameObject.js":4}],10:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],9:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./Class_GameObject.js');
@@ -1465,11 +1391,11 @@ var Vegetal = function(game, position, sprite, id, puntos) {
     }
 
     function Destruirse(){
-        this.Destroy();
+        this.destroy();
     }
 
 module.exports = Vegetal;
-},{"./Class_GameObject.js":4}],11:[function(require,module,exports){
+},{"./Class_GameObject.js":4}],10:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
@@ -1571,33 +1497,10 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./menu.js":12,"./play_scene.js":13}],12:[function(require,module,exports){
+},{"./menu.js":11,"./play_scene.js":12}],11:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
-
-var musicaMenu;
-var menu;
-var Flechita, parpadeando = false;
-var cursors;  //cursores
-var PosicionSuperior, PosicionInferior;    //Coordenadas
-var PosicionFlecha = true;    //Posicion de la Flecha true para arriba, false para abajo
-var timerControl;
-var Eleccion = false;
-var FullScreenButton;
-var ButtonCreated = false;
-
-var SwitchSound;
-var AceptSound;
-
-var Controls, AtControls = false;
-var RockSprite, RockAnim;
-var PlayerSprite, PlayerWalking;
-var VegetableSprite, VegetablePop;
-var EnemySprite, EnemyWalking;
-var FygarSprite, FygarWalking;
-
-var scoreStringA, scoreTextA, highScoreText;
 
 // Numeros magicos:
 var RockSpritePosX = 665;
@@ -1626,80 +1529,107 @@ var MenuScene = {
 
     create: function () {
 
-    Eleccion = false;
-    parpadeando = false;
-    PosicionFlecha = true;
-    ButtonCreated = false;
-    AtControls = false;
+    //DECLARACION DE VARIABLES    
+    this._musicaMenu;
+    this._menu;
+    this._Flechita;
+    this._parpadeando=false;
+    this._cursors;
+    this._PosicionSuperior; this._PosicionInferior;
+    this._PosicionFlecha = true;
 
-    timerControl = this.game.time.create(false);
+    this._timerControl;
+    this._Eleccion = false;
+    this._FullScreenButton;
+    this._ButtonCreated = false;
+    this._SwitchSound;
+    this._AceptSound;
+    this._Controls;
+    this._AtControls=false;
 
-    PosicionSuperior = new Par(300,330);
-    PosicionInferior = new Par(300,400);
+    this._RockSprite;
+    this._RockAnim;
+    this._PlayerSprite
+    this._PlayerWalking;
+    this._VegetableSprite;
+    this._VegetablePop;
+    this._EnemySprite; 
+    this._EnemyWalking;
+    this._FygarSprite;
+    this._FygarWalking;
 
-    musicaMenu = this.game.add.audio('MenuSong', 1, true); //key, volume, loop
-    musicaMenu.play();
+    this._scoreStringA;
+    this._scoreTextA;
+    this._highScoreText;
+
+    this._timerControl = this.game.time.create(false);
+
+    this._PosicionSuperior = new Par(300,330);
+    this._PosicionInferior = new Par(300,400);
+
+    this._musicaMenu = this.game.add.audio('MenuSong', 1, true); //key, volume, loop
+    this._musicaMenu.play();
 
     //SOUNDS
-    SwitchSound = this.game.add.audio('Switch');
-    AceptSound = this.game.add.audio('Acept');
+    this._SwitchSound = this.game.add.audio('Switch');
+    this._AceptSound = this.game.add.audio('Acept');
 
     //Inicializar los cursores.
-    cursors = this.game.input.keyboard.createCursorKeys();
+    this._cursors = this.game.input.keyboard.createCursorKeys();
     
-    menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
-    menu.anchor.x = 0;
-    menu.anchor.y = 0;
-    Flechita = new Phaser.Sprite(this.game, PosicionSuperior._x, PosicionSuperior._y, 'MenuFlecha');
-    Flechita.anchor.x = 0;
-    Flechita.anchor.y = 0;
-    Flechita.visible = false;
-    this.game.world.addChild(menu);
-    this.game.world.addChild(Flechita);
+    this._menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
+    this._menu.anchor.x = 0;
+    this._menu.anchor.y = 0;
+    this._Flechita = new Phaser.Sprite(this.game, this._PosicionSuperior._x, this._PosicionSuperior._y, 'MenuFlecha');
+    this._Flechita.anchor.x = 0;
+    this._Flechita.anchor.y = 0;
+    this._Flechita.visible = false;
+    this.game.world.addChild(this._menu);
+    this.game.world.addChild(this._Flechita);
     
     //Control de puntuaciones
-    scoreStringA = 'HI - SCORE: ';
-    scoreTextA = this.game.add.text(20, 20, scoreStringA, { font: '25px Arial', fill: '#fff' });
-    scoreTextA.visible = false;
-    highScoreText = this.game.add.text(180, 20, '0', { font: "bold 25px Arial", fill: "#46c0f9", align: "center" });
-    highScoreText.visible = false;
-    highScoreText.text = localStorage.getItem("highscore");
+    this._scoreStringA = 'HI - SCORE: ';
+    this._scoreTextA = this.game.add.text(20, 20, this._scoreStringA, { font: '25px Arial', fill: '#fff' });
+    this._scoreTextA.visible = false;
+    this._highScoreText = this.game.add.text(180, 20, '0', { font: "bold 25px Arial", fill: "#46c0f9", align: "center" });
+    this._highScoreText.visible = false;
+    this._highScoreText.text = localStorage.getItem("highscore");
     
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
 },
     update: function() {
 
-        if(menu.y > 0){
-            menu.y -= 2;
+        if(this._menu.y > 0){
+            this._menu.y -= 2;
         }
-        else if(!parpadeando){
-            parpadeando = true;
-            scoreTextA.visible = true;
-            highScoreText.visible = true;
+        else if(!this._parpadeando){
+            this._parpadeando = true;
+            this._scoreTextA.visible = true;
+            this._highScoreText.visible = true;
             var timerFlecha = this.game.time.create(false);
             timerFlecha.loop(250, switchFlechita, this);
             timerFlecha.start();
         }
         
-        if (menu.y <= 0 && !ButtonCreated){
-            ButtonCreated = true;
-            FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
+        if (this._menu.y <= 0 && !this._ButtonCreated){
+            this._ButtonCreated = true;
+            this._FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
         }
         
-        if (ButtonCreated) {
+        if (this._ButtonCreated) {
             if (this.game.scale.isFullScreen)
             {
-                FullScreenButton.loadTexture('NormalScreenButton');
+                this._FullScreenButton.loadTexture('NormalScreenButton');
             }
             else
             {
-                FullScreenButton.loadTexture('FullScreenButton');
+                this._FullScreenButton.loadTexture('FullScreenButton');
             }
         }
 
-        if (Eleccion) {
-            if (musicaMenu.volume > 0)
-                musicaMenu.volume -= 0.012;
+        if (this._Eleccion) {
+            if (this._musicaMenu.volume > 0)
+            this._musicaMenu.volume -= 0.012;
         }
 
 
@@ -1707,34 +1637,34 @@ var MenuScene = {
         this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
-            if (menu.y == 0 && !Eleccion && !AtControls){
+            if (this._menu.y == 0 && !this._Eleccion && !this._AtControls){
                 if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
-                    if (Flechita.y == PosicionInferior._y){
-                        SwitchSound.play();
-                        Flechita.y = PosicionSuperior._y;
-                        PosicionFlecha = true;
+                    if (this._Flechita.y == this._PosicionInferior._y){
+                        this._SwitchSound.play();
+                        this._Flechita.y = this._PosicionSuperior._y;
+                        this._PosicionFlecha = true;
                     }
                 }
                 if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
-                    if (Flechita.y == PosicionSuperior._y){
-                        SwitchSound.play();
-                        Flechita.y = PosicionInferior._y;
-                        PosicionFlecha = false;
+                    if (this._Flechita.y == this._PosicionSuperior._y){
+                        this._SwitchSound.play();
+                        this._Flechita.y = this._PosicionInferior._y;
+                        this._PosicionFlecha = false;
                     }
                 }
             }
 
             //////////////////ELECCION//////////////
-            if (!AtControls) {
+            if (!this._AtControls) {
                 if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
-                    if (menu.y > 0)
-                        menu.y = 0;
+                    if (this._menu.y > 0)
+                        this._menu.y = 0;
                     else {
-                        if (!Eleccion)
-                            AceptSound.play();  //The acept sound will sound
-                        Eleccion = true;
-                        timerControl.add(1500,Comienzo,this,this.game);
-                        timerControl.start();
+                        if (!this._Eleccion)
+                            this._AceptSound.play();  //The acept sound will sound
+                        this._Eleccion = true;
+                        this._timerControl.add(1500,Comienzo,this,this.game);
+                        this._timerControl.start();
                     }
                 }
             }
@@ -1758,14 +1688,14 @@ function Par (x, y) {
 }
 
 function Comienzo (g) {
-    if (PosicionFlecha) {
-        AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
-        musicaMenu.stop();
+    if (this._PosicionFlecha) {
+        this._AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
+        this._Menu.stop();
         g.state.start('play');
         
     }
     else {       //Los creditos o controles
-        AtControls = true;
+        this._AtControls = true;
         Controles(g);
         console.debug("hello");
     }
@@ -1773,69 +1703,69 @@ function Comienzo (g) {
 
 function Controles(g) {
     
-    Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
-    Controls.anchor.x = 0;
-    Controls.anchor.y = 0;
-    g.world.addChild(Controls);
+    this._Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
+    this._Controls.anchor.x = 0;
+    this._Controls.anchor.y = 0;
+    g.world.addChild(this._Controls);
 
-    RockSprite = new Phaser.Sprite(g, RockSpritePosX, RockSpritePosY, 'RocaCompletaSpriteSheet');
-    RockSprite.frame = 1;
-    RockSprite.width = RockSpriteDimensions * RockSprite.width;
-    RockSprite.height = RockSpriteDimensions * RockSprite.height;
-    RockSprite.anchor.x = 0.5;
-    RockSprite.anchor.y = 0.5;
-    g.world.addChild(RockSprite);
+    this._RockSprite = new Phaser.Sprite(g, RockSpritePosX, RockSpritePosY, 'RocaCompletaSpriteSheet');
+    this._RockSprite.frame = 1;
+    this._RockSprite.width = RockSpriteDimensions * this._RockSprite.width;
+    this._RockSprite.height = RockSpriteDimensions * this._RockSprite.height;
+    this._RockSprite.anchor.x = 0.5;
+    this._RockSprite.anchor.y = 0.5;
+    g.world.addChild(this._RockSprite);
 
-    PlayerSprite = new Phaser.Sprite(g, PlayerSpritePosX, PlayerSpritePosY, 'DigDugWalking');
-    PlayerSprite.frame = 1;
-    PlayerSprite.width = PlayerSpriteDimensions * PlayerSprite.width;
-    PlayerSprite.height = PlayerSpriteDimensions * PlayerSprite.height;
-    PlayerSprite.anchor.x = 0.5;
-    PlayerSprite.anchor.y = 0.5;
-    g.world.addChild(PlayerSprite);
+    this._PlayerSprite = new Phaser.Sprite(g, PlayerSpritePosX, PlayerSpritePosY, 'DigDugWalking');
+    this._PlayerSprite.frame = 1;
+    this._PlayerSprite.width = PlayerSpriteDimensions * this._PlayerSprite.width;
+    this._PlayerSprite.height = PlayerSpriteDimensions * this._PlayerSprite.height;
+    this._PlayerSprite.anchor.x = 0.5;
+    this._PlayerSprite.anchor.y = 0.5;
+    g.world.addChild(this._PlayerSprite);
 
-    VegetableSprite = new Phaser.Sprite(g, VegetableSpritePosX, VegetableSpritePosY, 'Bufos');
-    VegetableSprite.frame = 1;
-    VegetableSprite.width = VegetableSpriteDimensions * VegetableSprite.width;
-    VegetableSprite.height = VegetableSpriteDimensions * VegetableSprite.height;
-    VegetableSprite.anchor.x = 0.5;
-    VegetableSprite.anchor.y = 0.5;
-    g.world.addChild(VegetableSprite);
+    this._VegetableSprite = new Phaser.Sprite(g, VegetableSpritePosX, VegetableSpritePosY, 'Bufos');
+    this._VegetableSprite.frame = 1;
+    this._VegetableSprite.width = VegetableSpriteDimensions * this._VegetableSprite.width;
+    this._VegetableSprite.height = VegetableSpriteDimensions * this._VegetableSprite.height;
+    this._VegetableSprite.anchor.x = 0.5;
+    this._VegetableSprite.anchor.y = 0.5;
+    g.world.addChild(this._VegetableSprite);
 
-    EnemySprite = new Phaser.Sprite(g, EnemySpritePosX, EnemySpritePosY, 'P');
-    EnemySprite.frame = 1;
-    EnemySprite.width = -EnemySpriteDimensions * EnemySprite.width;
-    EnemySprite.height = EnemySpriteDimensions * EnemySprite.height;
-    EnemySprite.anchor.x = 0.5;
-    EnemySprite.anchor.y = 0.5;
-    g.world.addChild(EnemySprite);
+    this._EnemySprite = new Phaser.Sprite(g, EnemySpritePosX, EnemySpritePosY, 'P');
+    this._EnemySprite.frame = 1;
+    this._EnemySprite.width = -EnemySpriteDimensions * this._EnemySprite.width;
+    this._EnemySprite.height = EnemySpriteDimensions * this._EnemySprite.height;
+    this._EnemySprite.anchor.x = 0.5;
+    this._EnemySprite.anchor.y = 0.5;
+    g.world.addChild(this._EnemySprite);
 
-    FygarSprite = new Phaser.Sprite(g, FygarSpritePosX, FygarSpritePosY, 'F');
-    FygarSprite.frame = 1;
-    FygarSprite.width = -FygarSpriteDimensions * FygarSprite.width;
-    FygarSprite.height= FygarSpriteDimensions * FygarSprite.height;
-    FygarSprite.anchor.x = 0.5;
-    FygarSprite.anchor.y = 0.5;
-    g.world.addChild(FygarSprite);
+    this._FygarSprite = new Phaser.Sprite(g, FygarSpritePosX, FygarSpritePosY, 'F');
+    this._FygarSprite.frame = 1;
+    this._FygarSprite.width = -FygarSpriteDimensions * this._FygarSprite.width;
+    this._FygarSprite.height= FygarSpriteDimensions * this._FygarSprite.height;
+    this._FygarSprite.anchor.x = 0.5;
+    this._FygarSprite.anchor.y = 0.5;
+    g.world.addChild(this._FygarSprite);
 
-    RockAnim = RockSprite.animations.add('Shaking', [0, 1], 5, true);
-    RockAnim.play();
-    PlayerWalking = PlayerSprite.animations.add('Walking', [0, 1], 6, true);
-    PlayerWalking.play();
-    VegetablePop = VegetableSprite.animations.add('ShowVegetables', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
-    VegetablePop.play();
-    EnemyWalking = EnemySprite.animations.add('Walking', [0, 1], 6, true);
-    EnemyWalking.play();
-    FygarWalking = FygarSprite.animations.add('Walking', [0, 1], 6, true);
-    FygarWalking.play();
+    this._RockAnim = this._RockSprite.animations.add('Shaking', [0, 1], 5, true);
+    this._RockAnim.play();
+    this._PlayerWalking = this._PlayerSprite.animations.add('Walking', [0, 1], 6, true);
+    this._PlayerWalking.play();
+    this._VegetablePop = this._VegetableSprite.animations.add('ShowVegetables', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+    this._VegetablePop.play();
+    this._EnemyWalking = this._EnemySprite.animations.add('Walking', [0, 1], 6, true);
+    this._EnemyWalking.play();
+    this._FygarWalking = this._FygarSprite.animations.add('Walking', [0, 1], 6, true);
+    this._FygarWalking.play();
 
 }
 
 function switchFlechita() {
-    if (!Eleccion)
-        Flechita.visible = !Flechita.visible;
+    if (!this._Eleccion)
+        this._Flechita.visible = !this._Flechita.visible;
     else
-        Flechita.visible = true;
+        this._Flechita.visible = true;
 }
 
 function FullScreen() {
@@ -1843,15 +1773,15 @@ function FullScreen() {
     if (this.game.scale.isFullScreen)
     {
         this.game.scale.stopFullScreen();
-        FullScreenButton.loadTexture('FullScreenButton');
+        this._FullScreenButton.loadTexture('FullScreenButton');
     }
     else
     {
         this.game.scale.startFullScreen(false);
-        FullScreenButton.loadTexture('NormalScreenButton');
+        this._FullScreenButton.loadTexture('NormalScreenButton');
     }
 }
-},{"./play_scene.js":13}],13:[function(require,module,exports){
+},{"./play_scene.js":12}],12:[function(require,module,exports){
 
  'use strict';
 
@@ -1862,7 +1792,6 @@ var Movable = require('./Class_Movable.js');
 var Player = require('./Class_Player.js');
 var Enemy = require('./Class_Enemy.js');
 var Fygar = require('./Class_Fygar.js');
-var Hook = require('./Class_Hook.js');
 var BloqueTierra = require('./Class_Tierra.js');
 var Flower = require('./Class_Flor.js');
 
@@ -2183,7 +2112,7 @@ var PlayScene = {
             if(key.keyCode === Phaser.KeyCode.U){
                 for(var gh = GrupoEnemigos.length-1;gh>=0; gh--){
                     GrupoEnemigos.children[gh]._MovementEnable=false;
-                    GrupoEnemigos.children[gh].Destroy();
+                    GrupoEnemigos.children[gh].destroy();
                 }
             }
         }
@@ -2399,7 +2328,7 @@ function onCollisionTierra (obj1, obj2){
     if (obj1._id=='Player'){
 
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
-            obj2.Destroy(); //Llamamos la la destructora de la tierra
+            obj2.destroy(); //Llamamos la la destructora de la tierra
         else {
             if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-1;
@@ -2420,7 +2349,7 @@ function onCollisionTierra (obj1, obj2){
                 sumaPuntos(1,this.g);
             }
             if (obj2.width<4 || obj2.height<4){
-                obj2.Destroy();
+                obj2.destroy();
                 var PosCentralTierra = new Par (obj2._posCentralX, obj2._posCentralY);
                 var BanderaControl = new GO(this.g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
@@ -2435,7 +2364,7 @@ function onCollisionTierra (obj1, obj2){
         }
     }
     if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
-        obj2.Destroy();
+        obj2.destroy();
 }
 
 function onCollisionPara(obj1, obj2){
@@ -2450,7 +2379,7 @@ function onCollisionPara(obj1, obj2){
 function onCollisionVegetable(obj1,obj2){
     itemSound.play();
     sumaPuntos(obj2._puntos, this.g);
-    obj2.Destroy();
+    obj2.destroy();
 }
 
 function Par (x, y) {
@@ -2835,7 +2764,7 @@ function onCollisionHuidaEnemigo(obj1,obj2){
 function onCollisionEliminacionEnemigo(obj1,obj2){
     
     obj2._MovementEnable=false;
-    obj2.Destroy();
+    obj2.destroy();
 }
 
 function FullScreen(){
@@ -2851,4 +2780,4 @@ function FullScreen(){
         FullScreenButton.loadTexture('NormalScreenButton');
     }
 }
-},{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Hook.js":5,"./Class_Movable.js":6,"./Class_Player.js":7,"./Class_Roca.js":8,"./Class_Tierra.js":9,"./Class_Vegetal.js":10}]},{},[11]);
+},{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);
