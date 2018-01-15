@@ -433,8 +433,8 @@ var PlayScene = {
             this.game.debug.body(player._Hook);
         for (var qq =0; qq<GrupoEnemigos.length; qq++){
             this.game.debug.body(GrupoEnemigos.children[qq]);
-            //if(GrupoEnemigos.children[qq]._Fire!=undefined)
-              //  this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
+            if(GrupoEnemigos.children[qq]._Fire!=undefined)
+               this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
         }
         this.game.debug.body(player);
     }

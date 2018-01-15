@@ -2,8 +2,6 @@
 
 var Enemy = require('./Class_Enemy.js');
 
-var FireSound;
-
 // Numeros Magicos
 var DisparoAuxiliarDistanciaMax = 120;
 var DisparoAuxMovimiento = 2
@@ -20,7 +18,6 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
     this._Puntos=400;
-    //Animacion de coger fuego con 2 frames y 3 loops
     this._animBreathFire = this.animations.add('Breathing', [1, 9], 5, true);   
 
     this._TimerFuego = game.time.create(false);
@@ -45,7 +42,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     this._2FiresAnim;
     this._3FiresAnim;
 
-    FireSound = game.add.audio('Dragon', 7);
+    this._FireSound = game.add.audio('Dragon', 7);
 }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -144,34 +141,64 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
         // Comprobar cual es la distancia que se ha recibido de la bala auxiliar
         if(!this._Aplastado && this._State==0){
             if (Math.abs(this._distanciaX) > FuegoDistanciaMax || Math.abs(this._distanciaY) > FuegoDistanciaMax) {
-                this._3FireSpritesheet = '3';
-                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
-
-                this._Fire.anchor.x = 0.5;
-                this._Fire.anchor.y = 0.5;
-                this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
-                this._FireAnim.play(10, false);
-                this._game.world.add(this._Fire);
+                
 
                 // Colocar la posicion del fuego en la mitad de lo que ocupa el fuego
                 //+ 10 para que parezca que lo lanza el Fygar
-                if (this._Movingleft) {               
+                if (this._Movingleft) {
+                    
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+                    
                     this._Fire.x -= FuegoCentroLargo;
                     this._Fire.width = -this._Fire.width;
+
                 }
                 else if (this._Movingright) {
+
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
                     this._Fire.x += FuegoCentroLargo;
                 }
                 else if (this._Movingup) {
-                    this._Fire.angle = -90;
+
+                    this._3FireSpritesheet = '3V';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
+                    //this._Fire.angle = -90;
                     this._Fire.y -= FuegoCentroLargo;
                 }
                 else if (this._Movingdown) {
-                    this._Fire.angle = 90;
+
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
+                    //this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroLargo;
                 }
 
-                FireSound.play();
+                this._FireSound.play();
             }
             else if (Math.abs(this._distanciaX) > FuegoDistanciaMedia || Math.abs(this._distanciaX) > FuegoDistanciaMedia) {
                 this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
@@ -196,7 +223,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroMedio;
                 }
-                FireSound.play();
+                this._FireSound.play();
             }
             else if (Math.abs(this._distanciaX) > FuegoDistanciaMin || Math.abs(this._distanciaX) > FuegoDistanciaMin) {
                 this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
@@ -219,7 +246,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroCorto;
                 }
-                FireSound.play();
+                this._FireSound.play();
             }
             
             this._animBreathFire.stop();

@@ -429,8 +429,6 @@ module.exports = Flower;
 
 var Enemy = require('./Class_Enemy.js');
 
-var FireSound;
-
 // Numeros Magicos
 var DisparoAuxiliarDistanciaMax = 120;
 var DisparoAuxMovimiento = 2
@@ -447,7 +445,6 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     Enemy.apply(this, [spritesheet, cube, game, position, id, limiteDerecho, limiteSuperior, player]);
 
     this._Puntos=400;
-    //Animacion de coger fuego con 2 frames y 3 loops
     this._animBreathFire = this.animations.add('Breathing', [1, 9], 5, true);   
 
     this._TimerFuego = game.time.create(false);
@@ -472,7 +469,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     this._2FiresAnim;
     this._3FiresAnim;
 
-    FireSound = game.add.audio('Dragon', 7);
+    this._FireSound = game.add.audio('Dragon', 7);
 }
 
     Fygar.prototype = Object.create(Enemy.prototype);
@@ -571,34 +568,64 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
         // Comprobar cual es la distancia que se ha recibido de la bala auxiliar
         if(!this._Aplastado && this._State==0){
             if (Math.abs(this._distanciaX) > FuegoDistanciaMax || Math.abs(this._distanciaY) > FuegoDistanciaMax) {
-                this._3FireSpritesheet = '3';
-                this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
-
-                this._Fire.anchor.x = 0.5;
-                this._Fire.anchor.y = 0.5;
-                this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
-                this._FireAnim.play(10, false);
-                this._game.world.add(this._Fire);
+                
 
                 // Colocar la posicion del fuego en la mitad de lo que ocupa el fuego
                 //+ 10 para que parezca que lo lanza el Fygar
-                if (this._Movingleft) {               
+                if (this._Movingleft) {
+                    
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+                    
                     this._Fire.x -= FuegoCentroLargo;
                     this._Fire.width = -this._Fire.width;
+
                 }
                 else if (this._Movingright) {
+
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
                     this._Fire.x += FuegoCentroLargo;
                 }
                 else if (this._Movingup) {
-                    this._Fire.angle = -90;
+
+                    this._3FireSpritesheet = '3V';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
+                    //this._Fire.angle = -90;
                     this._Fire.y -= FuegoCentroLargo;
                 }
                 else if (this._Movingdown) {
-                    this._Fire.angle = 90;
+
+                    this._3FireSpritesheet = '3';
+                    this._Fire = new Phaser.Sprite(this._game, this.x, this.y, this._3FireSpritesheet[0]);
+                    this._Fire.anchor.x = 0.5;
+                    this._Fire.anchor.y = 0.5;
+                    this._FireAnim = this._Fire.animations.add('3FramesFire', [0, 1, 2], 10, false);
+                    this._FireAnim.play(10, false);
+                    this._game.world.add(this._Fire);
+
+                    //this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroLargo;
                 }
 
-                FireSound.play();
+                this._FireSound.play();
             }
             else if (Math.abs(this._distanciaX) > FuegoDistanciaMedia || Math.abs(this._distanciaX) > FuegoDistanciaMedia) {
                 this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '2');
@@ -623,7 +650,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroMedio;
                 }
-                FireSound.play();
+                this._FireSound.play();
             }
             else if (Math.abs(this._distanciaX) > FuegoDistanciaMin || Math.abs(this._distanciaX) > FuegoDistanciaMin) {
                 this._Fire = new Phaser.Sprite(this._game, this.x, this.y, '1Fire');
@@ -646,7 +673,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
                     this._Fire.angle = 90;
                     this._Fire.y += FuegoCentroCorto;
                 }
-                FireSound.play();
+                this._FireSound.play();
             }
             
             this._animBreathFire.stop();
@@ -1428,7 +1455,6 @@ var MenuScene = require('./menu.js');
 
 var BootScene = {
   preload: function () {
-    //this.game.load.image('preloader_bar', 'images/preloader_bar.png');
   },
 
   create: function () {
@@ -1439,11 +1465,6 @@ var BootScene = {
 
 var PreloaderScene = {
   preload: function () {
-     
-    // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
-    // this.loadingBar.anchor.setTo(0, 0.5);
-    // this.load.setPreloadSprite(this.loadingBar);
-
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
@@ -1466,18 +1487,19 @@ var PreloaderScene = {
     //IMAGENES Y SPRITESHEETS
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
-    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
+    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);  
     this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 11);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
-    this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
+    this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
     this.game.load.spritesheet('FlorBlancaSpriteSheet', 'images/florAnimBlanca.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
     this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
-
-    //this.game.load.image('Flor', 'images/flor.png');
+    this.game.load.spritesheet('2V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
+    this.game.load.spritesheet('3V', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
+  
 
     //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
@@ -1509,8 +1531,8 @@ var PreloaderScene = {
   },
 
   create: function () {
-    this.game.state.start('menu');
-    //this.game.state.start('play');
+    //this.game.state.start('menu');
+    this.game.state.start('play');
   }
 };
 
@@ -2242,8 +2264,8 @@ var PlayScene = {
             this.game.debug.body(player._Hook);
         for (var qq =0; qq<GrupoEnemigos.length; qq++){
             this.game.debug.body(GrupoEnemigos.children[qq]);
-            //if(GrupoEnemigos.children[qq]._Fire!=undefined)
-              //  this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
+            if(GrupoEnemigos.children[qq]._Fire!=undefined)
+               this.game.debug.body(GrupoEnemigos.children[qq]._Fire);     //COGER TEXTURAS DE FUEGO VERTICAL
         }
         this.game.debug.body(player);
     }

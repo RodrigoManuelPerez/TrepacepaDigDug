@@ -5,7 +5,6 @@ var MenuScene = require('./menu.js');
 
 var BootScene = {
   preload: function () {
-    //this.game.load.image('preloader_bar', 'images/preloader_bar.png');
   },
 
   create: function () {
@@ -16,11 +15,6 @@ var BootScene = {
 
 var PreloaderScene = {
   preload: function () {
-     
-    // this.loadingBar = this.game.add.sprite(0, 240, 'preloader_bar');
-    // this.loadingBar.anchor.setTo(0, 0.5);
-    // this.load.setPreloadSprite(this.loadingBar);
-
     this.game.load.baseURL = 'https://raw.githubusercontent.com/RodrigoManuelPerez/TrepacepaDigDug/master/src/';
     this.game.load.crossOrigin = 'anonymous';
 
@@ -43,18 +37,19 @@ var PreloaderScene = {
     //IMAGENES Y SPRITESHEETS
 
     this.game.load.spritesheet('DigDugWalking', 'images/WalkAnim.png', 36, 36, 11);
-    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);   //EL SPRITESHEET DEL POOKA SOLO TIENE 9 FRAMES EN REALIDAD
+    this.game.load.spritesheet('P', 'images/PookaSpriteSheet.png', 36, 36, 10);  
     this.game.load.spritesheet('F', 'images/FygarSpriteSheet.png', 36, 36, 11);
     this.game.load.spritesheet('RocaCompletaSpriteSheet', 'images/RocaCompleta.png', 40, 47, 14);
-    this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  //SpriteSheet de los buffos, se cogeran segun el nivel
+    this.game.load.spritesheet('Bufos', 'images/Bufos.png', 40, 40, 18);  
     this.game.load.spritesheet('FlorSpriteSheet', 'images/florAnim.png', 42, 46, 2);
     this.game.load.spritesheet('FlorBlancaSpriteSheet', 'images/florAnimBlanca.png', 42, 46, 2);
 
     this.game.load.image('1Fire', 'images/1FrameFire.png');
     this.game.load.spritesheet('2', 'images/2FramesFire.png', 80, 40, 2);
     this.game.load.spritesheet('3', 'images/3FramesFire.png', 120, 40, 3);
-
-    //this.game.load.image('Flor', 'images/flor.png');
+    this.game.load.spritesheet('2V', 'images/2FramesFireVertical.png', 40, 80, 2);    //HAY QUE INCLUIR LOS CASOS CONCRETOS EN LOS QUE EL FUEGO ESTÁ VERTICAL PORQUE
+    this.game.load.spritesheet('3V', 'images/3FramesFireVertical.png', 40, 120, 3);   //AUNQUE SE ROTE EL SPRITE NO SE ROTA SU BOUNDING BOX Y GENERA PROBLEMAS AL INTENTAR GENERAR COLISION
+  
 
     //DIFERENTES TIPOS DE TIERRA
     this.game.load.image('tierraSuperficie', 'images/TierraCSuperrficie.png');
@@ -86,8 +81,8 @@ var PreloaderScene = {
   },
 
   create: function () {
-    this.game.state.start('menu');
-    //this.game.state.start('play');
+    //this.game.state.start('menu');
+    this.game.state.start('play');
   }
 };
 
