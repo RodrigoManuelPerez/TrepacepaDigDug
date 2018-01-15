@@ -167,7 +167,7 @@ var PlayScene = {
         }
 
         //CUBO DE HUIDA
-        CuboHuida = new Phaser.Sprite(this.game,20,60,'tierraSuperficie');
+        CuboHuida = new Phaser.Sprite(this.game,40*7-2,60,'tierraSuperficie');
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
@@ -433,7 +433,7 @@ var PlayScene = {
         for (var qq =0; qq<GrupoEnemigos.length; qq++){
             this.game.debug.body(GrupoEnemigos.children[qq]);
         }
-        this.game.debug.body(player);
+        this.game.debug.body(CuboHuida);
     }
 }
 

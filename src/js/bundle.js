@@ -1145,7 +1145,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this.DestroyHook();
 
         if(this._Hooking && this._Hook!=null){
-            this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+            this._game.physics.arcade.overlap(this._Hook, this._GrupoEnemigos,EnemyHooked, null, this);
         }
             
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
@@ -1502,6 +1502,32 @@ window.onload = function () {
 
 var PlayScene = require('./play_scene.js');
 
+var _SwitchSound;
+var _AceptSound;
+var _AtControls=false;
+var _PosicionSuperior; 
+var _PosicionInferior;
+var _PosicionFlecha = true;
+
+var _timerControl;
+var _Eleccion = false;
+var _menu;
+var _Flechita;
+var _Controls
+
+var _RockSprite;
+var _RockAnim;
+var _PlayerSprite
+var _PlayerWalking;
+var _VegetableSprite;
+var _VegetablePop;
+var _EnemySprite; 
+var _EnemyWalking;
+var _FygarSprite;
+var _FygarWalking;
+var _musicaMenu;
+
+
 // Numeros magicos:
 var RockSpritePosX = 665;
 var RockSpritePosY = 130;
@@ -1529,63 +1555,44 @@ var MenuScene = {
 
     create: function () {
 
-    //DECLARACION DE VARIABLES    
-    this._musicaMenu;
-    this._menu;
-    this._Flechita;
+    //DECLARACION DE VARIABLES                
     this._parpadeando=false;
     this._cursors;
-    this._PosicionSuperior; this._PosicionInferior;
-    this._PosicionFlecha = true;
-
-    this._timerControl;
-    this._Eleccion = false;
     this._FullScreenButton;
     this._ButtonCreated = false;
-    this._SwitchSound;
-    this._AceptSound;
-    this._Controls;
-    this._AtControls=false;
-
-    this._RockSprite;
-    this._RockAnim;
-    this._PlayerSprite
-    this._PlayerWalking;
-    this._VegetableSprite;
-    this._VegetablePop;
-    this._EnemySprite; 
-    this._EnemyWalking;
-    this._FygarSprite;
-    this._FygarWalking;
+    _AtControls=false;
+    _PosicionFlecha=true;
+    _Eleccion=false;
+    
 
     this._scoreStringA;
     this._scoreTextA;
     this._highScoreText;
 
-    this._timerControl = this.game.time.create(false);
+    _timerControl = this.game.time.create(false);
 
-    this._PosicionSuperior = new Par(300,330);
-    this._PosicionInferior = new Par(300,400);
+    _PosicionSuperior = new Par(300,330);
+    _PosicionInferior = new Par(300,400);
 
-    this._musicaMenu = this.game.add.audio('MenuSong', 1, true); //key, volume, loop
-    this._musicaMenu.play();
+    _musicaMenu = this.game.add.audio('MenuSong', 1, true); //key, volume, loop
+    _musicaMenu.play();
 
     //SOUNDS
-    this._SwitchSound = this.game.add.audio('Switch');
-    this._AceptSound = this.game.add.audio('Acept');
+    _SwitchSound = this.game.add.audio('Switch');
+    _AceptSound = this.game.add.audio('Acept');
 
     //Inicializar los cursores.
     this._cursors = this.game.input.keyboard.createCursorKeys();
     
-    this._menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
-    this._menu.anchor.x = 0;
-    this._menu.anchor.y = 0;
-    this._Flechita = new Phaser.Sprite(this.game, this._PosicionSuperior._x, this._PosicionSuperior._y, 'MenuFlecha');
-    this._Flechita.anchor.x = 0;
-    this._Flechita.anchor.y = 0;
-    this._Flechita.visible = false;
-    this.game.world.addChild(this._menu);
-    this.game.world.addChild(this._Flechita);
+    _menu = new Phaser.Sprite(this.game, 0, 600, 'MenuFondo');
+    _menu.anchor.x = 0;
+    _menu.anchor.y = 0;
+    _Flechita = new Phaser.Sprite(this.game, _PosicionSuperior._x, _PosicionSuperior._y, 'MenuFlecha');
+    _Flechita.anchor.x = 0;
+    _Flechita.anchor.y = 0;
+    _Flechita.visible = false;
+    this.game.world.addChild(_menu);
+    this.game.world.addChild(_Flechita);
     
     //Control de puntuaciones
     this._scoreStringA = 'HI - SCORE: ';
@@ -1596,11 +1603,16 @@ var MenuScene = {
     this._highScoreText.text = localStorage.getItem("highscore");
     
     this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+
+
+    
+
+
 },
     update: function() {
 
-        if(this._menu.y > 0){
-            this._menu.y -= 2;
+        if(_menu.y > 0){
+            _menu.y -= 2;
         }
         else if(!this._parpadeando){
             this._parpadeando = true;
@@ -1610,8 +1622,49 @@ var MenuScene = {
             timerFlecha.loop(250, switchFlechita, this);
             timerFlecha.start();
         }
+
+        this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
+
+            ////////////////////MOVIMIENTO FLECHAS/////////////////
+                if (_menu.y == 0 && !_Eleccion && !_AtControls){
+                    if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
+                        if (_Flechita.y == _PosicionInferior._y){
+                            _SwitchSound.play();
+                            _Flechita.y = _PosicionSuperior._y;
+                            _PosicionFlecha = true;
+                        }
+                    }
+                    if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
+                        if (_Flechita.y == _PosicionSuperior._y){
+                            _SwitchSound.play();
+                            _Flechita.y = _PosicionInferior._y;
+                            _PosicionFlecha = false;
+                        }
+                    }
+                }
         
-        if (this._menu.y <= 0 && !this._ButtonCreated){
+                //////////////////ELECCION//////////////
+                if (!_AtControls) {
+                    if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
+                        if (_menu.y > 0)
+                            _menu.y = 0;
+                        else {
+                            if (!_Eleccion)
+                                _AceptSound.play();  //The acept sound will sound
+                            _Eleccion = true;
+                            _timerControl.add(1500,Comienzo,this,this.game);
+                            _timerControl.start();
+                        }
+                    }
+                }
+                else {
+                    if (key.keyCode === Phaser.KeyCode.ESC) {
+                        this.game.state.start('menu');
+                    }
+                }
+            }
+        
+        if (_menu.y <= 0 && !this._ButtonCreated){
             this._ButtonCreated = true;
             this._FullScreenButton = this.game.add.button(20, 60, 'FullScreenButton', FullScreen, this);
         }
@@ -1627,53 +1680,15 @@ var MenuScene = {
             }
         }
 
-        if (this._Eleccion) {
-            if (this._musicaMenu.volume > 0)
-            this._musicaMenu.volume -= 0.012;
+
+
+        if (_Eleccion) {
+            if (_musicaMenu.volume > 0)
+            _musicaMenu.volume -= 0.012;
         }
 
-
-        ///////////////////////HACKS//////////////////////////////////////
-        this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
-
-            ////////////////////MOVIMIENTO FLECHAS/////////////////
-            if (this._menu.y == 0 && !this._Eleccion && !this._AtControls){
-                if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
-                    if (this._Flechita.y == this._PosicionInferior._y){
-                        this._SwitchSound.play();
-                        this._Flechita.y = this._PosicionSuperior._y;
-                        this._PosicionFlecha = true;
-                    }
-                }
-                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
-                    if (this._Flechita.y == this._PosicionSuperior._y){
-                        this._SwitchSound.play();
-                        this._Flechita.y = this._PosicionInferior._y;
-                        this._PosicionFlecha = false;
-                    }
-                }
-            }
-
-            //////////////////ELECCION//////////////
-            if (!this._AtControls) {
-                if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
-                    if (this._menu.y > 0)
-                        this._menu.y = 0;
-                    else {
-                        if (!this._Eleccion)
-                            this._AceptSound.play();  //The acept sound will sound
-                        this._Eleccion = true;
-                        this._timerControl.add(1500,Comienzo,this,this.game);
-                        this._timerControl.start();
-                    }
-                }
-            }
-            else {
-                if (key.keyCode === Phaser.KeyCode.ESC) {
-                    this.game.state.start('menu');
-                }
-            }
-        }
+        console.debug(_AtControls);
+       
     },
     render: function() {
         
@@ -1688,14 +1703,14 @@ function Par (x, y) {
 }
 
 function Comienzo (g) {
-    if (this._PosicionFlecha) {
-        this._AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
-        this._Menu.stop();
+    if (_PosicionFlecha) {
+        _AceptSound.destroy();       //NO seria asi pero no consigo eliminar el sonido
+        _musicaMenu.stop();
         g.state.start('play');
         
     }
     else {       //Los creditos o controles
-        this._AtControls = true;
+        _AtControls = true;
         Controles(g);
         console.debug("hello");
     }
@@ -1703,69 +1718,69 @@ function Comienzo (g) {
 
 function Controles(g) {
     
-    this._Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
-    this._Controls.anchor.x = 0;
-    this._Controls.anchor.y = 0;
-    g.world.addChild(this._Controls);
+    _Controls = new Phaser.Sprite(g, 0, 0, 'Controles');
+    _Controls.anchor.x = 0;
+    _Controls.anchor.y = 0;
+    g.world.addChild(_Controls);
 
-    this._RockSprite = new Phaser.Sprite(g, RockSpritePosX, RockSpritePosY, 'RocaCompletaSpriteSheet');
-    this._RockSprite.frame = 1;
-    this._RockSprite.width = RockSpriteDimensions * this._RockSprite.width;
-    this._RockSprite.height = RockSpriteDimensions * this._RockSprite.height;
-    this._RockSprite.anchor.x = 0.5;
-    this._RockSprite.anchor.y = 0.5;
-    g.world.addChild(this._RockSprite);
+    _RockSprite = new Phaser.Sprite(g, RockSpritePosX, RockSpritePosY, 'RocaCompletaSpriteSheet');
+    _RockSprite.frame = 1;
+    _RockSprite.width = RockSpriteDimensions * _RockSprite.width;
+    _RockSprite.height = RockSpriteDimensions * _RockSprite.height;
+    _RockSprite.anchor.x = 0.5;
+    _RockSprite.anchor.y = 0.5;
+    g.world.addChild(_RockSprite);
 
-    this._PlayerSprite = new Phaser.Sprite(g, PlayerSpritePosX, PlayerSpritePosY, 'DigDugWalking');
-    this._PlayerSprite.frame = 1;
-    this._PlayerSprite.width = PlayerSpriteDimensions * this._PlayerSprite.width;
-    this._PlayerSprite.height = PlayerSpriteDimensions * this._PlayerSprite.height;
-    this._PlayerSprite.anchor.x = 0.5;
-    this._PlayerSprite.anchor.y = 0.5;
-    g.world.addChild(this._PlayerSprite);
+    _PlayerSprite = new Phaser.Sprite(g, PlayerSpritePosX, PlayerSpritePosY, 'DigDugWalking');
+    _PlayerSprite.frame = 1;
+    _PlayerSprite.width = PlayerSpriteDimensions * _PlayerSprite.width;
+    _PlayerSprite.height = PlayerSpriteDimensions * _PlayerSprite.height;
+    _PlayerSprite.anchor.x = 0.5;
+    _PlayerSprite.anchor.y = 0.5;
+    g.world.addChild(_PlayerSprite);
 
-    this._VegetableSprite = new Phaser.Sprite(g, VegetableSpritePosX, VegetableSpritePosY, 'Bufos');
-    this._VegetableSprite.frame = 1;
-    this._VegetableSprite.width = VegetableSpriteDimensions * this._VegetableSprite.width;
-    this._VegetableSprite.height = VegetableSpriteDimensions * this._VegetableSprite.height;
-    this._VegetableSprite.anchor.x = 0.5;
-    this._VegetableSprite.anchor.y = 0.5;
-    g.world.addChild(this._VegetableSprite);
+    _VegetableSprite = new Phaser.Sprite(g, VegetableSpritePosX, VegetableSpritePosY, 'Bufos');
+    _VegetableSprite.frame = 1;
+    _VegetableSprite.width = VegetableSpriteDimensions * _VegetableSprite.width;
+    _VegetableSprite.height = VegetableSpriteDimensions * _VegetableSprite.height;
+    _VegetableSprite.anchor.x = 0.5;
+    _VegetableSprite.anchor.y = 0.5;
+    g.world.addChild(_VegetableSprite);
 
-    this._EnemySprite = new Phaser.Sprite(g, EnemySpritePosX, EnemySpritePosY, 'P');
-    this._EnemySprite.frame = 1;
-    this._EnemySprite.width = -EnemySpriteDimensions * this._EnemySprite.width;
-    this._EnemySprite.height = EnemySpriteDimensions * this._EnemySprite.height;
-    this._EnemySprite.anchor.x = 0.5;
-    this._EnemySprite.anchor.y = 0.5;
-    g.world.addChild(this._EnemySprite);
+    _EnemySprite = new Phaser.Sprite(g, EnemySpritePosX, EnemySpritePosY, 'P');
+    _EnemySprite.frame = 1;
+    _EnemySprite.width = -EnemySpriteDimensions * _EnemySprite.width;
+    _EnemySprite.height = EnemySpriteDimensions * _EnemySprite.height;
+    _EnemySprite.anchor.x = 0.5;
+    _EnemySprite.anchor.y = 0.5;
+    g.world.addChild(_EnemySprite);
 
-    this._FygarSprite = new Phaser.Sprite(g, FygarSpritePosX, FygarSpritePosY, 'F');
-    this._FygarSprite.frame = 1;
-    this._FygarSprite.width = -FygarSpriteDimensions * this._FygarSprite.width;
-    this._FygarSprite.height= FygarSpriteDimensions * this._FygarSprite.height;
-    this._FygarSprite.anchor.x = 0.5;
-    this._FygarSprite.anchor.y = 0.5;
-    g.world.addChild(this._FygarSprite);
+    _FygarSprite = new Phaser.Sprite(g, FygarSpritePosX, FygarSpritePosY, 'F');
+    _FygarSprite.frame = 1;
+    _FygarSprite.width = -FygarSpriteDimensions * _FygarSprite.width;
+    _FygarSprite.height= FygarSpriteDimensions * _FygarSprite.height;
+    _FygarSprite.anchor.x = 0.5;
+    _FygarSprite.anchor.y = 0.5;
+    g.world.addChild(_FygarSprite);
 
-    this._RockAnim = this._RockSprite.animations.add('Shaking', [0, 1], 5, true);
-    this._RockAnim.play();
-    this._PlayerWalking = this._PlayerSprite.animations.add('Walking', [0, 1], 6, true);
-    this._PlayerWalking.play();
-    this._VegetablePop = this._VegetableSprite.animations.add('ShowVegetables', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
-    this._VegetablePop.play();
-    this._EnemyWalking = this._EnemySprite.animations.add('Walking', [0, 1], 6, true);
-    this._EnemyWalking.play();
-    this._FygarWalking = this._FygarSprite.animations.add('Walking', [0, 1], 6, true);
-    this._FygarWalking.play();
+    _RockAnim = _RockSprite.animations.add('Shaking', [0, 1], 5, true);
+    _RockAnim.play();
+    _PlayerWalking = _PlayerSprite.animations.add('Walking', [0, 1], 6, true);
+    _PlayerWalking.play();
+    _VegetablePop = _VegetableSprite.animations.add('ShowVegetables', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+    _VegetablePop.play();
+    _EnemyWalking = _EnemySprite.animations.add('Walking', [0, 1], 6, true);
+    _EnemyWalking.play();
+    _FygarWalking = _FygarSprite.animations.add('Walking', [0, 1], 6, true);
+    _FygarWalking.play();
 
 }
 
 function switchFlechita() {
-    if (!this._Eleccion)
-        this._Flechita.visible = !this._Flechita.visible;
+    if (!_Eleccion)
+        _Flechita.visible = !_Flechita.visible;
     else
-        this._Flechita.visible = true;
+        _Flechita.visible = true;
 }
 
 function FullScreen() {
@@ -1951,7 +1966,7 @@ var PlayScene = {
         }
 
         //CUBO DE HUIDA
-        CuboHuida = new Phaser.Sprite(this.game,20,60,'tierraSuperficie');
+        CuboHuida = new Phaser.Sprite(this.game,40*7-2,60,'tierraSuperficie');
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
@@ -2217,7 +2232,7 @@ var PlayScene = {
         for (var qq =0; qq<GrupoEnemigos.length; qq++){
             this.game.debug.body(GrupoEnemigos.children[qq]);
         }
-        this.game.debug.body(player);
+        this.game.debug.body(CuboHuida);
     }
 }
 

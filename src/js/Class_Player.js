@@ -352,7 +352,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this.DestroyHook();
 
         if(this._Hooking && this._Hook!=null){
-            this._game.physics.arcade.collide(this._Hook, this._GrupoEnemigos,EnemyHooked);
+            this._game.physics.arcade.overlap(this._Hook, this._GrupoEnemigos,EnemyHooked, null, this);
         }
             
         if(!this._Movingdown && !this._Movingup && !this._Movingleft && !this._Movingright){
