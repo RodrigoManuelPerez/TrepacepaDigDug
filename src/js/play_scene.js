@@ -346,6 +346,14 @@ var PlayScene = {
                 FullScreenButton.loadTexture('FullScreenButton');
         }
 
+        //BOTON DE MUTE
+        if(this.game.sound.mute && MuteButton.texture!='DeMuteButton'){
+            MuteButton.loadTexture('DeMuteButton');
+        }
+        else if(this.game.sound.mute && MuteButton.texture!='MuteButton'){
+            MuteButton.loadTexture('MuteButton');
+        }
+
         //NIVEL COMPLETADO
         if(GrupoEnemigos.length==0 && !NextLevel){
             NextLevel=true;
@@ -841,6 +849,8 @@ function LoadMap (lvl,g) {
 
 function ResetPosition(){       //Coloca al todos los personajes en el lugar original
     
+    Vegetable.destroy();
+
     for (var i=0; i< GrupoEnemigos.length; i++){
         GrupoEnemigos.children[i].x = GrupoEnemigos.children[i]._posOriginalX;
         GrupoEnemigos.children[i].y = GrupoEnemigos.children[i]._posOriginalY;
