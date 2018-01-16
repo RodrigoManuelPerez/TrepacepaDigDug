@@ -1143,7 +1143,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
-            this.DestroyHook();
+            this._Hook.destroy();
 
         if(this._Hooking && this._Hook!=null){
             this._game.physics.arcade.overlap(this._Hook, this._GrupoEnemigos,EnemyHooked, null, this);
@@ -1173,15 +1173,12 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             if(this.angle!=0)
                 this.angle=0;
             if(!this._EsperandoComenzar){
-                this._timer.add(3000, StartGame, this)
+                this._timer.add(2000, StartGame, this)
                 this._timer.start();
                 this._animWalk.paused=true;
                 this._EsperandoComenzar=true;    
             }
         }
-    }
-    Player.prototype.DestroyHook = function() {
-        this._Hook.destroy();
     }
 
     Player.prototype.Muerte = function() {
