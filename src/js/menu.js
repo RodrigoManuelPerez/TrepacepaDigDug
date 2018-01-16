@@ -102,7 +102,7 @@ var MenuScene = {
     this._highScoreText.visible = false;
     this._highScoreText.text = localStorage.getItem("highscore");
     
-    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
 
 
     

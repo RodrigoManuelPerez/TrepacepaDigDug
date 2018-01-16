@@ -1612,7 +1612,7 @@ var MenuScene = {
     this._highScoreText.visible = false;
     this._highScoreText.text = localStorage.getItem("highscore");
     
-    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
 
 
     
@@ -2025,7 +2025,7 @@ var PlayScene = {
         GrupoFireBullets = this.game.add.physicsGroup();
         
         //PARA UN CORRECTO FULLSCREEN
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
 
         //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
