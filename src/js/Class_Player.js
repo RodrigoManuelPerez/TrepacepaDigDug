@@ -417,7 +417,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             obj2._State++;
         }
         obj1.visible=false;
-        console.debug(this._Hooking);
         this._Hooking = false;
         this._readyToShoot=false;
         this._timerReload.add(this._reloadTime,Reload,this);

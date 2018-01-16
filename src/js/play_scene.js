@@ -40,6 +40,7 @@ var scoreStringC = '';
 var pauseString = '';
 var PAUSED=false;
 var FullScreenButton;
+var MuteButton;
 
 var vidas=3;
 var spriteVidas;
@@ -149,7 +150,6 @@ var PlayScene = {
         thisFlor = this.game.add.group();
 
         var contFB = Math.floor(nivel/10);
-        console.debug(contFB);
         var contFN = nivel%10;
         var cont = contFB + contFN;
         for (i = 0; i < cont; i++)
@@ -219,7 +219,7 @@ var PlayScene = {
         GrupoFireBullets = this.game.add.physicsGroup();
         
         //PARA UN CORRECTO FULLSCREEN
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
 
         //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
@@ -227,12 +227,12 @@ var PlayScene = {
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
 
+        MuteButton = this.game.add.button(760, 560, 'MuteButton', Mute, this);
 
         LoadMap(nivel,this.game);
 
         player._GrupoTierra=tierra;
         player._GrupoEnemigos=GrupoEnemigos;
-        console.debug(3+true);
 
         StopEnemies();
 
@@ -331,6 +331,8 @@ var PlayScene = {
                 }
             }
         }
+
+
 
         //BOTON DE FULLSCREEN
         if (this.game.scale.isFullScreen)
@@ -586,7 +588,7 @@ function onCollisionTierra (obj1, obj2){
             }
         }
     }
-    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
+    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y && obj1.y<540)         
         obj2.destroy();
 }
 
@@ -1001,5 +1003,16 @@ function FullScreen(){
     {
         this.game.scale.startFullScreen(false);
         FullScreenButton.loadTexture('NormalScreenButton');
+    }
+}
+
+function Mute(){
+    if(this.game.sound.mute){
+        this.game.sound.mute=false;
+        MuteButton.loadTexture('MuteButton');
+    }
+    else if(!this.game.sound.mute){
+        this.game.sound.mute=true;
+        MuteButton.loadTexture('DeMuteButton');
     }
 }

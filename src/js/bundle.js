@@ -189,7 +189,6 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             }            
         }
         else if(this._State>0 && !this._timerStarted){
-            console.debug(this._State);
             this._timerStarted=true;
             this._TimerState = this._game.time.create(false);
             this._TimerState.add(1500,ReduceState,this);
@@ -199,7 +198,11 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         if(this._State>0 && this._State<5){
             if(this.frame!=(4+this._State))
                 this.frame=(4+this._State);
-            
+        }
+
+        if(!this._Fantasma && !this.body.enable && this._State==0){
+            this.body.enable=true;
+            console.debug('he corregido un fantasma');
         }
 
     }
@@ -362,10 +365,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     function ReduceState(){
 
         if(this._State>0 && this._State<4){
-            console.debug(this._State);
             this._State--;
             this._TimerState.stop();
-            console.debug(this._State);
         } 
 
         if(this._State>0 && this._State<4){
@@ -1208,7 +1209,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             obj2._State++;
         }
         obj1.visible=false;
-        console.debug(this._Hooking);
         this._Hooking = false;
         this._readyToShoot=false;
         this._timerReload.add(this._reloadTime,Reload,this);
@@ -1473,6 +1473,10 @@ var PreloaderScene = {
     this.game.load.image('FullScreenButton', 'images/GoFullScreen.png');
     this.game.load.image('NormalScreenButton', 'images/ExitFullScreen.png');
 
+    //BOTONES MUTE
+    this.game.load.image('MuteButton', 'images/MuteButton.png');
+    this.game.load.image('DeMuteButton', 'images/DeMuteButton.png');
+
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');
@@ -1608,7 +1612,7 @@ var MenuScene = {
     this._highScoreText.visible = false;
     this._highScoreText.text = localStorage.getItem("highscore");
     
-    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
 
 
     
@@ -1692,8 +1696,6 @@ var MenuScene = {
             if (_musicaMenu.volume > 0)
             _musicaMenu.volume -= 0.012;
         }
-
-        console.debug(_AtControls);
        
     },
     render: function() {
@@ -1718,7 +1720,6 @@ function Comienzo (g) {
     else {       //Los creditos o controles
         _AtControls = true;
         Controles(g);
-        console.debug("hello");
     }
 }
 
@@ -1845,6 +1846,7 @@ var scoreStringC = '';
 var pauseString = '';
 var PAUSED=false;
 var FullScreenButton;
+var MuteButton;
 
 var vidas=3;
 var spriteVidas;
@@ -1954,7 +1956,6 @@ var PlayScene = {
         thisFlor = this.game.add.group();
 
         var contFB = Math.floor(nivel/10);
-        console.debug(contFB);
         var contFN = nivel%10;
         var cont = contFB + contFN;
         for (i = 0; i < cont; i++)
@@ -2024,7 +2025,7 @@ var PlayScene = {
         GrupoFireBullets = this.game.add.physicsGroup();
         
         //PARA UN CORRECTO FULLSCREEN
-        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
 
         //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
@@ -2032,12 +2033,12 @@ var PlayScene = {
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
 
+        MuteButton = this.game.add.button(760, 560, 'MuteButton', Mute, this);
 
         LoadMap(nivel,this.game);
 
         player._GrupoTierra=tierra;
         player._GrupoEnemigos=GrupoEnemigos;
-        console.debug(3+true);
 
         StopEnemies();
 
@@ -2136,6 +2137,8 @@ var PlayScene = {
                 }
             }
         }
+
+
 
         //BOTON DE FULLSCREEN
         if (this.game.scale.isFullScreen)
@@ -2391,7 +2394,7 @@ function onCollisionTierra (obj1, obj2){
             }
         }
     }
-    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y)         
+    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y && obj1.y<540)         
         obj2.destroy();
 }
 
@@ -2806,6 +2809,17 @@ function FullScreen(){
     {
         this.game.scale.startFullScreen(false);
         FullScreenButton.loadTexture('NormalScreenButton');
+    }
+}
+
+function Mute(){
+    if(this.game.sound.mute){
+        this.game.sound.mute=false;
+        MuteButton.loadTexture('MuteButton');
+    }
+    else if(!this.game.sound.mute){
+        this.game.sound.mute=true;
+        MuteButton.loadTexture('DeMuteButton');
     }
 }
 },{"./Class_Enemy.js":1,"./Class_Flor.js":2,"./Class_Fygar.js":3,"./Class_GameObject.js":4,"./Class_Movable.js":5,"./Class_Player.js":6,"./Class_Roca.js":7,"./Class_Tierra.js":8,"./Class_Vegetal.js":9}]},{},[10]);

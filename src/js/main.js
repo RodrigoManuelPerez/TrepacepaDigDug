@@ -70,6 +70,10 @@ var PreloaderScene = {
     this.game.load.image('FullScreenButton', 'images/GoFullScreen.png');
     this.game.load.image('NormalScreenButton', 'images/ExitFullScreen.png');
 
+    //BOTONES MUTE
+    this.game.load.image('MuteButton', 'images/MuteButton.png');
+    this.game.load.image('DeMuteButton', 'images/DeMuteButton.png');
+
     this.game.load.image('Gancho', 'images/Gancho.png');
 
     this.game.load.image('Banderita', 'images/Bandera.png');

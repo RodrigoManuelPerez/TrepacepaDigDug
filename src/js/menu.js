@@ -102,7 +102,7 @@ var MenuScene = {
     this._highScoreText.visible = false;
     this._highScoreText.text = localStorage.getItem("highscore");
     
-    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.NO_SCALE;
 
 
     
@@ -186,8 +186,6 @@ var MenuScene = {
             if (_musicaMenu.volume > 0)
             _musicaMenu.volume -= 0.012;
         }
-
-        console.debug(_AtControls);
        
     },
     render: function() {
@@ -212,7 +210,6 @@ function Comienzo (g) {
     else {       //Los creditos o controles
         _AtControls = true;
         Controles(g);
-        console.debug("hello");
     }
 }
 

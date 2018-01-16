@@ -188,7 +188,6 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
             }            
         }
         else if(this._State>0 && !this._timerStarted){
-            console.debug(this._State);
             this._timerStarted=true;
             this._TimerState = this._game.time.create(false);
             this._TimerState.add(1500,ReduceState,this);
@@ -198,7 +197,11 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         if(this._State>0 && this._State<5){
             if(this.frame!=(4+this._State))
                 this.frame=(4+this._State);
-            
+        }
+
+        if(!this._Fantasma && !this.body.enable && this._State==0){
+            this.body.enable=true;
+            console.debug('he corregido un fantasma');
         }
 
     }
@@ -361,10 +364,8 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     function ReduceState(){
 
         if(this._State>0 && this._State<4){
-            console.debug(this._State);
             this._State--;
             this._TimerState.stop();
-            console.debug(this._State);
         } 
 
         if(this._State>0 && this._State<4){
