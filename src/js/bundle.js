@@ -42,6 +42,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._PuntosContabilizados = false;
     this._Muerto = false;
     this._Sound = game.add.audio('Points',1);
+    this._SoundMuerte = game.add.audio('Pop',1);
     this._timerMuerte;
     
     //HUIDA
@@ -369,7 +370,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
         if(this._State>0 && this._State<4){
             this._TimerState = this._game.time.create(false);
-            this._TimerState.add(1500,ReduceState,this);
+            this._TimerState.add(1250,ReduceState,this);
             this._TimerState.start();
         }
         else if(this._State==0){
@@ -380,7 +381,9 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         }
         else if(this._State==4){
             this._TimerState.stop();
+            this.body.enable=false;
             this._Muerto=true;
+            this._SoundMuerte.play();
             this._timerMuerte = this._game.time.create(false);
             this._timerMuerte.add(1000,Sonido,this);
             this._timerMuerte.start();
@@ -749,11 +752,6 @@ var GameObject = function(game, position, sprite,id,spriteSheet){
 GameObject.prototype = Object.create(Phaser.Sprite.prototype);
 GameObject.prototype.constructor = GameObject;
 
-// GameObject.prototype.Destroy = function()
-// {
-//     this.destroy();
-// }
-
 module.exports = GameObject;
 },{}],5:[function(require,module,exports){
 'use strict';
@@ -837,11 +835,14 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._posInicial =position;
 
     this._timer = this._game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
+    this._timerReload = this._game.time.create(false);
 
     this._Hook;
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = this._game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    this._reloadTime=500;
+    this._readyToShoot=true;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -1061,11 +1062,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
 
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable){
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
-        this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
+        this._game.physics.arcade.enable(this._Hook);
         this._Hooking=true;
         this._HookDistanceX=0;
         this._HookDistanceY=0;
@@ -1209,11 +1210,18 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             obj2._animWalk.stop();
             obj2._State++;
         }
-        obj1.destroy();
+        obj1.visible=false;
+        console.debug(this._Hooking);
         this._Hooking = false;
+        this._readyToShoot=false;
+        this._timerReload.add(this._reloadTime,Reload,this);
+        this._timerReload.start();
         if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0)
             this._MovementEnable=true;
         
+    }
+    function Reload(){
+        this._readyToShoot=true;
     }
 
     
@@ -1427,6 +1435,7 @@ var PreloaderScene = {
     this.game.load.audio('Dragon', ['music/Sounds/Dragon.ogg']);
     this.game.load.audio('Rock', ['music/Sounds/Rock.ogg']);
     this.game.load.audio('Taser', ['music/Sounds/Taser.ogg']);
+    this.game.load.audio('Pop', ['music/Sounds/Pop.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
@@ -2072,7 +2081,6 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
-        //VO
         
         
 
@@ -2219,6 +2227,9 @@ var PlayScene = {
             }
         }
 
+        if(player._MovementEnable && PAUSED)
+            player._MovementEnable=false;
+
         //MUSICA
         if((player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)&&(player._MovementEnable || player._AutomaticMovement))
             playerMusic.resume();
@@ -2227,16 +2238,21 @@ var PlayScene = {
 
     },
     render: function(){
-        if(player._Hook!=null)
-            this.game.debug.body(player._Hook);
-        for (var qq =0; qq<GrupoEnemigos.length; qq++){
-            this.game.debug.body(GrupoEnemigos.children[qq]);
-        }
-        this.game.debug.body(CuboHuida);
     }
 }
 
 module.exports = PlayScene;
+
+function EnemyHooked(obj1,obj2){
+    if(obj2._State<4){
+        obj2._animWalk.stop();
+        obj2._State++;
+    }
+    obj1.destroy_in_next_tick= true;
+    player._Hooking = false;
+    if(!player._AnimMuerto && !player._Muerto && player._GrupoEnemigos.length!=0)
+        player._MovementEnable=true;
+}
 
 function switchPause(){
     if(PAUSED){

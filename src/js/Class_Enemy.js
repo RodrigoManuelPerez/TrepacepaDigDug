@@ -41,6 +41,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
     this._PuntosContabilizados = false;
     this._Muerto = false;
     this._Sound = game.add.audio('Points',1);
+    this._SoundMuerte = game.add.audio('Pop',1);
     this._timerMuerte;
     
     //HUIDA
@@ -368,7 +369,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
         if(this._State>0 && this._State<4){
             this._TimerState = this._game.time.create(false);
-            this._TimerState.add(1500,ReduceState,this);
+            this._TimerState.add(1250,ReduceState,this);
             this._TimerState.start();
         }
         else if(this._State==0){
@@ -379,7 +380,9 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
         }
         else if(this._State==4){
             this._TimerState.stop();
+            this.body.enable=false;
             this._Muerto=true;
+            this._SoundMuerte.play();
             this._timerMuerte = this._game.time.create(false);
             this._timerMuerte.add(1000,Sonido,this);
             this._timerMuerte.start();

@@ -44,11 +44,14 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._posInicial =position;
 
     this._timer = this._game.time.create(false); //TIMER PARA CONTROLAR MUERTE REAL
+    this._timerReload = this._game.time.create(false);
 
     this._Hook;
     this._Hooked = false; //ESTADO A TRUE CUANDO EL GANCHO HA COGIDO A UN ENEMIGO
     this._Hooking=false;  //LANZANDO EL GANCHO
     this._HookThrow = this._game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    this._reloadTime=500;
+    this._readyToShoot=true;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -268,11 +271,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
 
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable){
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
-        this._game.physics.enable(this._Hook, Phaser.Physics.ARCADE);
+        this._game.physics.arcade.enable(this._Hook);
         this._Hooking=true;
         this._HookDistanceX=0;
         this._HookDistanceY=0;
@@ -416,11 +419,18 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             obj2._animWalk.stop();
             obj2._State++;
         }
-        obj1.destroy();
+        obj1.visible=false;
+        console.debug(this._Hooking);
         this._Hooking = false;
+        this._readyToShoot=false;
+        this._timerReload.add(this._reloadTime,Reload,this);
+        this._timerReload.start();
         if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0)
             this._MovementEnable=true;
         
+    }
+    function Reload(){
+        this._readyToShoot=true;
     }
 
     

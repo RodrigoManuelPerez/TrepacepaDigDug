@@ -273,7 +273,6 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboHuida, onCollisionHuidaEnemigo);
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
-        //VO
         
         
 
@@ -420,6 +419,9 @@ var PlayScene = {
             }
         }
 
+        if(player._MovementEnable && PAUSED)
+            player._MovementEnable=false;
+
         //MUSICA
         if((player._Movingdown || player._Movingup || player._Movingleft || player._Movingright)&&(player._MovementEnable || player._AutomaticMovement))
             playerMusic.resume();
@@ -428,16 +430,21 @@ var PlayScene = {
 
     },
     render: function(){
-        if(player._Hook!=null)
-            this.game.debug.body(player._Hook);
-        for (var qq =0; qq<GrupoEnemigos.length; qq++){
-            this.game.debug.body(GrupoEnemigos.children[qq]);
-        }
-        this.game.debug.body(CuboHuida);
     }
 }
 
 module.exports = PlayScene;
+
+function EnemyHooked(obj1,obj2){
+    if(obj2._State<4){
+        obj2._animWalk.stop();
+        obj2._State++;
+    }
+    obj1.destroy_in_next_tick= true;
+    player._Hooking = false;
+    if(!player._AnimMuerto && !player._Muerto && player._GrupoEnemigos.length!=0)
+        player._MovementEnable=true;
+}
 
 function switchPause(){
     if(PAUSED){

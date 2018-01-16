@@ -29,6 +29,7 @@ var PreloaderScene = {
     this.game.load.audio('Dragon', ['music/Sounds/Dragon.ogg']);
     this.game.load.audio('Rock', ['music/Sounds/Rock.ogg']);
     this.game.load.audio('Taser', ['music/Sounds/Taser.ogg']);
+    this.game.load.audio('Pop', ['music/Sounds/Pop.ogg']);
 
         //MUSICA
     this.game.load.audio('MusicGame', ['music/Music/GameSong.ogg']);
