@@ -1406,6 +1406,13 @@ module.exports = Vegetal;
 var PlayScene = require('./play_scene.js');
 var MenuScene = require('./menu.js');
 
+// var wfconfig = {
+//   //  The Google Fonts we want to load (specify as many as you like in the array)
+//   google: {
+//     families: ['Press Start 2P']
+//   }
+// };
+
 var BootScene = {
   preload: function () {
   },
