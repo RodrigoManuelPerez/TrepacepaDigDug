@@ -2033,7 +2033,7 @@ var PlayScene = {
         else
             FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
 
-        MuteButton = this.game.add.button(760, 560, 'MuteButton', Mute, this);
+        MuteButton = this.game.add.button(720, 560, 'MuteButton', Mute, this);
 
         LoadMap(nivel,this.game);
 
