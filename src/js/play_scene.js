@@ -309,11 +309,6 @@ var PlayScene = {
             pulsando=false;
         }
 
-        console.debug(pulsando);
-
-        if(this.game.input.pointer2.isDown){
-            console.debug(4);
-        }
 
         
 
@@ -481,6 +476,8 @@ var PlayScene = {
 
     },
     render: function(){
+        this.game.debug.pointer(this.game.input.pointer1);
+        this.game.debug.pointer(this.game.input.pointer2);
     }
 }
 
