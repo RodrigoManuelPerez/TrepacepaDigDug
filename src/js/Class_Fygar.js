@@ -109,7 +109,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     }
 
     function StopToFire() {
-        if (this._MovementEnable && !this._Fantasma && this != undefined && this._State==0 && !this._Aplastado) {
+        if (!this._Aplastado && this._MovementEnable && !this._Fantasma && this != undefined && this._State==0) {
 
             this._MovementEnable = false;
             this._animWalk.stop();
@@ -130,7 +130,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
 
             this._ThrowingBullet = true;
         }
-        else {
+        else if(!this._Aplastado){
             this._TimeToFire = Math.random() * (5000) + 10000;
             this._TimerFuego.add(this._TimeToFire, StopToFire, this);
             this._TimerFuego.start();

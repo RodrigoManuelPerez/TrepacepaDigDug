@@ -540,7 +540,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
     }
 
     function StopToFire() {
-        if (this._MovementEnable && !this._Fantasma && this != undefined && this._State==0 && !this._Aplastado) {
+        if (!this._Aplastado && this._MovementEnable && !this._Fantasma && this != undefined && this._State==0) {
 
             this._MovementEnable = false;
             this._animWalk.stop();
@@ -561,7 +561,7 @@ var Fygar = function(spritesheet, cube, game, position, id, limiteDerecho, limit
 
             this._ThrowingBullet = true;
         }
-        else {
+        else if(!this._Aplastado){
             this._TimeToFire = Math.random() * (5000) + 10000;
             this._TimerFuego.add(this._TimeToFire, StopToFire, this);
             this._TimerFuego.start();
@@ -1498,17 +1498,22 @@ var PreloaderScene = {
 };
 
 var wfconfig = {
-  //  The Google Fonts we want to load (specify as many as you like in the array)
+  // el método que invoca Google font al terminar de cargar la fuente.
+  active: function() {
+      init(); //llamada al método de creación de Phaser.
+  },
+
   google: {
-    families: ['Press Start 2P']
+      families: ['Press Start 2P'] //la fuente o fuentes a cargar
   }
+
 };
 
 window.localStorage.setItem('highscore', '0');
 
 window.onload = function () {
   
-  //WebFont.load(wfconfig); 
+  WebFont.load(wfconfig);
 
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
@@ -1955,7 +1960,7 @@ var PlayScene = {
         levelString = ' ROUND ';
 
 
-        scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
+        //scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
         pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
         pauseText.visible=false;
@@ -1967,10 +1972,10 @@ var PlayScene = {
         score.text=puntuacion;
 
         
-            // scoreTextA = this.game.add.text(556, 44, 'HI -');
-            // scoreTextA.font = 'Press Start 2P';
-            // scoreTextA.fontSize=34;
-            // scoreTextA.fill = '#fff';
+            scoreTextA = this.game.add.text(556, 44, 'HI -');
+            scoreTextA.font = 'Press Start 2P';
+            scoreTextA.fontSize=34;
+            scoreTextA.fill = '#fff';
 
 
             // scoreTextB = this.game.add.text(599, 87, scoreStringB);

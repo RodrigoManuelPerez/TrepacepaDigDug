@@ -137,7 +137,7 @@ var PlayScene = {
         levelString = ' ROUND ';
 
 
-        scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
+        //scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
         pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
         pauseText.visible=false;
@@ -149,10 +149,10 @@ var PlayScene = {
         score.text=puntuacion;
 
         
-            // scoreTextA = this.game.add.text(556, 44, 'HI -');
-            // scoreTextA.font = 'Press Start 2P';
-            // scoreTextA.fontSize=34;
-            // scoreTextA.fill = '#fff';
+            scoreTextA = this.game.add.text(556, 44, 'HI -');
+            scoreTextA.font = 'Press Start 2P';
+            scoreTextA.fontSize=34;
+            scoreTextA.fill = '#fff';
 
 
             // scoreTextB = this.game.add.text(599, 87, scoreStringB);

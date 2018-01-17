@@ -95,17 +95,22 @@ var PreloaderScene = {
 };
 
 var wfconfig = {
-  //  The Google Fonts we want to load (specify as many as you like in the array)
+  // el método que invoca Google font al terminar de cargar la fuente.
+  active: function() {
+      init(); //llamada al método de creación de Phaser.
+  },
+
   google: {
-    families: ['Press Start 2P']
+      families: ['Press Start 2P'] //la fuente o fuentes a cargar
   }
+
 };
 
 window.localStorage.setItem('highscore', '0');
 
 window.onload = function () {
   
-  //WebFont.load(wfconfig); 
+  WebFont.load(wfconfig);
 
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
