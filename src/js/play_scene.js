@@ -131,54 +131,47 @@ var PlayScene = {
             puntuacion=0;
             puntuacionControl=0;
         }
-        scoreStringA = 'HI -';
+        scoreStringA = 'HI-';
         scoreStringB = ' SCORE';
         pauseString = 'PAUSED';
         levelString = ' ROUND ';
 
         
-            // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-        score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
-        highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
-        levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    
-        score.text=puntuacion;
+        scoreTextA = this.game.add.text(546, 44, scoreStringA);
+        scoreTextA.font = 'Press Start 2P';
+        scoreTextA.fontSize = 30;
+        scoreTextA.fill = '#fff';
 
+
+        scoreTextB = this.game.add.text(589, 87, scoreStringB);
+        scoreTextB.font = 'Press Start 2P';
+        scoreTextB.fontSize = 30;
+        scoreTextB.fill = '#fff';
+
+
+        pauseText = this.game.add.text(580, 190, pauseString);
+        pauseText.font = 'Press Start 2P';
+        pauseText.fontSize = 30;
+        pauseText.fill = '#fff';
+        pauseText.visible=false;
         
-            scoreTextA = this.game.add.text(556, 44, scoreStringA);
-            scoreTextA.font = 'Press Start 2P';
-            scoreTextA.fontSize = 30;
-            scoreTextA.fill = '#fff';
+            // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
+        score = this.game.add.text(599, 269, puntuacion);
+        score.font = 'Press Start 2P';
+        score.fontSize = 30;
+        score.fill = '#fff';
 
+        highScoreText = this.game.add.text(599, 130, maxPuntuacion);
+        highScoreText.font = 'Press Start 2P';
+        highScoreText.fontSize = 30;
+        highScoreText.fill = '#fff';
 
-            scoreTextB = this.game.add.text(599, 87, scoreStringB);
-            scoreTextB.font = 'Press Start 2P';
-            scoreTextB.fontSize = 30;
-            scoreTextB.fill = '#fff';
+        levelText = this.game.add.text(503, 517, levelString + nivel);
+        levelText.font = 'Press Start 2P';
+        levelText.fontSize = 30;
+        levelText.fill = '#fff';
 
-
-            pauseText = this.game.add.text(590, 190, pauseString);
-            pauseText.font = 'Press Start 2P';
-            pauseText.fontSize = 30;
-            pauseText.fill = '#fff';
-            pauseText.visible=false;
-            
-                // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-            score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
-            score.font = 'Press Start 2P';
-            score.fontSize = 30;
-            score.fill = '#fff';
-
-            highScoreText = this.game.add.text(599, 130, maxPuntuacion);
-            highScoreText.font = 'Press Start 2P';
-            highScoreText.fontSize = 30;
-            highScoreText.fill = '#fff';
-
-            levelText = this.game.add.text(513, 517, levelString + nivel);
-            levelText.font = 'Press Start 2P';
-            levelText.fontSize = 30;
-            levelText.fill = '#fff';
-
-            score.text=puntuacion;
+        score.text=puntuacion;
         
 
         //FLORES
@@ -235,7 +228,7 @@ var PlayScene = {
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
         thisLifes = this.game.add.group()
-        this.game.add.text(599, 345, 'LIVES ', { font: '34px Arial', fill: '#fff' });
+        this.game.add.text(599, 345, 'LIVES ', { font: '30px Press Start 2P', fill: '#fff' });
 
         ActualizaHUD(this.game);
 
