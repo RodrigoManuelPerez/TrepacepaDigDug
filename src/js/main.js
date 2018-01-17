@@ -95,10 +95,6 @@ var PreloaderScene = {
 };
 
 var wfconfig = {
-  // el método que invoca Google font al terminar de cargar la fuente.
-  active: function() {
-      init(); //llamada al método de creación de Phaser.
-  },
 
   google: {
       families: ['Press Start 2P'] //la fuente o fuentes a cargar
