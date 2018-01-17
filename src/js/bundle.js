@@ -1406,12 +1406,7 @@ module.exports = Vegetal;
 var PlayScene = require('./play_scene.js');
 var MenuScene = require('./menu.js');
 
-// var wfconfig = {
-//   //  The Google Fonts we want to load (specify as many as you like in the array)
-//   google: {
-//     families: ['Press Start 2P']
-//   }
-// };
+
 
 var BootScene = {
   preload: function () {
@@ -1502,9 +1497,19 @@ var PreloaderScene = {
   }
 };
 
+var wfconfig = {
+  //  The Google Fonts we want to load (specify as many as you like in the array)
+  google: {
+    families: ['Press Start 2P']
+  }
+};
+
 window.localStorage.setItem('highscore', '0');
 
 window.onload = function () {
+  
+  //WebFont.load(wfconfig); 
+
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
   game.state.add('boot', BootScene);
@@ -1878,8 +1883,11 @@ var PosCentral;
 //BOOLEANOS DE CONTROL
 var cargado;
 var NextLevel;
-
 var timerControl;
+
+
+//INPUT
+var pulsando=false;
 
 var PlayScene = {
 
@@ -1944,8 +1952,9 @@ var PlayScene = {
         scoreStringA = 'HI -';
         scoreStringB = ' SCORE';
         pauseString = 'PAUSED';
-
         levelString = ' ROUND ';
+
+
         scoreTextA = this.game.add.text(556, 44, scoreStringA, { font: '34px Arial', fill: '#fff' });
         scoreTextB = this.game.add.text(599, 87, scoreStringB, { font: '34px Arial', fill: '#fff' });
         pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
@@ -1956,6 +1965,28 @@ var PlayScene = {
         highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
         levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    
         score.text=puntuacion;
+
+        
+            // scoreTextA = this.game.add.text(556, 44, 'HI -');
+            // scoreTextA.font = 'Press Start 2P';
+            // scoreTextA.fontSize=34;
+            // scoreTextA.fill = '#fff';
+
+
+            // scoreTextB = this.game.add.text(599, 87, scoreStringB);
+            // scoreTextB.font = 'Press Start 2P';
+            // scoreTextB.fontSize=34;
+            // scoreTextB.fill = '#fff';
+
+
+            // pauseText = this.game.add.text(590, 190, pauseString, { font: '34px Arial', fill: '#fff' });
+            // pauseText.visible=false;
+            
+            //     // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
+            // score = this.game.add.text(599, 259, puntuacion, { font: '34px Arial', fill: '#fff' });
+            // highScoreText = this.game.add.text(599, 130, maxPuntuacion, { font: "bold 34px Arial", fill: "#46c0f9", align: "center" });
+            // levelText = this.game.add.text(513, 517, levelString + nivel, { font: "bold 34px Arial", fill: "#fff", align: "center" });    
+            // score.text=puntuacion;
         
 
         //FLORES
@@ -2087,6 +2118,21 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoEnemigos, CuboDestruccion, onCollisionEliminacionEnemigo);
 
         
+        //INPUT TACTIL
+
+        if(this.game.input.pointer1.isDown){
+            pulsando=true;
+        }
+        else{
+            pulsando=false;
+        }
+
+        console.debug(pulsando);
+
+        if(this.game.input.pointer2.isDown){
+            console.debug(4);
+        }
+
         
 
         if(GrupoEnemigos.length==1){
@@ -2662,7 +2708,8 @@ function LoadMap (lvl,g) {
 
 function ResetPosition(){       //Coloca al todos los personajes en el lugar original
     
-    Vegetable.destroy();
+    if(Vegetable!=undefined)
+        Vegetable.destroy();
 
     for (var i=0; i< GrupoEnemigos.length; i++){
         GrupoEnemigos.children[i].x = GrupoEnemigos.children[i]._posOriginalX;

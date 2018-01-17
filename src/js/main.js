@@ -3,12 +3,7 @@
 var PlayScene = require('./play_scene.js');
 var MenuScene = require('./menu.js');
 
-// var wfconfig = {
-//   //  The Google Fonts we want to load (specify as many as you like in the array)
-//   google: {
-//     families: ['Press Start 2P']
-//   }
-// };
+
 
 var BootScene = {
   preload: function () {
@@ -99,9 +94,19 @@ var PreloaderScene = {
   }
 };
 
+var wfconfig = {
+  //  The Google Fonts we want to load (specify as many as you like in the array)
+  google: {
+    families: ['Press Start 2P']
+  }
+};
+
 window.localStorage.setItem('highscore', '0');
 
 window.onload = function () {
+  
+  //WebFont.load(wfconfig); 
+
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
 
   game.state.add('boot', BootScene);
