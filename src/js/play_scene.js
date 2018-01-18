@@ -84,10 +84,27 @@ var PlayScene = {
         this.game.load.text('level3', 'levels/level3.json');
         this.game.load.text('level4', 'levels/level4.json');
         this.game.load.text('level5', 'levels/level5.json');
-        // this.game.load.text('level6', 'levels/level6.json');
-        // this.game.load.text('level7', 'levels/level7.json');
-        // this.game.load.text('level8', 'levels/level8.json');
-        // this.game.load.text('level9', 'levels/level9.json');
+        this.game.load.text('level6', 'levels/level6.json');
+        this.game.load.text('level7', 'levels/level7.json');
+        this.game.load.text('level8', 'levels/level8.json');
+        this.game.load.text('level9', 'levels/level9.json');
+        this.game.load.text('level10', 'levels/level10.json');
+        this.game.load.text('level11', 'levels/level11.json');
+        this.game.load.text('level12', 'levels/level12.json');
+        this.game.load.text('level13', 'levels/level13.json');
+        this.game.load.text('level14', 'levels/level14.json');
+        this.game.load.text('level15', 'levels/level15.json');
+        this.game.load.text('level16', 'levels/level16.json');
+        this.game.load.text('level17', 'levels/level17.json');
+        this.game.load.text('level18', 'levels/level18.json');
+        this.game.load.text('level19', 'levels/level19.json');
+        this.game.load.text('level20', 'levels/level20.json');
+        this.game.load.text('level21', 'levels/level21.json');
+        this.game.load.text('level22', 'levels/level22.json');
+        this.game.load.text('level23', 'levels/level23.json');
+        this.game.load.text('level24', 'levels/level24.json');
+        this.game.load.text('level25', 'levels/level25.json');
+
 
     },
 
@@ -291,7 +308,9 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoBanderas, GrupoEnemigos, onCollisionBandera);
 
         //ENEMIGOS CON EL PLAYER
-        this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
+        if(player._EnPosicion){ //Si el player ya se puede mover
+            this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
+        }
 
         //PLAYER CON VEGETAL
         if(VegetalGenerado){
