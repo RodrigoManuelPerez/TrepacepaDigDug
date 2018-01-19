@@ -336,7 +336,6 @@ var PlayScene = {
 
         if(GrupoEnemigos.length==1){
             if(!GrupoEnemigos.children[0]._Huyendo){
-                //sonido del ultimo enemigo
                 GrupoEnemigos.children[0]._Huyendo=true;
                 playerMusic.stop();
                 playerMusic=this.game.add.audio('MusicGameSpeedUp',0.25,true);    //key, Incluyendo la musica pero a mas velocidad
@@ -498,8 +497,8 @@ var PlayScene = {
 
     },
     render: function(){
-        this.game.debug.pointer(this.game.input.pointer1);
-        this.game.debug.pointer(this.game.input.pointer2);
+        //this.game.debug.pointer(this.game.input.pointer1);
+        //this.game.debug.pointer(this.game.input.pointer2);
     }
 }
 
