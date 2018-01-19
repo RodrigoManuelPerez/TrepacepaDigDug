@@ -2127,7 +2127,7 @@ var PlayScene = {
         this.game.physics.arcade.collide(GrupoBanderas, GrupoEnemigos, onCollisionBandera);
 
         //ENEMIGOS CON EL PLAYER
-        if(player._EnPosicion){ //Si el player ya se puede mover
+        if(player._MovementEnable){ //Si el player ya se puede mover
             this.game.physics.arcade.collide(GrupoEnemigos, player._core, MuertePlayer);
         }
 
