@@ -81,7 +81,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
             if((this._Fantasma && this._SemiVelocidad==0) || !this._Fantasma){
 
-                if(this._Movingleft && (this.x>15 || this._ultimoGiro)){
+                if(this._Movingleft && (this.x>10 || this._ultimoGiro)){
                     this.x--;
                     this._distanceX--;
                     if(!this._Fantasma){
@@ -844,6 +844,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._HookThrow = this._game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     this._reloadTime=500;
     this._readyToShoot=true;
+    this._ShootEnable=true;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -1057,13 +1058,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     if (this._distanceY > 42 || this._distanceY < -42)
         this._distanceY = 0;
 
-        
-        
-
-
+    
+    
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot){
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
@@ -1141,6 +1140,9 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._MovementEnable=true;
                 }
             }
+
+            
+
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
@@ -1888,7 +1890,7 @@ var timerControl;
 
 
 //INPUT
-var pulsando=false;
+var pulsando;
 
 var PlayScene = {
 
@@ -2061,6 +2063,9 @@ var PlayScene = {
         player.body.enable=true;
         this.game.world.addChild(player);
 
+        if(nivel==25)
+            player._ShootEnable=false;
+
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
         thisLifes = this.game.add.group()
@@ -2143,7 +2148,7 @@ var PlayScene = {
         
         //INPUT TACTIL
 
-        if(this.game.input.pointer1.isDown){
+        if(this.game.input.mousePointer.isDown){
             pulsando=true;
         }
         else{
@@ -2316,8 +2321,9 @@ var PlayScene = {
 
     },
     render: function(){
-        //this.game.debug.pointer(this.game.input.pointer1);
-        //this.game.debug.pointer(this.game.input.pointer2);
+        // this.game.debug.pointer(this.game.input.pointer1);
+        // this.game.debug.pointer(this.game.input.pointer2);
+        // this.game.debug.pointer(this.game.input.mousePointer);
     }
 }
 

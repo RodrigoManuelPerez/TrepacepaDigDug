@@ -69,7 +69,7 @@ var timerControl;
 
 
 //INPUT
-var pulsando=false;
+var pulsando;
 
 var PlayScene = {
 
@@ -242,6 +242,9 @@ var PlayScene = {
         player.body.enable=true;
         this.game.world.addChild(player);
 
+        if(nivel==25)
+            player._ShootEnable=false;
+
         ///////////////////////Vidas//////////////////////////////
         thisLifes = this.lifes;
         thisLifes = this.game.add.group()
@@ -324,7 +327,7 @@ var PlayScene = {
         
         //INPUT TACTIL
 
-        if(this.game.input.pointer1.isDown){
+        if(this.game.input.mousePointer.isDown){
             pulsando=true;
         }
         else{
@@ -497,8 +500,9 @@ var PlayScene = {
 
     },
     render: function(){
-        //this.game.debug.pointer(this.game.input.pointer1);
-        //this.game.debug.pointer(this.game.input.pointer2);
+        // this.game.debug.pointer(this.game.input.pointer1);
+        // this.game.debug.pointer(this.game.input.pointer2);
+        // this.game.debug.pointer(this.game.input.mousePointer);
     }
 }
 

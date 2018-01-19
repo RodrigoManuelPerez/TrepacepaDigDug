@@ -80,7 +80,7 @@ var Enemy = function(spritesheet,cube, game, position, id, limiteDerecho, limite
 
             if((this._Fantasma && this._SemiVelocidad==0) || !this._Fantasma){
 
-                if(this._Movingleft && (this.x>15 || this._ultimoGiro)){
+                if(this._Movingleft && (this.x>10 || this._ultimoGiro)){
                     this.x--;
                     this._distanceX--;
                     if(!this._Fantasma){

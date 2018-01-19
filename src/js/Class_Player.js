@@ -52,6 +52,7 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._HookThrow = this._game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     this._reloadTime=500;
     this._readyToShoot=true;
+    this._ShootEnable=true;
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
@@ -265,13 +266,11 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     if (this._distanceY > 42 || this._distanceY < -42)
         this._distanceY = 0;
 
-        
-        
-
-
+    
+    
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot){
+    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
@@ -349,6 +348,9 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._MovementEnable=true;
                 }
             }
+
+            
+
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
