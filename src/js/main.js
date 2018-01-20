@@ -80,7 +80,8 @@ var PreloaderScene = {
 
     this.game.load.image('Banderita', 'images/Bandera.png');
 
-    this.game.load.image('Controles', 'images/Controles.png')
+    this.game.load.image('PAD', 'images/Cursors.png')
+    this.game.load.image('BOTON', 'images/Boton.png')
 
 
     //COSAS DEL MENU

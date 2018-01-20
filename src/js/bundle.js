@@ -848,6 +848,14 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
+
+
+    //ENTRADA TACTIL
+    this._pulsandoBoton=false;
+    this._pulsandoDerecha=false;
+    this._pulsandoIzquierda=false;
+    this._pulsandoArriba=false;
+    this._pulsandoAbajo=false;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -857,7 +865,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     {
     //Comprobación de cursores de Phaser
     if(this._MovementEnable){
-        if (this._cursors.left.isDown && this.x > 20 && this._Enableleft)
+        if ((this._cursors.left.isDown || this._pulsandoIzquierda) && this.x > 20 && this._Enableleft)
         {
             if (this._Movingright == true)
                 this._Movingright = false;
@@ -908,7 +916,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - 20 && this._Enableright)
+        else if ((this._cursors.right.isDown || this._pulsandoDerecha) && this.x < this._LimiteDerecho - 20 && this._Enableright)
         {
             if (this._Movingleft == true)
                 this._Movingleft = false;
@@ -958,7 +966,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.down.isDown && this.y < 612 - this.height && this._Enabledown)
+        else if ((this._cursors.down.isDown || this._pulsandoAbajo) && this.y < 612 - this.height && this._Enabledown)
         {   
 
             if (this._Movingright == true)
@@ -1001,7 +1009,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
+        else if ((this._cursors.up.isDown || this._pulsandoIzquierda) && this.y > this.height + 24 && this._Enableup)
         {   
 
             if (this._Movingright == true)
@@ -1052,6 +1060,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         }
     }
 
+    
+
 
     if (this._distanceX > 42 || this._distanceX < -42)
         this._distanceX = 0;
@@ -1062,7 +1072,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
+    if ((this._HookThrow.isDown || this._pulsandoBoton) && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
@@ -1082,6 +1092,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this.Input();
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
+
+
 
         if(this._AnimMuerto || this._Muerto){
             if(this._MovementEnable)
@@ -1140,9 +1152,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._MovementEnable=true;
                 }
             }
-
-            
-
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
@@ -1485,7 +1494,8 @@ var PreloaderScene = {
 
     this.game.load.image('Banderita', 'images/Bandera.png');
 
-    this.game.load.image('Controles', 'images/Controles.png')
+    this.game.load.image('PAD', 'images/Cursors.png')
+    this.game.load.image('BOTON', 'images/Boton.png')
 
 
     //COSAS DEL MENU
@@ -1891,6 +1901,12 @@ var timerControl;
 
 //INPUT
 var pulsando;
+var DistX=0;
+var DistY=0;
+
+var PAD;
+var InputButton;
+
 
 var PlayScene = {
 
@@ -2093,13 +2109,28 @@ var PlayScene = {
 
         //Actualizacion automática de los botones de pantalla completa
         if (this.game.scale.isFullScreen)
-            FullScreenButton = this.game.add.button(760, 560, 'NormalScreenButton', FullScreen, this);
+            FullScreenButton = this.game.add.button(760, 20, 'NormalScreenButton', FullScreen, this);
         else
-            FullScreenButton = this.game.add.button(760, 560, 'FullScreenButton', FullScreen, this);
+            FullScreenButton = this.game.add.button(760, 20, 'FullScreenButton', FullScreen, this);
 
-        MuteButton = this.game.add.button(720, 560, 'MuteButton', Mute, this);
+        MuteButton = this.game.add.button(720, 20, 'MuteButton', Mute, this);
+
 
         LoadMap(nivel,this.game);
+
+        //INPUT
+
+        PAD = new Phaser.Sprite(this.game,200, 450,'PAD');
+        PAD.visible=false;
+        PAD.anchor.x = 0.5;
+        PAD.anchor.y = 0.5;
+        this.game.world.addChild(PAD);
+
+        InputButton = new Phaser.Sprite(this.game,600, 450,'BOTON');
+        InputButton.visible=false;
+        InputButton.anchor.x = 0.5;
+        InputButton.anchor.y = 0.5;
+        this.game.world.addChild(InputButton);
 
         player._GrupoTierra=tierra;
         player._GrupoEnemigos=GrupoEnemigos;
@@ -2148,15 +2179,60 @@ var PlayScene = {
         
         //INPUT TACTIL
 
-        if(this.game.input.mousePointer.isDown){
-            pulsando=true;
-        }
-        else{
-            pulsando=false;
+        if(this.game.input.mousePointer.isDown){        //pointer1 || pointer2
+            if(this.game.input.mousePointer.positionDown.x<300){    //pointer1
+
+                PAD.position=this.game.input.mousePointer.positionDown;     //pointer1
+                PAD.visible=true;
+
+                DistX = (this.game.input.mousePointer.position.x-this.game.input.mousePointer.positionDown.x);      //pointer1
+                DistY = (this.game.input.mousePointer.position.y-this.game.input.mousePointer.positionDown.y);      //pointer1
+                console.debug(DistX);
+                if(DistX>70){
+                    
+                    player._pulsandoDerecha = true;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoArriba=false;
+                    player._pulsandoAbajo=false;
+                }
+                else if(DistX<-70){
+                    player._pulsandoIzquierda = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoArriba=false;
+                    player._pulsandoAbajo=false;
+                }
+                else if(DistY<-70){
+                    player._pulsandoArriba = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoAbajo=false;
+                    
+                }
+                else if(DistY>70){
+                    player._pulsandoAbajo = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoAbajo=false;
+                }
+            }else{
+                PAD.visible=false;
+                player._pulsandoDerecha=false;
+                player._pulsandoIzquierda=false;
+                player._pulsandoArriba=false;
+                player._pulsandoAbajo=false;
+            }
+            
+            if(this.game.input.mousePointer.positionDown.x>550){   //pointer2
+                InputButton.position=this.game.input.mousePointer.positionDown;     //pointer2
+                InputButton.visible=true;
+                player._pulsandoBoton=true;
+            }
+            else{
+                InputButton.visible=false;
+                player._pulsandoBoton=false;
+            }
         }
 
-
-        
 
         if(GrupoEnemigos.length==1){
             if(!GrupoEnemigos.children[0]._Huyendo){
@@ -2176,15 +2252,15 @@ var PlayScene = {
         ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
 
-            //////////////////PRUEBA CAMBIO LEVEL///////////////
-            if(key.keyCode === 48){     //El 0
-                LevelComplete(this.game);
-            }
+            // //////////////////PRUEBA CAMBIO LEVEL///////////////
+            // if(key.keyCode === 48){     //El 0
+            //     LevelComplete(this.game);
+            // }
 
-            ///////////////////NIVEL 1 A FULL VIDAS//////////////////
-            if(key.keyCode === 49){     //El 1
-                ComenzarJuego(this.game);
-            }
+            // ///////////////////NIVEL 1 A FULL VIDAS//////////////////
+            // if(key.keyCode === 49){     //El 1
+            //     ComenzarJuego(this.game);
+            // }
 
             if(key.keyCode === Phaser.KeyCode.P && !player._AutomaticMovement && !player._AnimMuerto && !player._Muerto && !player._EsperandoComenzar){ //LO NECESARIO PARA RESETEAR LA ESCENA PERDIENDO UNA VIDA
                 if(!PAUSED){
@@ -2323,7 +2399,7 @@ var PlayScene = {
     render: function(){
         // this.game.debug.pointer(this.game.input.pointer1);
         // this.game.debug.pointer(this.game.input.pointer2);
-        // this.game.debug.pointer(this.game.input.mousePointer);
+        this.game.debug.pointer(this.game.input.mousePointer);
     }
 }
 

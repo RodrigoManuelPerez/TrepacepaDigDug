@@ -56,6 +56,14 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
 
     this._HookDistanceX=0;
     this._HookDistanceY=0;
+
+
+    //ENTRADA TACTIL
+    this._pulsandoBoton=false;
+    this._pulsandoDerecha=false;
+    this._pulsandoIzquierda=false;
+    this._pulsandoArriba=false;
+    this._pulsandoAbajo=false;
     }
 
     Player.prototype = Object.create(Movable.prototype);
@@ -65,7 +73,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     {
     //Comprobación de cursores de Phaser
     if(this._MovementEnable){
-        if (this._cursors.left.isDown && this.x > 20 && this._Enableleft)
+        if ((this._cursors.left.isDown || this._pulsandoIzquierda) && this.x > 20 && this._Enableleft)
         {
             if (this._Movingright == true)
                 this._Movingright = false;
@@ -116,7 +124,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.right.isDown && this.x < this._LimiteDerecho - 20 && this._Enableright)
+        else if ((this._cursors.right.isDown || this._pulsandoDerecha) && this.x < this._LimiteDerecho - 20 && this._Enableright)
         {
             if (this._Movingleft == true)
                 this._Movingleft = false;
@@ -166,7 +174,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.down.isDown && this.y < 612 - this.height && this._Enabledown)
+        else if ((this._cursors.down.isDown || this._pulsandoAbajo) && this.y < 612 - this.height && this._Enabledown)
         {   
 
             if (this._Movingright == true)
@@ -209,7 +217,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if (this._cursors.up.isDown && this.y > this.height + 24 && this._Enableup)
+        else if ((this._cursors.up.isDown || this._pulsandoIzquierda) && this.y > this.height + 24 && this._Enableup)
         {   
 
             if (this._Movingright == true)
@@ -260,6 +268,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
         }
     }
 
+    
+
 
     if (this._distanceX > 42 || this._distanceX < -42)
         this._distanceX = 0;
@@ -270,7 +280,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
     
     //PARTE DEL GANCHO 
 
-    if (this._HookThrow.isDown && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
+    if ((this._HookThrow.isDown || this._pulsandoBoton) && !this._Hooking && this._MovementEnable && this._readyToShoot && this._ShootEnable){
         this._TaserSound.play();
         this._MovementEnable=false;
         this._Hook = new Phaser.Sprite(this._game, this.x, this.y, 'Gancho');
@@ -290,6 +300,8 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
             this.Input();
         else if(this._AutomaticMovement)
             this.AutomaticMovement();
+
+
 
         if(this._AnimMuerto || this._Muerto){
             if(this._MovementEnable)
@@ -348,9 +360,6 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                     this._MovementEnable=true;
                 }
             }
-
-            
-
         }
 
         if(this._game.physics.arcade.collide(this._Hook, this._GrupoTierra))
