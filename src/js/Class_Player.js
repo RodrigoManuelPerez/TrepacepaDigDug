@@ -315,8 +315,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
                 else{
                     this._Hook.destroy();
-                    this._Hooking=false;
-                    this._MovementEnable=true;
+                    if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0){
+                        this._Hooking=false;
+                        this._MovementEnable=true;
+                    }
                 }
             }
             else if(this.width<0 && this.angle==0){
@@ -329,8 +331,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
                 else{
                     this._Hook.destroy();
-                    this._Hooking=false;
-                    this._MovementEnable=true;
+                    if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0){
+                        this._Hooking=false;
+                        this._MovementEnable=true;
+                    }
                 }
             }
             else if(this.angle==90){
@@ -342,8 +346,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
                 else{
                     this._Hook.destroy();
-                    this._Hooking=false;
-                    this._MovementEnable=true;
+                    if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0){
+                        this._Hooking=false;
+                        this._MovementEnable=true;
+                    }
                 }
             }
             else if(this.angle==-90){
@@ -355,8 +361,10 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
                 else{
                     this._Hook.destroy();
-                    this._Hooking=false;
-                    this._MovementEnable=true;
+                    if(!this._AnimMuerto && !this._Muerto && this._GrupoEnemigos.length!=0){
+                        this._Hooking=false;
+                        this._MovementEnable=true;
+                    }
                 }
             }
         }

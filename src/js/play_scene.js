@@ -14,8 +14,8 @@ var Flower = require('./Class_Flor.js');
 
 var player;
 var cursors;
-var limiteDerecho;
-var limiteSuperior;
+var limiteDerecho = 513;
+var limiteSuperior = 44;
 var tierra, tierraH, tierraV;
 var GrupoRocas, rocasCaidas, VegetalGenerado;
 
@@ -72,9 +72,22 @@ var timerControl;
 var pulsando;
 var DistX=0;
 var DistY=0;
-
 var PAD;
 var InputButton;
+var distPulsacion=60;
+
+
+//NUMEROS MAGICOS
+var posicionCentralX=258;
+var posicionCentralY=298;
+var tamañofuente=30;
+var posPlayerIniX=358; var posPlayerIniY=60;
+var puntuacionVida=20000;
+
+//PARA LA COLISION CON LA ROCA
+var minimo=20; var maximo=21;
+
+
 
 
 var PlayScene = {
@@ -140,9 +153,9 @@ var PlayScene = {
         this.game.physics.startSystem(Phaser.ARCADE);
     
         //Poner variables a los limites.
-        limiteDerecho = 513;
-        limiteSuperior = 44;
-        PosCentral = new Par(258, 298);
+        
+        
+        PosCentral = new Par(posicionCentralX, posicionCentralY);
 
         //Rocas para vegetal
         cargado=false;
@@ -162,36 +175,35 @@ var PlayScene = {
         
         scoreTextA = this.game.add.text(546, 44, scoreStringA);
         scoreTextA.font = 'Press Start 2P';
-        scoreTextA.fontSize = 30;
+        scoreTextA.fontSize = tamañofuente;
         scoreTextA.fill = '#fff';
 
 
         scoreTextB = this.game.add.text(589, 87, scoreStringB);
         scoreTextB.font = 'Press Start 2P';
-        scoreTextB.fontSize = 30;
+        scoreTextB.fontSize = tamañofuente;
         scoreTextB.fill = '#fff';
 
 
         pauseText = this.game.add.text(580, 190, pauseString);
         pauseText.font = 'Press Start 2P';
-        pauseText.fontSize = 30;
+        pauseText.fontSize = tamañofuente;
         pauseText.fill = '#fff';
         pauseText.visible=false;
         
-            // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
         score = this.game.add.text(589, 269, puntuacion);
         score.font = 'Press Start 2P';
-        score.fontSize = 30;
+        score.fontSize = tamañofuente;
         score.fill = '#fff';
 
         highScoreText = this.game.add.text(589, 130, maxPuntuacion);
         highScoreText.font = 'Press Start 2P';
-        highScoreText.fontSize = 30;
+        highScoreText.fontSize = tamañofuente;
         highScoreText.fill = '#fff';
 
         levelText = this.game.add.text(503, 517, levelString + nivel);
         levelText.font = 'Press Start 2P';
-        levelText.fontSize = 30;
+        levelText.fontSize = tamañofuente;
         levelText.fill = '#fff';
 
         score.text=puntuacion;
@@ -208,7 +220,7 @@ var PlayScene = {
         {
             if(contFB>0){
                 contFB--;
-                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorBlancaSpriteSheet')        //FlorBlancaSpriteSheet
+                spriteFlor = new Flower(this.game,470 - (43 * i), 34, 'FlorBlancaSpriteSheet')        //FlorBlancaSpriteSheet       
                 thisFlor.addChild(spriteFlor);
             }
             else if(contFN>0){
@@ -219,7 +231,7 @@ var PlayScene = {
         }
 
         //CUBO DE HUIDA
-        CuboHuida = new Phaser.Sprite(this.game,40*7-2,60,'tierraSuperficie');
+        CuboHuida = new Phaser.Sprite(this.game,40*7-2,60,'tierraSuperficie');      
         this.game.physics.enable(CuboHuida, Phaser.Physics.ARCADE);
         CuboHuida.anchor.x = 0.5;
         CuboHuida.anchor.y = 0.5;
@@ -240,8 +252,8 @@ var PlayScene = {
         cursors = this.game.input.keyboard.createCursorKeys();
 
         //Construimos el player
-        var PosPlayer = new Par(358, 60);
-        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, 278, 318, 'DigDugWalking');
+        var PosPlayer = new Par(posPlayerIniX, posPlayerIniY);
+        player = new Player(this.game,PosPlayer, 'Player',cursors, limiteDerecho, limiteSuperior, 278, 318, 'DigDugWalking'); 
         this.game.physics.enable(player, Phaser.Physics.ARCADE);
         player.anchor.x = 0.5;
         player.anchor.y = 0.5;
@@ -353,25 +365,25 @@ var PlayScene = {
 
                 DistX = (this.game.input.pointer1.position.x-this.game.input.pointer1.positionDown.x);      //pointer1
                 DistY = (this.game.input.pointer1.position.y-this.game.input.pointer1.positionDown.y);      //pointer1
-                
-                if(DistY<-60){
+
+                if(DistY<-distPulsacion){
                     player._pulsandoArriba = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoIzquierda=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistY>60){
+                else if(DistY>distPulsacion){
                     player._pulsandoAbajo = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
-                }else if(DistX>60){
+                }else if(DistX>distPulsacion){
                     player._pulsandoDerecha = true;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistX<-60){
+                else if(DistX<-distPulsacion){
                     player._pulsandoIzquierda = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoArriba=false;
@@ -387,6 +399,7 @@ var PlayScene = {
             player._pulsandoAbajo=false;
         }
         
+        //Pongo restricciones a la pulsacion entre lados de la pantalla
         if(this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x<350){    //Si se esta usando el pointer 1 ya, usamos el pointer 2
             if(this.game.input.pointer2.isDown){    //pointer2
                 if(this.game.input.pointer2.positionDown.x>450 && this.game.input.pointer2.positionDown.y>80){   //pointer2
@@ -430,9 +443,9 @@ var PlayScene = {
             StopRocks();
         }
 
-        ///////////////////////HACKS//////////////////////////////////////
         this.game.input.keyboard.game.input.keyboard.onUpCallback = function(key){
 
+            ///////////////////////HACKS//////////////////////////////////////
             // //////////////////PRUEBA CAMBIO LEVEL///////////////
             // if(key.keyCode === 48){     //El 0
             //     LevelComplete(this.game);
@@ -502,8 +515,8 @@ var PlayScene = {
         //ROCAS CAIDAS
         //Comprobacion de la rotura de rocas
         if(cargado){
-            if(GrupoRocas.length<tamañoGrupoRocas){       //////////////////////////////////////////////////////////
-                rocasCaidas++;                      //CUANDO CARGAMOS LA ESCENA DE OTRO NIVEL ESTO SE LLAMA UNA PRIMERA VEZ Y AUMENTA 1
+            if(GrupoRocas.length<tamañoGrupoRocas){     
+                rocasCaidas++;                     
                 tamañoGrupoRocas=GrupoRocas.length;
             }
         }
@@ -578,8 +591,7 @@ var PlayScene = {
 
     },
     render: function(){
-        // this.game.debug.pointer(this.game.input.pointer1);
-        // this.game.debug.pointer(this.game.input.pointer2);
+        
     }
 }
 
@@ -635,7 +647,7 @@ function onCollisionAplasta(obj1, obj2){
     if(obj2._Falling){
         if(obj1._id=='Player')  //Si el objeto es el digdug es necesario para su movimiento y asi pausar la cancion
         {
-            obj1.y-=15;
+            obj1.y-=15;     //colocamos al player para que su animacion de muerte no quede por detras de la tierra debido al orden de creacion de los objetos
             obj1._Movingdown=false;     
             obj1._Movingleft=false;
             obj1._Movingright=false;
@@ -661,7 +673,7 @@ function onCollisionAplasta(obj1, obj2){
             obj1.body.enable=false;
         }
         
-        obj1._MovementEnable=false;
+        obj1._MovementEnable=false;     //en cualquier caso impedimos el movieminto al objeto que ha colisionado
         
         if(obj1.angle!=0)
             obj1.angle=0;
@@ -671,8 +683,8 @@ function onCollisionAplasta(obj1, obj2){
 
 function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que restringe el movimiento
 {
-
-    if ((obj1.x-20 == obj2.x && obj1.y<obj2.y+21)||(obj1.x-20 > obj2.x && obj1.y==obj2.y+21)||(obj1.x-20 < obj2.x && obj1.y==obj2.y+21)/*||(obj1.x-20 == obj2.x && obj1.y>obj2.y+58)*/){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
+    
+    if ((obj1.x-minimo == obj2.x && obj1.y<obj2.y+maximo)||(obj1.x-minimo > obj2.x && obj1.y==obj2.y+maximo)||(obj1.x-minimo < obj2.x && obj1.y==obj2.y+maximo)){ //COLISION CON LA PARTE SUPERIOR DE LA ROCA
 
         if (obj1._Movingleft) {
             obj1._Enableleft = false;
@@ -687,7 +699,7 @@ function onCollisionRoca(obj1, obj2)    //Colision del player con la roca que re
             obj1._dirY = -1
         }
     }
-     else if (obj1.x-20 == obj2.x && obj1.y>obj2.y+58){
+     else if (obj1.x-minimo == obj2.x && obj1.y>obj2.y+58){ //COLISION CON LA PARTE INFERIOR DE LA ROCA
          if (obj1._Movingup) {
              obj1._Enableup = false;
          }
@@ -703,25 +715,25 @@ function onCollisionTierra (obj1, obj2){
         if(obj2._id == 'tierraH' || obj2._id == 'tierraV')
             obj2.destroy(); //Llamamos la la destructora de la tierra
         else {
-            if ((obj1.x-20)>obj2._posX && (obj1.y-20)==obj2._posY){       //ENTRANDO POR LA DERECHA
+            if ((obj1.x-minimo)>obj2._posX && (obj1.y-minimo)==obj2._posY){       //ENTRANDO POR LA DERECHA
                 obj2.width = obj2.width-1;
                 sumaPuntos(1,this.g);
             }
-            else if ((obj1.x-20)<obj2._posX && (obj1.y-20)==obj2._posY){
+            else if ((obj1.x-minimo)<obj2._posX && (obj1.y-minimo)==obj2._posY){
                 obj2.x = obj2.x+1;
                 obj2.width = obj2.width-1;
                 sumaPuntos(1,this.g);
             }
-            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)<obj2._posY){
+            else if ((obj1.x-minimo)==obj2._posX && (obj1.y-minimo)<obj2._posY){
                 obj2.y = obj2.y + 1;
                 obj2.height = obj2.height-1;
                 sumaPuntos(1,this.g);
             }
-            else if ((obj1.x-20)==obj2._posX && (obj1.y-20)>obj2._posY){
+            else if ((obj1.x-minimo)==obj2._posX && (obj1.y-minimo)>obj2._posY){
                 obj2.height = obj2.height-1;
                 sumaPuntos(1,this.g);
             }
-            if (obj2.width<4 || obj2.height<4){
+            if (obj2.width<4 || obj2.height<4){     //Si el ancho de la tierra que queda es menor a 4, destruimos la tierra que queda
                 obj2.destroy();
                 var PosCentralTierra = new Par (obj2._posCentralX, obj2._posCentralY);
                 var BanderaControl = new GO(this.g, PosCentralTierra, 'Banderita', 'Bandera'); 
@@ -736,12 +748,12 @@ function onCollisionTierra (obj1, obj2){
             }
         }
     }
-    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y && obj1.y<540)         
+    if (obj1._Falling && obj1._id=='Roca' && obj1.y<obj2.y && obj1.y<540)  //Destruimos la tierra fina con la roca al caer, pero no la más inferior       
         obj2.destroy();
 }
 
 function onCollisionPara(obj1, obj2){
-    if(obj2._Falling && obj1.y>obj2.y+21){
+    if(obj2._Falling && obj1.y>obj2.y+maximo){
         if(obj2.y != obj2._posY)
             obj2.Para();
         else
@@ -763,8 +775,8 @@ function Par (x, y) {
 function sumaPuntos (x,g) {
     puntuacion += x;
     puntuacionControl += x;
-    if(puntuacionControl>=20000){
-        puntuacionControl-=20000;
+    if(puntuacionControl>=puntuacionVida){
+        puntuacionControl-=puntuacionVida;
         if(vidas<8){
             vidas++;
             ActualizaHUD(g);
@@ -777,9 +789,10 @@ function LoadMap (lvl,g) {
     g.mapaNivel = JSON.parse(g.cache.getText('level'+lvl));
 
     var posX=-3, posY=80;
+    var anchoCasillaConTierraFina=43;
     
-    var V1 = new Par(-3, posY-43);
-    var V2 = new Par(513, posY-43);
+    var V1 = new Par(posX, posY-anchoCasillaConTierraFina);
+    var V2 = new Par(513, posY-anchoCasillaConTierraFina);     //COLOCAMOS LA DOS TIERRAS FINAS VERTICALES A LOS LATERALES DE LA SUPERFICIE INVISIBLES PARA GENERAR COLISION 
 
     BloqTierraleft = new GO(g, V1, 'tierraVInferior', 'tierraV');  
     g.physics.arcade.enable(BloqTierraleft);
@@ -796,8 +809,8 @@ function LoadMap (lvl,g) {
     tierraV.add(BloqTierraright);
     
 
-    for(var h=0; h<12; h++){
-        var PosTierraH = new Par(posX, posY-43);
+    for(var h=0; h<12; h++){    //NUMERO DE COLUMNAS
+        var PosTierraH = new Par(posX, posY-anchoCasillaConTierraFina);
         var BloqTierraH = new GO(g, PosTierraH, 'tierraHInferior','tierraH');
         BloqTierraH.visible=false;
         g.physics.arcade.enable(BloqTierraH);
@@ -805,7 +818,7 @@ function LoadMap (lvl,g) {
         g.world.addChild(BloqTierraH);
         tierraH.add(BloqTierraH);
 
-        var PosCentralTierra = new Par (posX+23, posY-20);
+        var PosCentralTierra = new Par (posX+23, posY-minimo);
         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
@@ -816,7 +829,7 @@ function LoadMap (lvl,g) {
         GrupoBanderas.add(BanderaControl);
         BanderaControl.body.immovable = true;
 
-        posX+=43;
+        posX+=anchoCasillaConTierraFina;
     }
     
     posY=83;
@@ -844,10 +857,10 @@ function LoadMap (lvl,g) {
                         g.world.addChild(BloqTierraH);
                         tierraH.add(BloqTierraH);
 
-                        posX+=43;
+                        posX+=anchoCasillaConTierraFina;
                     }
                     else{
-                        posX+=43;
+                        posX+=anchoCasillaConTierraFina;
                     }
                 }
             }
@@ -868,17 +881,17 @@ function LoadMap (lvl,g) {
                         g.world.addChild(BloqTierraV);
                         tierraV.add(BloqTierraV);
 
-                        posX+=43;
+                        posX+=anchoCasillaConTierraFina;
                     }
                     else{
-                        posX+=43;
+                        posX+=anchoCasillaConTierraFina;
                     }
                 }
                 else    //AQUI PARA LAS COLUMNAS IMPARES QUE PUEDEN SER DE TIERRA, TIERRA CON ROCA, VACIA, VACIA CON MONSTRUO
                 {
                     if(fila[i]=='0'){    //Bloque de Tierra
                         
-                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var PosCentralTierra = new Par(posX-minimo, posY-23);
                         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
                         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
@@ -891,8 +904,8 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='3'){    //Bloque de Tierra
                         
-                        var PosTierra = new Par(posX-40, posY-43);
-                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var PosTierra = new Par(posX-40, posY-anchoCasillaConTierraFina);
+                        var PosCentralTierra = new Par(posX-minimo, posY-23);
 
                         if(j<9)
                             var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra',PosCentralTierra); 
@@ -909,8 +922,8 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='4'){    //Bloque de Tierra + Roca
                         
-                        var PosTierra = new Par(posX-40, posY-43);
-                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var PosTierra = new Par(posX-40, posY-anchoCasillaConTierraFina);
+                        var PosCentralTierra = new Par(posX-minimo, posY-23);
                         
                         if(j<9)
                             var BloqTierra = new BloqueTierra(g, PosTierra, 'tierraSuperficie', 'tierra', PosCentralTierra); 
@@ -934,7 +947,7 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='5'){    //Enemigo Pooka
                         
-                        var PosEne = new Par(posX-20,posY-23);
+                        var PosEne = new Par(posX-minimo,posY-23);
                         var enemigo = new Enemy('P', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
@@ -942,7 +955,7 @@ function LoadMap (lvl,g) {
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
 
-                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var PosCentralTierra = new Par(posX-minimo, posY-23);
                         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
                         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
@@ -956,7 +969,7 @@ function LoadMap (lvl,g) {
                     }
                     else if(fila[i]=='6'){    //Enemigo Fygar
 
-                        var PosEne = new Par(posX-20,posY-23);
+                        var PosEne = new Par(posX-minimo,posY-23);
                         var enemigo = new Fygar('FygarSpriteSheet', CuboHuida, g, PosEne, 'Enemigo', limiteDerecho, limiteSuperior,player, tierra);
                         g.physics.enable(enemigo, Phaser.Physics.ARCADE);
                         enemigo.anchor.x = 0.5;
@@ -964,7 +977,7 @@ function LoadMap (lvl,g) {
                         g.world.addChild(enemigo);
                         GrupoEnemigos.add(enemigo);
 
-                        var PosCentralTierra = new Par(posX-20, posY-23);
+                        var PosCentralTierra = new Par(posX-minimo, posY-23);
                         var BanderaControl = new GO(g, PosCentralTierra, 'Banderita', 'Bandera'); 
 
                         g.physics.enable(BanderaControl, Phaser.Physics.ARCADE);
@@ -981,7 +994,7 @@ function LoadMap (lvl,g) {
         }
         posX=-3;
         if (j%2==0)
-            posY+=43;
+            posY+=anchoCasillaConTierraFina;
     }
     tamañoGrupoRocas=GrupoRocas.length;
     cargado=true;
@@ -1059,7 +1072,7 @@ function LevelComplete(g){
     g.state.restart('play', false, false);
 }
 
-function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS
+function ActualizaHUD(g){       //ACTUALIZA EL HUD DE LAS VIDAS LAS VARIABLES SON DE COLOCACION EN EL HUD
 
     for (i = 0; i < thisLifes.length; i++) 
     {
