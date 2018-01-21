@@ -354,24 +354,24 @@ var PlayScene = {
                 DistX = (this.game.input.pointer1.position.x-this.game.input.pointer1.positionDown.x);      //pointer1
                 DistY = (this.game.input.pointer1.position.y-this.game.input.pointer1.positionDown.y);      //pointer1
                 
-                if(DistY<-70){
+                if(DistY<-60){
                     player._pulsandoArriba = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoIzquierda=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistY>70){
+                else if(DistY>60){
                     player._pulsandoAbajo = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
-                }else if(DistX>70){
+                }else if(DistX>60){
                     player._pulsandoDerecha = true;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistX<-70){
+                else if(DistX<-60){
                     player._pulsandoIzquierda = true;
                     player._pulsandoDerecha=false;
                     player._pulsandoArriba=false;
@@ -387,7 +387,7 @@ var PlayScene = {
             player._pulsandoAbajo=false;
         }
         
-        if(this.game.input.pointer1.isDown){    //Si se esta usando el pointer 1 ya, usamos el pointer 2
+        if(this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x<350){    //Si se esta usando el pointer 1 ya, usamos el pointer 2
             if(this.game.input.pointer2.isDown){    //pointer2
                 if(this.game.input.pointer2.positionDown.x>450 && this.game.input.pointer2.positionDown.y>80){   //pointer2
                     InputButton.position=this.game.input.pointer2.positionDown;     //pointer2
