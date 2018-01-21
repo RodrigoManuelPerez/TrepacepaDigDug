@@ -179,12 +179,12 @@ var PlayScene = {
         pauseText.visible=false;
         
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-        score = this.game.add.text(599, 269, puntuacion);
+        score = this.game.add.text(589, 269, puntuacion);
         score.font = 'Press Start 2P';
         score.fontSize = 30;
         score.fill = '#fff';
 
-        highScoreText = this.game.add.text(599, 130, maxPuntuacion);
+        highScoreText = this.game.add.text(589, 130, maxPuntuacion);
         highScoreText.font = 'Press Start 2P';
         highScoreText.fontSize = 30;
         highScoreText.fill = '#fff';
@@ -275,14 +275,9 @@ var PlayScene = {
         
         //PARA UN CORRECTO FULLSCREEN
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-
-        //Actualizacion automática de los botones de pantalla completa
-        if (this.game.scale.isFullScreen)
-            FullScreenButton = this.game.add.button(760, 20, 'NormalScreenButton', FullScreen, this);
-        else
-            FullScreenButton = this.game.add.button(760, 20, 'FullScreenButton', FullScreen, this);
-
-        MuteButton = this.game.add.button(720, 20, 'MuteButton', Mute, this);
+        
+        FullScreenButton = this.game.add.button(750, 20, 'NormalScreenButton', FullScreen, this);
+        MuteButton = this.game.add.button(710, 20, 'MuteButton', Mute, this);
 
 
         LoadMap(nivel,this.game);
@@ -299,6 +294,8 @@ var PlayScene = {
         InputButton.visible=false;
         InputButton.anchor.x = 0.5;
         InputButton.anchor.y = 0.5;
+        InputButton.width=2*InputButton.width;
+        InputButton.height=2*InputButton.height;
         this.game.world.addChild(InputButton);
 
         player._GrupoTierra=tierra;
@@ -348,17 +345,27 @@ var PlayScene = {
         
         //INPUT TACTIL
 
-        if(this.game.input.mousePointer.isDown){        //pointer1 || pointer2
-            if(this.game.input.mousePointer.positionDown.x<300){    //pointer1
+        if(this.game.input.pointer1.isDown){        //pointer1
+            if(this.game.input.pointer1.positionDown.x<350){    //pointer1
 
-                PAD.position=this.game.input.mousePointer.positionDown;     //pointer1
+                PAD.position=this.game.input.pointer1.positionDown;     //pointer1
                 PAD.visible=true;
 
-                DistX = (this.game.input.mousePointer.position.x-this.game.input.mousePointer.positionDown.x);      //pointer1
-                DistY = (this.game.input.mousePointer.position.y-this.game.input.mousePointer.positionDown.y);      //pointer1
-                console.debug(DistX);
-                if(DistX>70){
-                    
+                DistX = (this.game.input.pointer1.position.x-this.game.input.pointer1.positionDown.x);      //pointer1
+                DistY = (this.game.input.pointer1.position.y-this.game.input.pointer1.positionDown.y);      //pointer1
+                
+                if(DistY<-70){
+                    player._pulsandoArriba = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoAbajo=false;
+                }
+                else if(DistY>70){
+                    player._pulsandoAbajo = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoArriba=false;
+                }else if(DistX>70){
                     player._pulsandoDerecha = true;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
@@ -370,37 +377,42 @@ var PlayScene = {
                     player._pulsandoArriba=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistY<-70){
-                    player._pulsandoArriba = true;
-                    player._pulsandoDerecha=false;
-                    player._pulsandoIzquierda=false;
-                    player._pulsandoAbajo=false;
-                    
-                }
-                else if(DistY>70){
-                    player._pulsandoAbajo = true;
-                    player._pulsandoDerecha=false;
-                    player._pulsandoIzquierda=false;
-                    player._pulsandoAbajo=false;
-                }
-            }else{
-                PAD.visible=false;
-                player._pulsandoDerecha=false;
-                player._pulsandoIzquierda=false;
-                player._pulsandoArriba=false;
-                player._pulsandoAbajo=false;
             }
-            
-            if(this.game.input.mousePointer.positionDown.x>550){   //pointer2
-                InputButton.position=this.game.input.mousePointer.positionDown;     //pointer2
-                InputButton.visible=true;
-                player._pulsandoBoton=true;
+        }
+        else{
+            PAD.visible=false;
+            player._pulsandoDerecha=false;
+            player._pulsandoIzquierda=false;
+            player._pulsandoArriba=false;
+            player._pulsandoAbajo=false;
+        }
+        
+        if(this.game.input.pointer1.isDown){    //Si se esta usando el pointer 1 ya, usamos el pointer 2
+            if(this.game.input.pointer2.isDown){    //pointer2
+                if(this.game.input.pointer2.positionDown.x>450 && this.game.input.pointer2.positionDown.y>80){   //pointer2
+                    InputButton.position=this.game.input.pointer2.positionDown;     //pointer2
+                    InputButton.visible=true;
+                    player._pulsandoBoton=true;
+                }
+            }
+            else{
+                InputButton.visible=false;
+                player._pulsandoBoton=false;
+            }
+        }else{  //si no, usamos el pointer 1
+            if(this.game.input.pointer1.isDown){    //pointer1
+                if(this.game.input.pointer1.positionDown.x>450 && this.game.input.pointer1.positionDown.y>80){   //pointer1
+                    InputButton.position=this.game.input.pointer1.positionDown;     //pointer1
+                    InputButton.visible=true;
+                    player._pulsandoBoton=true;
+                }
             }
             else{
                 InputButton.visible=false;
                 player._pulsandoBoton=false;
             }
         }
+        
 
 
         if(GrupoEnemigos.length==1){
@@ -568,7 +580,6 @@ var PlayScene = {
     render: function(){
         // this.game.debug.pointer(this.game.input.pointer1);
         // this.game.debug.pointer(this.game.input.pointer2);
-        this.game.debug.pointer(this.game.input.mousePointer);
     }
 }
 

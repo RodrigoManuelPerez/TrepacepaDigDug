@@ -126,43 +126,70 @@ var MenuScene = {
         this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
-                if (_menu.y == 0 && !_Eleccion && !_AtControls){
-                    if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
-                        if (_Flechita.y == _PosicionInferior._y){
-                            _SwitchSound.play();
-                            _Flechita.y = _PosicionSuperior._y;
-                            _PosicionFlecha = true;
-                        }
-                    }
-                    if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
-                        if (_Flechita.y == _PosicionSuperior._y){
-                            _SwitchSound.play();
-                            _Flechita.y = _PosicionInferior._y;
-                            _PosicionFlecha = false;
-                        }
+            if (_menu.y == 0 && !_Eleccion && !_AtControls){
+                if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
+                    if (_Flechita.y == _PosicionInferior._y){
+                        _SwitchSound.play();
+                        _Flechita.y = _PosicionSuperior._y;
+                        _PosicionFlecha = true;
                     }
                 }
-        
-                //////////////////ELECCION//////////////
-                if (!_AtControls) {
-                    if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
-                        if (_menu.y > 0)
-                            _menu.y = 0;
-                        else {
-                            if (!_Eleccion)
-                                _AceptSound.play();  //The acept sound will sound
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
+                    if (_Flechita.y == _PosicionSuperior._y){
+                        _SwitchSound.play();
+                        _Flechita.y = _PosicionInferior._y;
+                        _PosicionFlecha = false;
+                    }
+                }
+            }
+    
+            //////////////////ELECCION//////////////
+            if (!_AtControls) {
+                if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
+                    if (_menu.y > 0)
+                        _menu.y = 0;
+                    else {
+                        if (!_Eleccion){
+                            _AceptSound.play();  //The acept sound will sound
                             _Eleccion = true;
                             _timerControl.add(1500,Comienzo,this,this.game);
                             _timerControl.start();
                         }
                     }
                 }
-                else {
-                    if (key.keyCode === Phaser.KeyCode.ESC) {
-                        this.game.state.start('menu');
-                    }
+            }
+            else {
+                if (key.keyCode === Phaser.KeyCode.ESC) {    //pointer1
+                    this.game.state.start('menu');
                 }
             }
+        }
+        if(!_AtControls){
+            if (_menu.y > 0 && this.game.input.pointer1.isDown)
+                _menu.y = 0;
+            else{
+                if(!_Eleccion && this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x >= 333 && this.game.input.pointer1.positionDown.x <= 427 && this.game.input.pointer1.positionDown.y >= 329 && this.game.input.pointer1.positionDown.y <= 388){
+                    _Flechita.y = _PosicionSuperior._y;
+                    _PosicionFlecha = true;
+                    _Eleccion = true;
+                    _timerControl.add(1500,Comienzo,this,this.game);
+                    _timerControl.start();
+                }
+                else if(!_Eleccion && this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x >= 333 && this.game.input.pointer1.positionDown.x <= 427 && this.game.input.pointer1.positionDown.y >= 388 && this.game.input.pointer1.positionDown.y <= 456){
+                    _Flechita.y = _PosicionInferior._y;
+                    _PosicionFlecha = false;
+                    _Eleccion = true;
+                    _timerControl.add(1500,Comienzo,this,this.game);
+                    _timerControl.start();
+                }
+            }
+        }
+        else if (this.game.input.pointer1.isDown){
+            this.game.state.start('menu');
+        }
+
+
+
         
         if (_menu.y <= 0 && !this._ButtonCreated){
             this._ButtonCreated = true;
@@ -180,6 +207,10 @@ var MenuScene = {
             }
         }
 
+
+        if(!_AtControls){
+
+        }
 
 
         if (_Eleccion) {

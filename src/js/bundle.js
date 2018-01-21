@@ -812,7 +812,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
 
     this._animWalk.play(6,true);
-    //this._animDig.play(6,true);
 
     this._core = new Phaser.Sprite(this._game, 0, 0, 'Banderita');
     this._game.physics.enable(this._core, Phaser.Physics.ARCADE);
@@ -1009,7 +1008,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if ((this._cursors.up.isDown || this._pulsandoIzquierda) && this.y > this.height + 24 && this._Enableup)
+        else if ((this._cursors.up.isDown || this._pulsandoArriba) && this.y > this.height + 24 && this._Enableup)
         {   
 
             if (this._Movingright == true)
@@ -1501,6 +1500,7 @@ var PreloaderScene = {
     //COSAS DEL MENU
     this.game.load.image('MenuFondo', 'images/Menu.png');
     this.game.load.image('MenuFlecha', 'images/Flecha.png');
+    this.game.load.image('Controles', 'images/Controles.png');
   },
 
   create: function () {
@@ -1661,43 +1661,70 @@ var MenuScene = {
         this.game.input.keyboard.game.input.keyboard.onDownCallback = function(key){
 
             ////////////////////MOVIMIENTO FLECHAS/////////////////
-                if (_menu.y == 0 && !_Eleccion && !_AtControls){
-                    if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
-                        if (_Flechita.y == _PosicionInferior._y){
-                            _SwitchSound.play();
-                            _Flechita.y = _PosicionSuperior._y;
-                            _PosicionFlecha = true;
-                        }
-                    }
-                    if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
-                        if (_Flechita.y == _PosicionSuperior._y){
-                            _SwitchSound.play();
-                            _Flechita.y = _PosicionInferior._y;
-                            _PosicionFlecha = false;
-                        }
+            if (_menu.y == 0 && !_Eleccion && !_AtControls){
+                if (key.keyCode === Phaser.KeyCode.W || key.keyCode === 38){
+                    if (_Flechita.y == _PosicionInferior._y){
+                        _SwitchSound.play();
+                        _Flechita.y = _PosicionSuperior._y;
+                        _PosicionFlecha = true;
                     }
                 }
-        
-                //////////////////ELECCION//////////////
-                if (!_AtControls) {
-                    if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
-                        if (_menu.y > 0)
-                            _menu.y = 0;
-                        else {
-                            if (!_Eleccion)
-                                _AceptSound.play();  //The acept sound will sound
+                if (key.keyCode === Phaser.KeyCode.S || key.keyCode === 40){
+                    if (_Flechita.y == _PosicionSuperior._y){
+                        _SwitchSound.play();
+                        _Flechita.y = _PosicionInferior._y;
+                        _PosicionFlecha = false;
+                    }
+                }
+            }
+    
+            //////////////////ELECCION//////////////
+            if (!_AtControls) {
+                if (key.keyCode === Phaser.KeyCode.ENTER || key.keyCode === Phaser.KeyCode.SPACEBAR){
+                    if (_menu.y > 0)
+                        _menu.y = 0;
+                    else {
+                        if (!_Eleccion){
+                            _AceptSound.play();  //The acept sound will sound
                             _Eleccion = true;
                             _timerControl.add(1500,Comienzo,this,this.game);
                             _timerControl.start();
                         }
                     }
                 }
-                else {
-                    if (key.keyCode === Phaser.KeyCode.ESC) {
-                        this.game.state.start('menu');
-                    }
+            }
+            else {
+                if (key.keyCode === Phaser.KeyCode.ESC) {    //pointer1
+                    this.game.state.start('menu');
                 }
             }
+        }
+        if(!_AtControls){
+            if (_menu.y > 0 && this.game.input.pointer1.isDown)
+                _menu.y = 0;
+            else{
+                if(!_Eleccion && this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x >= 333 && this.game.input.pointer1.positionDown.x <= 427 && this.game.input.pointer1.positionDown.y >= 329 && this.game.input.pointer1.positionDown.y <= 388){
+                    _Flechita.y = _PosicionSuperior._y;
+                    _PosicionFlecha = true;
+                    _Eleccion = true;
+                    _timerControl.add(1500,Comienzo,this,this.game);
+                    _timerControl.start();
+                }
+                else if(!_Eleccion && this.game.input.pointer1.isDown && this.game.input.pointer1.positionDown.x >= 333 && this.game.input.pointer1.positionDown.x <= 427 && this.game.input.pointer1.positionDown.y >= 388 && this.game.input.pointer1.positionDown.y <= 456){
+                    _Flechita.y = _PosicionInferior._y;
+                    _PosicionFlecha = false;
+                    _Eleccion = true;
+                    _timerControl.add(1500,Comienzo,this,this.game);
+                    _timerControl.start();
+                }
+            }
+        }
+        else if (this.game.input.pointer1.isDown){
+            this.game.state.start('menu');
+        }
+
+
+
         
         if (_menu.y <= 0 && !this._ButtonCreated){
             this._ButtonCreated = true;
@@ -1715,6 +1742,10 @@ var MenuScene = {
             }
         }
 
+
+        if(!_AtControls){
+
+        }
 
 
         if (_Eleccion) {
@@ -2010,12 +2041,12 @@ var PlayScene = {
         pauseText.visible=false;
         
             // Puesto el texto 'Score' en la posicion (x, y) con la fuente y color que se quiera
-        score = this.game.add.text(599, 269, puntuacion);
+        score = this.game.add.text(589, 269, puntuacion);
         score.font = 'Press Start 2P';
         score.fontSize = 30;
         score.fill = '#fff';
 
-        highScoreText = this.game.add.text(599, 130, maxPuntuacion);
+        highScoreText = this.game.add.text(589, 130, maxPuntuacion);
         highScoreText.font = 'Press Start 2P';
         highScoreText.fontSize = 30;
         highScoreText.fill = '#fff';
@@ -2106,14 +2137,9 @@ var PlayScene = {
         
         //PARA UN CORRECTO FULLSCREEN
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-
-        //Actualizacion automática de los botones de pantalla completa
-        if (this.game.scale.isFullScreen)
-            FullScreenButton = this.game.add.button(760, 20, 'NormalScreenButton', FullScreen, this);
-        else
-            FullScreenButton = this.game.add.button(760, 20, 'FullScreenButton', FullScreen, this);
-
-        MuteButton = this.game.add.button(720, 20, 'MuteButton', Mute, this);
+        
+        FullScreenButton = this.game.add.button(750, 20, 'NormalScreenButton', FullScreen, this);
+        MuteButton = this.game.add.button(710, 20, 'MuteButton', Mute, this);
 
 
         LoadMap(nivel,this.game);
@@ -2130,6 +2156,8 @@ var PlayScene = {
         InputButton.visible=false;
         InputButton.anchor.x = 0.5;
         InputButton.anchor.y = 0.5;
+        InputButton.width=2*InputButton.width;
+        InputButton.height=2*InputButton.height;
         this.game.world.addChild(InputButton);
 
         player._GrupoTierra=tierra;
@@ -2179,17 +2207,27 @@ var PlayScene = {
         
         //INPUT TACTIL
 
-        if(this.game.input.mousePointer.isDown){        //pointer1 || pointer2
-            if(this.game.input.mousePointer.positionDown.x<300){    //pointer1
+        if(this.game.input.pointer1.isDown){        //pointer1
+            if(this.game.input.pointer1.positionDown.x<350){    //pointer1
 
-                PAD.position=this.game.input.mousePointer.positionDown;     //pointer1
+                PAD.position=this.game.input.pointer1.positionDown;     //pointer1
                 PAD.visible=true;
 
-                DistX = (this.game.input.mousePointer.position.x-this.game.input.mousePointer.positionDown.x);      //pointer1
-                DistY = (this.game.input.mousePointer.position.y-this.game.input.mousePointer.positionDown.y);      //pointer1
-                console.debug(DistX);
-                if(DistX>70){
-                    
+                DistX = (this.game.input.pointer1.position.x-this.game.input.pointer1.positionDown.x);      //pointer1
+                DistY = (this.game.input.pointer1.position.y-this.game.input.pointer1.positionDown.y);      //pointer1
+                
+                if(DistY<-70){
+                    player._pulsandoArriba = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoAbajo=false;
+                }
+                else if(DistY>70){
+                    player._pulsandoAbajo = true;
+                    player._pulsandoDerecha=false;
+                    player._pulsandoIzquierda=false;
+                    player._pulsandoArriba=false;
+                }else if(DistX>70){
                     player._pulsandoDerecha = true;
                     player._pulsandoIzquierda=false;
                     player._pulsandoArriba=false;
@@ -2201,37 +2239,42 @@ var PlayScene = {
                     player._pulsandoArriba=false;
                     player._pulsandoAbajo=false;
                 }
-                else if(DistY<-70){
-                    player._pulsandoArriba = true;
-                    player._pulsandoDerecha=false;
-                    player._pulsandoIzquierda=false;
-                    player._pulsandoAbajo=false;
-                    
-                }
-                else if(DistY>70){
-                    player._pulsandoAbajo = true;
-                    player._pulsandoDerecha=false;
-                    player._pulsandoIzquierda=false;
-                    player._pulsandoAbajo=false;
-                }
-            }else{
-                PAD.visible=false;
-                player._pulsandoDerecha=false;
-                player._pulsandoIzquierda=false;
-                player._pulsandoArriba=false;
-                player._pulsandoAbajo=false;
             }
-            
-            if(this.game.input.mousePointer.positionDown.x>550){   //pointer2
-                InputButton.position=this.game.input.mousePointer.positionDown;     //pointer2
-                InputButton.visible=true;
-                player._pulsandoBoton=true;
+        }
+        else{
+            PAD.visible=false;
+            player._pulsandoDerecha=false;
+            player._pulsandoIzquierda=false;
+            player._pulsandoArriba=false;
+            player._pulsandoAbajo=false;
+        }
+        
+        if(this.game.input.pointer1.isDown){    //Si se esta usando el pointer 1 ya, usamos el pointer 2
+            if(this.game.input.pointer2.isDown){    //pointer2
+                if(this.game.input.pointer2.positionDown.x>450 && this.game.input.pointer2.positionDown.y>80){   //pointer2
+                    InputButton.position=this.game.input.pointer2.positionDown;     //pointer2
+                    InputButton.visible=true;
+                    player._pulsandoBoton=true;
+                }
+            }
+            else{
+                InputButton.visible=false;
+                player._pulsandoBoton=false;
+            }
+        }else{  //si no, usamos el pointer 1
+            if(this.game.input.pointer1.isDown){    //pointer1
+                if(this.game.input.pointer1.positionDown.x>450 && this.game.input.pointer1.positionDown.y>80){   //pointer1
+                    InputButton.position=this.game.input.pointer1.positionDown;     //pointer1
+                    InputButton.visible=true;
+                    player._pulsandoBoton=true;
+                }
             }
             else{
                 InputButton.visible=false;
                 player._pulsandoBoton=false;
             }
         }
+        
 
 
         if(GrupoEnemigos.length==1){
@@ -2399,7 +2442,6 @@ var PlayScene = {
     render: function(){
         // this.game.debug.pointer(this.game.input.pointer1);
         // this.game.debug.pointer(this.game.input.pointer2);
-        this.game.debug.pointer(this.game.input.mousePointer);
     }
 }
 

@@ -87,6 +87,7 @@ var PreloaderScene = {
     //COSAS DEL MENU
     this.game.load.image('MenuFondo', 'images/Menu.png');
     this.game.load.image('MenuFlecha', 'images/Flecha.png');
+    this.game.load.image('Controles', 'images/Controles.png');
   },
 
   create: function () {

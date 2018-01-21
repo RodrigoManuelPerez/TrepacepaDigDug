@@ -20,7 +20,6 @@ var Player = function(game, position, id, cursors, limiteDerecho, limiteSuperior
     this._animDie =this.animations.add('Diying', [5,6,7,8,9], 2, false);
 
     this._animWalk.play(6,true);
-    //this._animDig.play(6,true);
 
     this._core = new Phaser.Sprite(this._game, 0, 0, 'Banderita');
     this._game.physics.enable(this._core, Phaser.Physics.ARCADE);
@@ -217,7 +216,7 @@ Player.prototype.Input = function() //Mueve el jugador a la izquierda
                 }
             }
         }
-        else if ((this._cursors.up.isDown || this._pulsandoIzquierda) && this.y > this.height + 24 && this._Enableup)
+        else if ((this._cursors.up.isDown || this._pulsandoArriba) && this.y > this.height + 24 && this._Enableup)
         {   
 
             if (this._Movingright == true)
