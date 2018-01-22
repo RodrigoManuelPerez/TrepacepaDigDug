@@ -11,7 +11,7 @@ Manual del Juego:
 
 1. Descripción del comienzo 
 
-Tras elegir el modo de juego cargará la primera pantalla, DigDug aparece por la esquina superior derecha, avanza al centro de la superficie y cava hacia abajo hasta situarse en el medio de la pantalla. La primera ronda tiene 4 monstruos y tres rocas y la primera verdura que aparecerá es la zanahoria. Aparece una flor blanca en el tope derecho de la superficie que indica el nivel 1.
+Tras elegir el modo de juego cargará la primera pantalla, DigDug aparece por la esquina superior derecha, avanza al centro de la superficie y cava hacia abajo hasta situarse en el medio de la pantalla. La primera ronda tiene 4 monstruos y tres rocas y la primera verdura que aparecerá es la zanahoria. Aparece una flor blanca en el tope derecho de la superficie que indica el primer nivel.
 
 2. Menús y configuraciónEl menú consta de dos botones en el medio, uno encima de otro, para modos de uno y dos jugadores. Además aparece el logo del juego arriba (centrado) y el nombre del grupo con el año de creación abajo (centrado también) sobre un fondo negro. 
 
@@ -20,8 +20,7 @@ La interfaz se compone por la pantalla de juego formada por una matriz de 12 col
 
 
 4. Jugabilidad 
-    
-    1. Mecánicas 
+
 
 HÉROE: 
 
@@ -31,7 +30,7 @@ Dig Dug se mueve en 4 direcciones, y tiene un gancho inflador que se lanza a una
 - Puede ser matado por: Dragón, Monstruo y Piedra. 
 
 Dig Dug se mueve más lento cuando cava y se choca cuando se encuentra con una piedra. Además como el mapa son cuadrículas, para cambiar de movimiento en L (ej: de abajo a dcha) tiene que esperar a alcanzar la siguiente casilla de la cuadrícula que pueda usar para cambiar de dirección. Sin embargo, el cambio de dirección dcha-izq y arriba-abajo es inmediato.
- 
+
 
 ENEMIGOS:
 
@@ -56,6 +55,5 @@ La dinámica principal del juego es el paso de rondas derrotando a todos los ene
 
 
 6. Niveles 
-  
 
 La creación de los niveles se produce siguiendo un patrón, hasta el nivel 10 y partiendo del nivel inicial aumenta a cada ronda las rocas en una hasta llegar a 5 y hasta 8 los enemigos. Al llegar a 5 las rocas irán disminuyendo hasta volver a 3 y así cíclicamente.
